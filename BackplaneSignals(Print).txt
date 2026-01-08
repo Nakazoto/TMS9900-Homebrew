@@ -1,0 +1,61 @@
+Right to Left
+1...J3...16
+     DA15      Data Bus 15
+     DA14      Data Bus 14
+     DA13      Data Bus 13
+     DA12      Data Bus 12
+     DA11      Data Bus 11
+     DA10      Data Bus 10
+     DA9       Data Bus 9
+     DA8       Data Bus 8
+     DA7       Data Bus 7
+     DA6       Data Bus 6
+     DA5       Data Bus 5
+     DA4       Data Bus 4
+     DA3       Data Bus 3
+     DA2       Data Bus 2
+     DA1       Data Bus 1
+     DA0       Data Bus 0
+1...J4...5
+     IC3       Interupt Request Priority LSB
+     IC2       Interupt Request Priority 2
+     IC1       Interupt Request Priority 1
+     IC0       Interupt Request Priority MSB
+     IRQ       Interupt Request
+1...J1...8
+     /RESET    Global Reset Signal
+     HOLDA     Hold Acknowledge (CPU output)
+     WAIT      Wait State (CPU output)
+     /HOLD     Hold (CPU input)
+     /WE       Write Enable (CPU output)
+     READY     Memory Ready (CPU input)
+     /MEMEN    Memory Enable (CPU input)
+     DBIN      Data Bus In (CPU output)
+1...J2...15
+     AD15      Memory Address 15
+     AD14      Memory Address 14
+     AD13      Memory Address 13
+     AD12      Memory Address 12
+     AD11      Memory Address 11
+     AD10      Memory Address 10
+     AD9       Memory Address 9
+     AD8       Memory Address 8
+     AD7       Memory Address 7
+     AD6       Memory Address 6
+     AD5       Memory Address 5
+     AD4       Memory Address 4
+     AD3       Memory Address 3
+     AD2       Memory Address 2
+     AD1       Memory Address 1
+1...J7...5
+     SPARE     PHI2 (CPU+CLK only)
+     SPARE     PHI1 (CPU+CLK only)
+     SPARE     PHI4 (CPU+CLK only)
+     SPARE     PHI3 (CPU+CLK only)
+     SPARE     Currently unused
+1...J5...5
+     GND
+     -12V
+     +5V
+     -5V
+     +12V

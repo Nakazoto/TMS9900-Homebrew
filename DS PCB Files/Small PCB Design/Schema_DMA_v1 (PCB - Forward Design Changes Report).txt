@@ -1,0 +1,86 @@
+Forward Design Changes Report
+-----------------------------
+
+Report Written:     21:29 Wednesday, October 16, 2024
+Design Path:        C:\Users\Nakaz\Desktop\Electronics Projects\TMS9900 Homebrew\Small PCB Design\Schema_DMA_v1.pcb
+Design Title:       
+Created:            2024/10/16 12:10:08
+Last Saved:         2024/10/16 21:19:58
+Editing Time:       104 min
+Units:              mm (precision 1)
+
+Disconnected pin "H2.1" from net "N0507".
+Disconnected pin "H2.2" from net "N0508".
+Disconnected pin "H2.4" from net "N0510".
+Disconnected pin "H3.1" from net "DBIN".
+Disconnected pin "H3.2" from net "MEMEN".
+Disconnected pin "H3.3" from net "N0505".
+Disconnected pin "U5.2" from net "MEMEN".
+Disconnected pin "U5.4" from net "MEMEN".
+Disconnected pin "U6.1" from net "DBIN".
+Disconnected pin "R1.1" from net "DBIN".
+Disconnected pin "R2.1" from net "MEMEN".
+Disconnected pin "H18.5" from net "N0057".
+Disconnected pin "LED3.1" from net "GND".
+Disconnected pin "LED3.2" from net "N0500".
+Disconnected pin "LED5.1" from net "GND".
+Disconnected pin "LED5.2" from net "N0498".
+Disconnected pin "LED6.1" from net "GND".
+Disconnected pin "LED6.2" from net "N0497".
+Disconnected pin "LED8.1" from net "GND".
+Disconnected pin "LED8.2" from net "N0495".
+Disconnected pin "R4.1" from net "DBIN".
+Disconnected pin "R5.1" from net "MEMEN".
+Disconnected pin "R6.1" from net "N0505".
+Disconnected pin "R6.2" from net "N0500".
+Disconnected pin "R8.1" from net "N0507".
+Disconnected pin "R8.2" from net "N0498".
+Disconnected pin "R9.1" from net "N0508".
+Disconnected pin "R9.2" from net "N0497".
+Disconnected pin "R11.1" from net "N0510".
+Disconnected pin "R11.2" from net "N0495".
+
+Deleted component reference "LED3".
+Deleted component reference "LED5".
+Deleted component reference "LED6".
+Deleted component reference "LED8".
+Deleted component reference "R6".
+Deleted component reference "R8".
+Deleted component reference "R9".
+Deleted component reference "R11".
+
+Deleted net "N0495".
+Deleted net "N0497".
+Deleted net "N0498".
+Deleted net "N0500".
+Deleted net "N0505".
+Deleted net "N0507".
+Deleted net "N0508".
+Deleted net "N0510".
+Deleted net "N0057".
+
+Added net "N0424".
+Added net "N0426".
+
+Connected pin "H3.1" to net "N0426".
+Connected pin "H3.2" to net "N0424".
+Connected pin "U5.2" to net "N0424".
+Connected pin "U5.4" to net "N0424".
+Connected pin "U6.1" to net "N0426".
+Connected pin "R1.1" to net "N0426".
+Connected pin "R2.1" to net "N0424".
+Connected pin "R4.1" to net "N0426".
+Connected pin "R5.1" to net "N0424".
+
+Net "N0037" changed from net class "Ground" to net class "Signal".
+Net "N0054" changed from net class "Ground" to net class "Signal".
+
+Net N0001 renamed to N0520
+Net N0007 renamed to N0522
+Net N0008 renamed to N0523
+Net N0009 renamed to N0524
+Net N0037 renamed to N0490
+Net N0054 renamed to N0451
+
+
+End Of Report.

@@ -1,0 +1,70 @@
+
+  
+       TITL  'FEEL AROUND ROUTINES'
+
+       DATA   WRKSPC
+       DATA   FEEL
+
+FEEL   CLR    R0          FOOD:TRAP 
+       LI     R7,32       UP & DOWN
+       MOV    R3,R4       POSITION 5
+       S      R7,R4       POSITION 2
+       INC    R4          POSITION 3 SAVED
+FEEL1  LI     R6,>DA00    218 TRAP
+       BL     FCHK        CHECK
+       C      R4,R2       POSITION 3?
+       JNE    FEEL1       LOOP
+FEEL2  LI     R6,>D700    215 WALL
+       BL     FCHK        CHECK
+       C      R4,R2       POSITION 3?
+       JNE    FEEL2       LOOP 
+FEEL3  LI     R6,>CF00    207 FOOD
+       BL     FCHK        CHECK
+       C      R4,R2       POSITION 3?
+       JNE    FEEL3       LOOP
+       RTWP
+
+FCHK   MOV    R3,R2       POSITION 5
+       S      R7,R2       POSITION 2
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       DEC    R2          POSITION 1
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       A      R7,R2       POSITION 4
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       A      R7,R2       POSITION 7
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       INC    R2          POSITION 8
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       INC    R2          POSITION 9
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       S      R7,R2       POSITION 6
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       S      R7,R2       POSITION 3
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       RT
+
+FLIP   CI     R6,>DA00    218 TRAP
+       JNE    FLIP1       NEXT
+       LI     R8,>C700    199 DISARMED
+       AI     R0,>0100    ADD 1 FOOD
+       JMP    FLIP3       REPLACE  
+FLIP1  CI     R6,>D700    215 WALL
+       JNE    FLIP 2      NEXT
+       LI     R8,>EF00    239 SHOW WALL
+       JMP    FLIP3       REPLACE
+FLIP2  CI     R6,>CF00    207 FOOD
+       JNE    FLIP4       DONE
+       LI     R8,>8000    129 SPACE
+       INC    R0          ADD 1 TRAP
+FLIP3  MOVB   R8,*R2      REPLACE IT
+FLIP4  RT                 RETURN
+
+         

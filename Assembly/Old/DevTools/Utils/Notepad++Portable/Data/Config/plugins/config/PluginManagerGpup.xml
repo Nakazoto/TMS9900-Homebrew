@@ -1,0 +1,4 @@
+<install>
+    <delete file="T:\Utils\Notepad++Portable\App\Notepad++\plugins\PluginManager.dll" />
+    <copy from="T:\Utils\Notepad++Portable\App\Notepad++\plugins\Config\plugin_install_temp\plugin1\plugins\PluginManager.dll" to="T:\Utils\Notepad++Portable\App\Notepad++\plugins\" replace="true" />
+</install>

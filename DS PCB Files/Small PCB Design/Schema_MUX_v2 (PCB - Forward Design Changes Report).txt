@@ -1,0 +1,17 @@
+Forward Design Changes Report
+-----------------------------
+
+Report Written:     13:29 Tuesday, October 15, 2024
+Design Path:        C:\Users\Nakaz\Desktop\Electronics Projects\TMS9900 Homebrew\Small PCB Design\Schema_MUX_v2.pcb
+Design Title:       
+Created:            2024/10/15 13:17:31
+Last Saved:         2024/10/15 13:28:16
+Editing Time:       11 min
+Units:              mm (precision 1)
+
+Disconnected pin "U9.1" from net "AD3".
+
+Connected pin "U9.1" to net "AD4".
+
+
+End Of Report.

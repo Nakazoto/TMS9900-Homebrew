@@ -1,0 +1,14 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="2">
+            <File firstVisibleLine="57" xOffset="0" scrollWidth="1" startPos="1133" endPos="1133" selMode="0" lang="Assembly" encoding="-1" filename="T:\Sources\Lesson4.asm" backupFilePath="" originalFileLastModifTimestamp="1584354397" />
+            <File firstVisibleLine="32" xOffset="0" scrollWidth="17752" startPos="1117" endPos="1117" selMode="0" lang="Assembly" encoding="-1" filename="T:\SrcAll\monitor.asm" backupFilePath="" originalFileLastModifTimestamp="1584276353" />
+            <File firstVisibleLine="54" xOffset="0" scrollWidth="672" startPos="3032" endPos="3032" selMode="0" lang="Assembly" encoding="-1" filename="T:\Sources\Lesson5.asm" backupFilePath="" originalFileLastModifTimestamp="1590803330" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="17752" startPos="0" endPos="0" selMode="0" lang="Assembly" encoding="-1" filename="T:\SrcAll\functions.asm" backupFilePath="" originalFileLastModifTimestamp="1584275475" />
+            <File firstVisibleLine="7" xOffset="0" scrollWidth="42824" startPos="7619" endPos="7619" selMode="0" lang="XML" encoding="1252" filename="T:\Utils\Notepad++Portable\App\Notepad++\langs.xml" backupFilePath="" originalFileLastModifTimestamp="1584353977" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="17752" startPos="430" endPos="430" selMode="0" lang="Assembly" encoding="-1" filename="T:\SrcAll\v1_Header.asm" backupFilePath="" originalFileLastModifTimestamp="1584145788" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="640" startPos="383" endPos="350" selMode="0" lang="Assembly" encoding="-1" filename="T:\Sources\Minimal.asm" backupFilePath="" originalFileLastModifTimestamp="1584237335" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

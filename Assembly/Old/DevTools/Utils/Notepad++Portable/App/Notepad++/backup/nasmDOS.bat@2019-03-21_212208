@@ -1,0 +1,12 @@
+@echo off
+cd %2
+\Utils\nasm\nasm %1 -fbin -o "\RelX86\myprog.com"
+if not "%errorlevel%"=="0" goto Abandon
+cd \BldX86
+\Utils\Vasm\vlink.exe Prog.ELF -oProg.exe -baoutpc386
+copy program.bin program.bld
+
+exit
+:Abandon
+if "%3"=="nopause" exit
+pause

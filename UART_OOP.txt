@@ -1,0 +1,20 @@
+TMS9900 UART Order of Operations
+For use with TR-1602
+
+Transmit
+Check pin 22 THRE for a high level to see if transmit holding register is empty
+Put low level on pin 23 THRL to load a new value into transmit holding register
+
+Receive
+Pin 19 DR outputs a high level when a byte has been received
+     - This hits the interrupt request pin
+     - This also places an interrupt value on the IRQ level pins
+Put low level on pin 18 DRR to reset DR line
+Put low level on pin 4 RRD to output parallel data onto RR1 - RR8
+
+
+MMIO Addresses
+Tx:  F000 -> THRE
+     F002 -> THRL
+Rx:  F004 -> DRR
+     F006 -> RRD

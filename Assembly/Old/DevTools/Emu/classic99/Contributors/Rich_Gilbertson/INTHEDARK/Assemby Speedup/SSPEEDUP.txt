@@ -1,0 +1,188 @@
+ 
+       TITL  'ENEMY ROUTINES'
+       AORG   >D000
+
+WRKSPC EQU    $
+       DATA   0         R0 FOOD:TRAPS
+RX     DATA   0         R1 RXB X
+NX     DATA   0         R2 NEW X
+       DATA   0         R3 RXB U
+       DATA   0         R4 SAVED U POSITION 3
+       DATA   0         R5
+       DATA   0         R6 VALUE TO CHECK 225,226,227
+       DATA   0         R7 INCREMENT VALUE 32
+       DATA   0         R8 INCREMENT VALUE 1
+       DATA   0         R9
+       DATA   0         R10   POSITIONS
+       DATA   0         R11     1 2 3
+       DATA   0         R12     4 5 6
+       DATA   0         R13     7 8 9
+       DATA   0         R14
+       DATA   0         R15
+
+       DATA   WRKSPC
+       DATA   SRCH
+  
+SRCH   LI     R6,>C700 199 UNARMED TRAP
+       LI     R7,32    UP & DOWN
+       LI     R8,>0100 1 CHAR NUMBER
+SRCHL  MOV    R1,R2    POSITION 5
+       S      R7,R2    POSITION 2
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       DEC    R2       POSITION 1
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       A      R7,R2    POSITION 4
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       A      R7,R2    POSITION 7
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       INC    R2       POSITION 8
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       INC    R2       POSITION 9
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       S      R7,R2    POSITION 6
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       S      R7,R2    POSITION 3
+       CB     *R2,R6   EQUAL?
+       JEQ    CNG      REPLACE
+       CI     R6,>CF00 FOOD?
+       JEQ    HV       FIND A MOVE
+       LI     R6,>CF00 FOOD 207
+       JMP    SRCHL    SEARCH LOOP
+
+CNG    CI     R6,>C700 199 UNARMED TRAP
+       JNE    CNGF     NO HAS TO BE FOOD
+       LI     R6,>DA00 218 REARM THE TRAP
+       MOVB   R6,*R2   REPLACE WITH TRAP
+       RTWP            RETURN DELAY
+CNGF   LI     R6,>8000 SPACE
+       MOVB   R6,*R2   REPLACE WITH SPACE
+ 
+HV     LI     R6,>E100 VALUES 225 226 227
+HVANG  MOV    R1,R2    POSITION 5
+       DEC    R2       POSITION 4
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES
+       A      R7,R2    POSITION 7
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES
+       INC    R2       POSITION 8
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES
+       INC    R2       POSITION 9
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES
+       S      R7,R2    POSITION 6
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES
+       S      R7,R2    POSITION 3
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES 
+       DEC    R2       POSITION 2
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES      
+       DEC    R2       POSITION 1
+       CB     *R2,R6   EQUAL?
+       JEQ    GOUT     YES
+       AB     R8,R6    ADD 1
+       CI     R6,>E400 228?
+       JEQ    TRAIL    FIND A TRAIL
+       JMP    HVANG    LOOP
+
+TRAIL  LI     R6,>E100 TRAIL?
+TRAIL2 LI     R1,>2022 START OVER!!!!
+FIND   INC    R1       ADD 1 TO COLUMN
+       CI     R1,>3FDD END OF 8K?
+       JNE    FIND1
+       AB     R8,R6
+       CI     R6,>E400 228?
+       JEQ    GOUT3
+       JMP    FIND   
+FIND1  CB     *R1,R6   225? 226? 227?
+       JEQ    HV       RESTART HERE!!!
+       JMP    FIND     NO KEEP LOOKING
+
+GOUT   LI     R6,>E100 225
+GOUT1  CB     *R1,R6   EQUAL?
+       JEQ    GOUT2    YES
+       AB     R8,R6    ADD 1 TO CHARACTER
+       CI     R6,>E300 227?
+       JNE    GOUT1    NEXT CHECK 
+       LI     R6,>7F00 SET UP FOR SPACE
+GOUT2  AB     R8,R6    ADD 1 TO CHARACTER
+       MOVB   R6,*R1   UPDATE OLD CHARATER
+       MOV    R2,R1    PUT NEW X IN OLD X
+GOUT3  RTWP            DONE GO BACK TO RXB
+  
+       TITL  'FEEL AROUND ROUTINES'
+
+       DATA   WRKSPC
+       DATA   FEEL
+
+FEEL   CLR    R0          FOOD:TRAP 
+       LI     R7,32       UP & DOWN
+       MOV    R3,R4       POSITION 5
+       S      R7,R4       POSITION 2
+       INC    R4          POSITION 3 SAVED
+FEEL1  LI     R6,>DA00    218 TRAP
+       BL     @FCHK       CHECK
+       C      R4,R2       POSITION 3?
+       JNE    FEEL1       LOOP
+FEEL2  LI     R6,>D700    215 WALL
+       BL     @FCHK       CHECK
+       C      R4,R2       POSITION 3?
+       JNE    FEEL2       LOOP 
+FEEL3  LI     R6,>CF00    207 FOOD
+       BL     @FCHK       CHECK
+       C      R4,R2       POSITION 3?
+       JNE    FEEL3       LOOP
+       RTWP               RETURN TO RXB
+FCHK   MOV    R3,R2       POSITION 5
+       S      R7,R2       POSITION 2
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       DEC    R2          POSITION 1
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       A      R7,R2       POSITION 4
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       A      R7,R2       POSITION 7
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       INC    R2          POSITION 8
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       INC    R2          POSITION 9
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       S      R7,R2       POSITION 6
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       S      R7,R2       POSITION 3
+       CB     *R2,R6      SAME?
+       JEQ    FLIP        REPLACE
+       RT                 RETURN 
+FLIP   CI     R6,>DA00    218 TRAP
+       JNE    FLIP1       NEXT
+       LI     R8,>C700    199 DISARMED
+       INC    R0          ADD 1 TRAP
+       JMP    FLIP3       REPLACE  
+FLIP1  CI     R6,>D700    215 WALL
+       JNE    FLIP2       NEXT
+       LI     R8,>EF00    239 SHOW WALL
+       JMP    FLIP3       REPLACE
+FLIP2  CI     R6,>CF00    207 FOOD
+       JNE    FLIP4       DONE
+       LI     R8,>8000    129 SPACE
+       AI     R0,>0100    ADD 1 FOOD
+FLIP3  MOVB   R8,*R2      REPLACE IT
+FLIP4  RT                 RETURN
+
+       END

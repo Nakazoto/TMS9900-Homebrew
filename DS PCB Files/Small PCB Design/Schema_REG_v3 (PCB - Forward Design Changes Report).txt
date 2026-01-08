@@ -1,0 +1,25 @@
+Forward Design Changes Report
+-----------------------------
+
+Report Written:     09:29 Tuesday, October 15, 2024
+Design Path:        C:\Users\Nakaz\Desktop\Electronics Projects\TMS9900 Homebrew\Small PCB Design\Schema_REG_v3.pcb
+Design Title:       
+Created:            2024/10/14 22:52:10
+Last Saved:         2024/10/15 9:18:44
+Editing Time:       33 min
+Units:              mm (precision 1)
+
+Disconnected pin "U8.6" from net "N0588".
+Disconnected pin "U8.9" from net "AD13".
+Disconnected pin "U8.10" from net "N0588".
+
+Deleted net "N0588".
+
+Added net "N0874".
+
+Connected pin "U8.6" to net "N0874".
+Connected pin "U8.9" to net "N0874".
+Connected pin "U8.10" to net "AD13".
+
+
+End Of Report.

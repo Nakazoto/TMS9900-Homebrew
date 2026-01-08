@@ -1,0 +1,55 @@
+Forward Design Changes Report
+-----------------------------
+
+Report Written:     22:13 Thursday, October 17, 2024
+Design Path:        C:\Users\Nakaz\Desktop\Electronics Projects\TMS9900 Homebrew\Small PCB Design\Schema_RAM2_v1.pcb
+Design Title:       
+Created:            2024/10/17 17:46:07
+Last Saved:         2024/10/17 22:11:41
+Editing Time:       37 min
+Units:              mm (precision 1)
+
+Disconnected pin "U3.26" from net "+5V".
+Disconnected pin "U4.26" from net "+5V".
+Disconnected pin "H2.1" from net "N0055".
+Disconnected pin "H2.2" from net "N0057".
+Disconnected pin "H2.3" from net "N0058".
+Disconnected pin "H2.4" from net "N0059".
+Disconnected pin "H3.1" from net "N0054".
+Disconnected pin "H3.2" from net "N0043".
+Disconnected pin "H3.3" from net "N0037".
+Disconnected pin "H3.4" from net "N0010".
+Disconnected pin "H15.1" from net "N0001".
+Disconnected pin "H15.2" from net "N0006".
+Disconnected pin "H15.3" from net "N0007".
+Disconnected pin "H15.4" from net "N0008".
+Disconnected pin "H15.5" from net "N0009".
+Disconnected pin "H18.1" from net "N0011".
+Disconnected pin "H18.2" from net "N0013".
+Disconnected pin "H18.5" from net "N0031".
+Disconnected pin "U1.7" from net "N0501".
+
+Deleted net "N0501".
+Deleted net "N0001".
+Deleted net "N0006".
+Deleted net "N0007".
+Deleted net "N0008".
+Deleted net "N0009".
+Deleted net "N0010".
+Deleted net "N0011".
+Deleted net "N0013".
+Deleted net "N0031".
+Deleted net "N0037".
+Deleted net "N0043".
+Deleted net "N0054".
+Deleted net "N0055".
+Deleted net "N0057".
+Deleted net "N0058".
+Deleted net "N0059".
+
+Connected pin "U1.7" to net "GND".
+
+Net N0019 renamed to N0451
+
+
+End Of Report.

@@ -1,0 +1,18 @@
+Forward Design Changes Report
+-----------------------------
+
+Report Written:     19:28 Monday, October 14, 2024
+Design Path:        C:\Users\Nakaz\Desktop\Electronics Projects\TMS9900 Homebrew\Small PCB Design\Schema_CPU_v3.pcb
+Design Title:       
+Created:            2024/10/14 12:04:13
+Last Saved:         2024/10/14 19:25:13
+Editing Time:       341 min
+Units:              mm (precision 1)
+
+Disconnected pin "C9.1" from net "GND".
+Disconnected pin "C9.2" from net "-5V".
+
+Deleted component reference "C9".
+
+
+End Of Report.

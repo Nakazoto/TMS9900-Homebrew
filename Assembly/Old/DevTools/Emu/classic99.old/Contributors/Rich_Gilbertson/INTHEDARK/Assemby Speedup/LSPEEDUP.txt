@@ -1,0 +1,235 @@
+
+FEEL AROUND ROUTINES                                         PAGE 0001
+  0001                
+  0003 D000              AORG   >D000   
+  0004                
+  0005      D000  WRKSPC EQU    $   
+  0006 D000 0000         DATA   0         R0 FOOD:TRAPS   
+  0007 D002 0000  RX     DATA   0         R1 RXB X  
+  0008 D004 0000  NX     DATA   0         R2 NEW X  
+  0009 D006 0000         DATA   0         R3 RXB U  
+  0010 D008 0000         DATA   0         R4 SAVED U POSITION 3   
+  0011 D00A 0000         DATA   0         R5  
+  0012 D00C 0000         DATA   0         R6 VALUE TO CHECK 225,226,227   
+  0013 D00E 0000         DATA   0         R7 INCREMENT VALUE 32   
+  0014 D010 0000         DATA   0         R8 INCREMENT VALUE 1  
+  0015 D012 0000         DATA   0         R9  
+  0016 D014 0000         DATA   0         R10   POSITIONS   
+  0017 D016 0000         DATA   0         R11     1 2 3   
+  0018 D018 0000         DATA   0         R12     4 5 6   
+  0019 D01A 0000         DATA   0         R13     7 8 9   
+  0020 D01C 0000         DATA   0         R14   
+  0021 D01E 0000         DATA   0         R15   
+  0022                
+  0023 D020 D000         DATA   WRKSPC                            208,0
+  0024 D022 D024         DATA   SRCH                              208,36 
+  0025                      
+  0026 D024 0206  SRCH   LI     R6,>C700 199 UNARMED TRAP         2,6
+       D026 C700                                                  199,0
+  0027 D028 0207         LI     R7,32    UP & DOWN                2,7
+       D02A 0020                                                  0,32
+  0028 D02C 0208         LI     R8,>0100 1 CHAR NUMBER            2,8
+       D02E 0100                                                  1,0
+  0029 D030 C081  SRCHL  MOV    R1,R2    POSITION 5               192,129
+  0030 D032 6087         S      R7,R2    POSITION 2               96,135
+  0031 D034 9192         CB     *R2,R6   EQUAL?                   145,146
+  0032 D036 131B         JEQ    CNG      REPLACE                  19,27
+  0033 D038 0602         DEC    R2       POSITION 1               6,2
+  0034 D03A 9192         CB     *R2,R6   EQUAL?                   145,146
+  0035 D03C 1318         JEQ    CNG      REPLACE                  19,24
+  0036 D03E A087         A      R7,R2    POSITION 4               160,135
+  0037 D040 9192         CB     *R2,R6   EQUAL?                   145,146
+  0038 D042 1315         JEQ    CNG      REPLACE                  19,21
+  0039 D044 A087         A      R7,R2    POSITION 7               160,135
+  0040 D046 9192         CB     *R2,R6   EQUAL?                   145,146
+  0041 D048 1312         JEQ    CNG      REPLACE                  19,18
+  0042 D04A 0582         INC    R2       POSITION 8               5,130
+  0043 D04C 9192         CB     *R2,R6   EQUAL?                   145,146
+  0044 D04E 130F         JEQ    CNG      REPLACE                  19,15
+  0045 D050 0582         INC    R2       POSITION 9               5,130
+  0046 D052 9192         CB     *R2,R6   EQUAL?                   145,146
+  0047 D054 130C         JEQ    CNG      REPLACE                  19,12
+  0048 D056 6087         S      R7,R2    POSITION 6               96,135
+  0049 D058 9192         CB     *R2,R6   EQUAL?                   145,146
+  0050 D05A 1309         JEQ    CNG      REPLACE                  19,9
+  0051 D05C 6087         S      R7,R2    POSITION 3               96,135
+  0052 D05E 9192         CB     *R2,R6   EQUAL?                   145,146
+  0053 D060 1306         JEQ    CNG      REPLACE                  19,6
+  0054 D062 0286         CI     R6,>CF00 FOOD?                    2,134
+       D064 CF00                                                  207,0
+  0055 D066 130D         JEQ    HV       FIND A MOVE              19,13
+  0056 D068 0206         LI     R6,>CF00 FOOD 207                 2,6
+ENEMY ROUTINES                                               PAGE 0002
+       D06A CF00                                                  207,0
+  0057 D06C 10E1         JMP    SRCHL    SEARCH LOOP              16,225 
+  0058                
+  0059 D06E 0286  CNG    CI     R6,>C700 199 UNARMED TRAP         2,134
+       D070 C700                                                  199,0
+  0060 D072 1604         JNE    CNGF     NO HAS TO BE FOOD        22,4
+  0061 D074 0206         LI     R6,>DA00 218 REARM THE TRAP       2,6
+       D076 DA00                                                  218,0
+  0062 D078 D486         MOVB   R6,*R2   REPLACE WITH TRAP        212,134
+  0063 D07A 0380         RTWP            RETURN DELAY             3,128
+  0064 D07C 0206  CNGF   LI     R6,>8000 SPACE                    2,6
+       D07E 8000                                                  128,0
+  0065 D080 D486         MOVB   R6,*R2   REPLACE WITH SPACE       212,134  
+  0066                        
+  0067 D082 0206  HV     LI     R6,>E100 VALUES 225 226 227       2,6
+       D084 E100                                                  225,0
+  0068 D086 C081  HVANG  MOV    R1,R2    POSITION 5               192,129
+  0069 D088 0602         DEC    R2       POSITION 4               6,2
+  0070 D08A 9192         CB     *R2,R6   EQUAL?                   145,146
+  0071 D08C 132A         JEQ    GOUT     YES                      19,42
+  0072 D08E A087         A      R7,R2    POSITION 7               160,135
+  0073 D090 9192         CB     *R2,R6   EQUAL?                   145,146
+  0074 D092 1327         JEQ    GOUT     YES                      19,39
+  0075 D094 0582         INC    R2       POSITION 8               5,130
+  0076 D096 9192         CB     *R2,R6   EQUAL?                   145,146
+  0077 D098 1324         JEQ    GOUT     YES                      19,36
+  0078 D09A 0582         INC    R2       POSITION 9               5,130
+  0079 D09C 9192         CB     *R2,R6   EQUAL?                   145,146
+  0080 D09E 1321         JEQ    GOUT     YES                      19,33
+  0081 D0A0 6087         S      R7,R2    POSITION 6               96,135
+  0082 D0A2 9192         CB     *R2,R6   EQUAL?                   145,146
+  0083 D0A4 131E         JEQ    GOUT     YES                      19,30
+  0084 D0A6 6087         S      R7,R2    POSITION 3               96,135
+  0085 D0A8 9192         CB     *R2,R6   EQUAL?                   145,146
+  0086 D0AA 131B         JEQ    GOUT     YES                      19,27
+  0087 D0AC 0602         DEC    R2       POSITION 2               6,2
+  0088 D0AE 9192         CB     *R2,R6   EQUAL?                   145,146
+  0089 D0B0 1318         JEQ    GOUT     YES                      19,24
+  0090 D0B2 0602         DEC    R2       POSITION 1               6,2
+  0091 D0B4 9192         CB     *R2,R6   EQUAL?                   145,146
+  0092 D0B6 1315         JEQ    GOUT     YES                      19,21
+  0093 D0B8 B188         AB     R8,R6    ADD 1                    177,136
+  0094 D0BA 0286         CI     R6,>E400 228?                     2,134
+       D0BC E400                                                  228,0
+  0095 D0BE 1301         JEQ    TRAIL    FIND A TRAIL             19,1
+  0096 D0C0 10E2         JMP    HVANG    LOOP                     16,226  
+  0097                               
+  0098 D0C2 0206  TRAIL  LI     R6,>E100 TRAIL?                   2,6
+       D0C4 E100                                                  225,0
+  0099 D0C6 0201  TRAIL2 LI     R1,>2022 START OVER!!!!           2,1
+       D0C8 2022                                                  32,34
+  0100 D0CA 0581  FIND   INC    R1       ADD 1 TO COLUMN          5,129
+  0101 D0CC 0281         CI     R1,>3FDD END OF 8K?               2,129
+       D0CE 3FDD                                                  63,221
+  0102 D0D0 1605         JNE    FIND1                             22,5
+  0103 D0D2 B188         AB     R8,R6                             177,136
+  0104 D0D4 0286         CI     R6,>E400 228?                     2,134
+       D0D6 E400                                                  228,0
+  0105 D0D8 1311         JEQ    GOUT3                             19,17
+ENEMY ROUTINES                                               PAGE 0003
+  0106 D0DA 10F7         JMP    FIND                              16,247
+  0107 D0DC 9191  FIND1  CB     *R1,R6   225? 226? 227?           145,145
+  0108 D0DE 13D1         JEQ    HV       RESTART HERE!!!          19,209
+  0109 D0E0 10F4         JMP    FIND     NO KEEP LOOKING          16,244 
+  0110                
+  0111 D0E2 0206  GOUT   LI     R6,>E100 225                      2,6
+       D0E4 E100                                                  225,0
+  0112 D0E6 9191  GOUT1  CB     *R1,R6   EQUAL?                   145,145
+  0113 D0E8 1306         JEQ    GOUT2    YES                      19,6
+  0114 D0EA B188         AB     R8,R6    ADD 1 TO CHARACTER       177,136
+  0115 D0EC 0286         CI     R6,>E300 227?                     2,134
+       D0EE E300                                                  227,0
+  0116 D0F0 16FA         JNE    GOUT1    NEXT CHECK               22,250
+  0117 D0F2 0206         LI     R6,>7F00 SET UP FOR SPACE         2,6
+       D0F4 7F00                                                  127,0
+  0118 D0F6 B188  GOUT2  AB     R8,R6    ADD 1 TO CHARACTER       177,136
+  0119 D0F8 D446         MOVB   R6,*R1   UPDATE OLD CHARATER      212,70
+  0120 D0FA C042         MOV    R2,R1    PUT NEW X IN OLD X       192,66  
+  0121 D0FC 0380  GOUT3  RTWP            DONE GO BACK TO RXB      3,128
+  0122                
+  0124                
+  0125 D0FE D000         DATA   WRKSPC                            208,0
+  0126 D100 D102         DATA   FEEL                              209,2
+  0127                
+  0128 D102 04C0  FEEL   CLR    R0          FOOD:TRAP             4,192
+  0129 D104 0207         LI     R7,32       UP & DOWN             2,7
+       D106 0020                                                  0,32
+  0130 D108 C103         MOV    R3,R4       POSITION 5            193,3
+  0131 D10A 6107         S      R7,R4       POSITION 2            97,7
+  0132 D10C 0584         INC    R4          POSITION 3 SAVED      5,132   
+  0133 D10E 0206  FEEL1  LI     R6,>DA00    218 TRAP              2,6
+       D110 DA00                                                  218,0
+  0134 D112 06A0         BL     @FCHK       CHECK                 6,160
+       D114 D134                                                  209,52
+  0135 D116 8084         C      R4,R2       POSITION 3?           128,132
+  0136 D118 16FA         JNE    FEEL1       LOOP                  22,250
+  0137 D11A 0206  FEEL2  LI     R6,>D700    215 WALL              2,6
+       D11C D700                                                  215,0
+  0138 D11E 06A0         BL     @FCHK       CHECK                 6,160
+       D120 D134                                                  209,52
+  0139 D122 8084         C      R4,R2       POSITION 3?           128,132 
+  0140 D124 16FA         JNE    FEEL2       LOOP                  22,250
+  0141 D126 0206  FEEL3  LI     R6,>CF00    207 FOOD              2,6
+       D128 CF00                                                  207,0
+  0142 D12A 06A0         BL     @FCHK       CHECK                 6,160
+       D12C D134                                                  209,52
+  0143 D12E 8084         C      R4,R2       POSITION 3?           128,132
+  0144 D130 16FA         JNE    FEEL3       LOOP                  22,250
+  0145 D132 0380         RTWP               RETURN TO RXB         3,128
+  0146 D134 C083  FCHK   MOV    R3,R2       POSITION 5            192,131
+  0147 D136 6087         S      R7,R2       POSITION 2            96,135
+  0148 D138 9192         CB     *R2,R6      SAME?                 145,146
+  0149 D13A 1316         JEQ    FLIP        REPLACE               19,22
+  0150 D13C 0602         DEC    R2          POSITION 1            6,2
+  0151 D13E 9192         CB     *R2,R6      SAME?                 145,146
+  0152 D140 1313         JEQ    FLIP        REPLACE               19,19
+  0153 D142 A087         A      R7,R2       POSITION 4            160,135
+  0154 D144 9192         CB     *R2,R6      SAME?                 145,146
+  0155 D146 1310         JEQ    FLIP        REPLACE               19,16
+FEEL AROUND ROUTINES                                         PAGE 0004
+  0156 D148 A087         A      R7,R2       POSITION 7            160,135
+  0157 D14A 9192         CB     *R2,R6      SAME?                 145,146
+  0158 D14C 130D         JEQ    FLIP        REPLACE               19,13
+  0159 D14E 0582         INC    R2          POSITION 8            5,130
+  0160 D150 9192         CB     *R2,R6      SAME?                 145,146
+  0161 D152 130A         JEQ    FLIP        REPLACE               19,10
+  0162 D154 0582         INC    R2          POSITION 9            5,130
+  0163 D156 9192         CB     *R2,R6      SAME?                 145,146
+  0164 D158 1307         JEQ    FLIP        REPLACE               19,7
+  0165 D15A 6087         S      R7,R2       POSITION 6            96,135
+  0166 D15C 9192         CB     *R2,R6      SAME?                 145,146
+  0167 D15E 1304         JEQ    FLIP        REPLACE               19,4
+  0168 D160 6087         S      R7,R2       POSITION 3            96,135
+  0169 D162 9192         CB     *R2,R6      SAME?                 145,146
+  0170 D164 1301         JEQ    FLIP        REPLACE               19,1
+  0171 D166 045B         RT                 RETURN                4,91
+  0172 D168 0286  FLIP   CI     R6,>DA00    218 TRAP              2,134
+       D16A DA00                                                  218,0
+  0173 D16C 1604         JNE    FLIP1       NEXT                  22,4
+  0174 D16E 0208         LI     R8,>C700    199 DISARMED          2,8
+       D170 C700                                                  199,0
+  0175 D172 0580         INC    R0          ADD 1 TRAP            5,128
+  0176 D174 100D         JMP    FLIP3       REPLACE               16,13
+  0177 D176 0286  FLIP1  CI     R6,>D700    215 WALL              2,134
+       D178 D700                                                  215,0
+  0178 D17A 1603         JNE    FLIP2       NEXT                  22,3
+  0179 D17C 0208         LI     R8,>EF00    239 SHOW WALL         2,8
+       D17E EF00                                                  239,0
+  0180 D180 1007         JMP    FLIP3       REPLACE               16,7
+  0181 D182 0286  FLIP2  CI     R6,>CF00    207 FOOD              2,134
+       D184 CF00                                                  207,0
+  0182 D186 1605         JNE    FLIP4       DONE                  22,5
+  0183 D188 0208         LI     R8,>8000    129 SPACE             2,8 
+       D18A 8000                                                  128.0
+  0184 D18C 0220         AI     R0,>0100    ADD 1 FOOD            2,32
+       D18E 0100                                                  1,0
+  0185 D190 D488  FLIP3  MOVB   R8,*R2      REPLACE IT            212,136
+  0186 D192 045B  FLIP4  RT                 RETURN                4,91
+  0187                
+  0188                   END  
+FEEL AROUND ROUTINES                                         PAGE 0005
+    CNG     D06E      CNGF    D07C      FCHK    D134      FEEL    D102    
+    FEEL1   D10E      FEEL2   D11A      FEEL3   D126      FIND    D0CA    
+    FIND1   D0DC      FLIP    D168      FLIP1   D176      FLIP2   D182    
+    FLIP3   D190      FLIP4   D192      GOUT    D0E2      GOUT1   D0E6    
+    GOUT2   D0F6      GOUT3   D0FC      HV      D082      HVANG   D086    
+    NX      D004      R0      0000      R1      0001      R10     000A    
+    R11     000B      R12     000C      R13     000D      R14     000E    
+    R15     000F      R2      0002      R3      0003      R4      0004    
+    R5      0005      R6      0006      R7      0007      R8      0008    
+    R9      0009      RX      D002      SRCH    D024      SRCHL   D030    
+    TRAIL   D0C2      TRAIL2  D0C6      WRKSPC  D000    
+  0000 ERRORS

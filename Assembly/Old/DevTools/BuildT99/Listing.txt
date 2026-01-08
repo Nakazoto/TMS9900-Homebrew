@@ -1,0 +1,690 @@
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 1 - 3/16/2020 18:45:17
+
+
+       1/       0 :                     
+       2/       0 : =83C0H              wspDefault equ 83C0h
+       3/       0 : =83E0H              wspMonitor equ 83E0h
+       4/       0 :                     			
+       5/       0 : =8300H              userRam    equ 8300h
+       6/       0 : =8320H              CursorX    equ userRam+20h
+       7/       0 :                     
+       8/       0 : =8C00H              VDPWD   EQU     8C00h           ;VDP RAM write data
+       9/       0 : =8C02H              VDPWA   EQU     8C02h           ;VDP RAM read/write address
+      10/       0 :                     
+      11/       0 :                     	include "\srcAll\v1_Header.asm"
+(1)    1/       0 :                     
+(1)    2/    6000 :                             ORG  6000h
+(1)    3/    6000 :                     		
+(1)    4/    6000 : AA01                		WORD 0AA01h				;header
+(1)    5/    6002 : 0000                		Word 0
+(1)    6/    6004 : 0000                		Word 0
+(1)    7/    6006 : 600C                        WORD PROGA				;Pointer to 1st program
+(1)    8/    6008 : 0000                        Word 0
+(1)    9/    600A : 0000                		Word 0
+(1)   10/    600C : 0000                PROGA   WORD 0					;1st entry 0=only
+(1)   11/    600E : 6022                        WORD ProgramStart		;Start of Program
+(1)   12/    6010 : 1000                        BYTE 16				;Text Length
+(1)   13/    6012 : 4C45 4152 4E41 534D         BYTE "LEARNASM.NET   "	;Text Message
+                    2E4E 4554 2020 2000 
+(1)   14/    6022 :                     		
+(1)   15/    6022 :                     
+(1)   16/    6022 :                     ProgramStart:
+(1)   17/    6022 : 0300 0000           		LIMI    0               ;disable interrupts
+(1)   18/    6026 : 02E0 83C0                   LWPI    wspDefault      ;set default workspace
+      12/    602A :                     
+      13/    602A : 06A0 640E           	bl @ScrInit
+      14/    602E :                     	
+      15/    602E : 0200 623E           	li r0,TestData
+      16/    6032 : 0201 8300           	li r1,UserRam
+      17/    6036 : 0202 0005           	li r2,5
+      18/    603A : 06A0 624A           	bl @LDIR			;Copy 10 test bytes to 8300h
+      19/    603E :                     	
+      20/    603E : 0200 0000           	li r0,0				;Zero the test registers
+      21/    6042 : C040                	mov r0,r1
+      22/    6044 : C080                	mov r0,r2
+      23/    6046 : C0C0                	mov r0,r3
+      24/    6048 :                     	
+      25/    6048 : 1002                	jmp ByteTests		;Commands using a single byte of register
+      26/    604A :                     	;jmp BranchTest
+      27/    604A :                     	;jmp TestCmpJe
+      28/    604A :                     	;b @TestCmpGl
+      29/    604A :                     	;b @TestCmpGlSigned
+      30/    604A :                     	;b @TestCarry
+      31/    604A :                     	;b @TestOverflow
+      32/    604A : 0460 61FC           	b @TestParity
+      33/    604E :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      34/    604E :                     		
+      35/    604E :                     ByteTests:				;Byte commands use the high byte of the register
+      36/    604E :                     
+      37/    604E : 0420 6252           	blwp @ShowRam		;Show 8300h test data
+      38/    6052 : 0203 FFFF           	li r3,0FFFFh
+      39/    6056 : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+      40/    605A :                     	
+      41/    605A : 0200 623E           	li r0,TestData		;Load source TestData into R0
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 2 - 3/16/2020 18:45:17
+
+
+      42/    605E :                     	
+      43/    605E : C050                	mov *r0,r1			;Move Word from address R0 into R1 (1122)
+      44/    6060 : D090                	movb *r0,r2			;Move Byte from address R0 into R2 (11??)
+      45/    6062 :                     	
+      46/    6062 : D0D0                	movb *r0,r3			;Move Byte from address R0 into R3 (11??)
+      47/    6064 :                     	
+      48/    6064 : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+      49/    6068 :                     	
+      50/    6068 : 0420 6306           	blwp @DoNewLineW	;Start a new line
+      51/    606C :                     	
+      52/    606C : 0201 FFFF           	li r1,0FFFFh
+      53/    6070 : 0200 0100           	li r0,00100h
+      54/    6074 : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+      55/    6078 :                     	
+      56/    6078 : B040                	ab r0,r1			;Add Byte 1
+      57/    607A : B080                	ab r0,r2
+      58/    607C : B0C0                	ab r0,r3
+      59/    607E :                     	
+      60/    607E : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+      61/    6082 :                     	
+      62/    6082 : 7040                	sb r0,r1
+      63/    6084 : 7080                	sb r0,r2
+      64/    6086 : 70C0                	sb r0,r3
+      65/    6088 :                     	
+      66/    6088 : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+      67/    608C :                     
+      68/    608C :                     
+      69/    608C : 0420 6306           	blwp @DoNewLineW	;Start a new line
+      70/    6090 :                     
+      71/    6090 : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+      72/    6094 :                     
+      73/    6094 : 06C0                	swpb r0
+      74/    6096 : 06C1                	swpb r1
+      75/    6098 : 06C2                	swpb r2
+      76/    609A : 06C3                	swpb r3
+      77/    609C :                     	
+      78/    609C : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+      79/    60A0 :                     
+      80/    60A0 :                     	
+      81/    60A0 : 0460 6248           	b @InfLoop        	;Branch to Infloop	
+      82/    60A4 :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      83/    60A4 :                     	
+      84/    60A4 :                     	
+      85/    60A4 :                     BranchTest:	
+      86/    60A4 : 0200 4120           	li r0,'A '
+      87/    60A8 : 06A0 63D4           	bl @PrintChar
+      88/    60AC :                     	
+      89/    60AC : 0201 60BA           	li r1,BranchTest_Skip1
+      90/    60B0 : 0451                	b *r1				;Branch to address in R1
+      91/    60B2 :                     	
+      92/    60B2 : 0200 3120           	li r0,'1 '			;This will never happen
+      93/    60B6 : 06A0 63D4           	bl @PrintChar	
+      94/    60BA :                     BranchTest_Skip1:	
+      95/    60BA :                     
+      96/    60BA : 0200 4220           	li r0,'B '
+      97/    60BE : 06A0 63D4           	bl @PrintChar
+      98/    60C2 :                     
+      99/    60C2 : 0460 60CE           	b @BranchTest_Skip2	;Branch to address BranchTest_Skip2
+     100/    60C6 :                     	
+     101/    60C6 : 0200 3220           	li r0,'2 '
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 3 - 3/16/2020 18:45:17
+
+
+     102/    60CA : 06A0 63D4           	bl @PrintChar		;;This will never happen
+     103/    60CE :                     BranchTest_Skip2:	
+     104/    60CE :                     	
+     105/    60CE : 0200 4320           	li r0,'C '
+     106/    60D2 : 06A0 63D4           	bl @PrintChar
+     107/    60D6 :                     	
+     108/    60D6 : 06A0 60F6           	bl @BLTest1			;Jump to BLTest... Return address in R11
+     109/    60DA : 06A0 63D4           	bl @PrintChar
+     110/    60DE :                     	
+     111/    60DE : 0200 4420           	li r0,'D '
+     112/    60E2 : 06A0 63D4           	bl @PrintChar
+     113/    60E6 :                     	
+     114/    60E6 : 06A0 60FC           	bl @BLTest2			;Jump to BLTest... Return address in R11
+     115/    60EA :                     	
+     116/    60EA : 0200 4520           	li r0,'E '
+     117/    60EE : 06A0 63D4           	bl @PrintChar
+     118/    60F2 :                     	
+     119/    60F2 : 0460 6248           	b @InfLoop        	;Branch to Infloop	
+     120/    60F6 :                     
+     121/    60F6 :                     
+     122/    60F6 :                     BLTest1:	
+     123/    60F6 : 0200 2120           	li r0,'! '			;change R0
+     124/    60FA : 045B                	B *R11				;Return
+     125/    60FC :                     	
+     126/    60FC :                     BLTest2:
+     127/    60FC : C28B                	mov r11,r10			;Move R11->R10... we NEED R11
+     128/    60FE :                     	
+     129/    60FE : 020B 2A20           	li r11,'* '			;Use R11
+     130/    6102 : C00B                	mov r11,r0
+     131/    6104 :                     	
+     132/    6104 : 06A0 63D4           	bl @PrintChar		;BL... so we used R11 again!
+     133/    6108 :                     	
+     134/    6108 : 045A                	B *R10				;Return
+     135/    610A :                     	
+     136/    610A :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     137/    610A :                     TestCmpJe:
+     138/    610A : 0200 10FF           	li r0,10FFh
+     139/    610E : 0201 10FE           	li r1,10FEh
+     140/    6112 : 0202 10FF           	li r2,10FFh
+     141/    6116 : 0203 1100           	li r3,1100h
+     142/    611A : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+     143/    611E :                     	
+     144/    611E :                     	;ci r0,10FEh		;10FF != 10FF
+     145/    611E :                     	;ci r0,10FFh		;10FF  = 10FF
+     146/    611E :                     	
+     147/    611E :                     	;c r0,r1			;10FF != 10FE
+     148/    611E :                     	;c r0,r2			;10FF  = 10FF
+     149/    611E :                     	
+     150/    611E : 9040                	cb r0,r1			;10  = 10	;FF / FE ignored
+     151/    6120 :                     	;cb r0,r3			;11 != 10
+     152/    6120 :                     	
+     153/    6120 : 0420 626C           	blwp @MonitorFlags
+     154/    6124 :                     	
+     155/    6124 : 1307                	Jeq ResultEQ
+     156/    6126 : 1602                	Jne ResultNE
+     157/    6128 : 0460 6248           	b @InfLoop        	;Branch to Infloop	
+     158/    612C :                     
+     159/    612C :                     	
+     160/    612C :                     ResultNE:
+     161/    612C : 0200 2120           	li r0,'! '
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 4 - 3/16/2020 18:45:17
+
+
+     162/    6130 : 06A0 63D4           	bl @PrintChar
+     163/    6134 :                     ResultEQ:
+     164/    6134 : 0200 3D20           	li r0,'= '
+     165/    6138 : 06A0 63D4           	bl @PrintChar
+     166/    613C : 0460 6248           	b @InfLoop        	;Branch to Infloop	
+     167/    6140 :                     
+     168/    6140 :                     
+     169/    6140 :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+     170/    6140 :                     TestCmpGlSigned:
+     171/    6140 : 0200 6000           	li r0,6000h			;+24576
+     172/    6144 : 0201 7000           	li r1,7000h			;+28672
+     173/    6148 : 0202 8000           	li r2,8000h			;-32768
+     174/    614C : 0203 9000           	li r3,9000h			;-28672
+     175/    6150 : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+     176/    6154 :                     	
+     177/    6154 :                     
+     178/    6154 :                     	
+     179/    6154 :                     	;c r1,r0				;r1>r0	(> if unsigned)
+     180/    6154 :                     	;c r1,r2				;r>r2	(< if unsigned!!!!!)
+     181/    6154 : 80C2                	c r2,r3				;r2<r3	(> if unsigned)
+     182/    6156 :                     	
+     183/    6156 :                     	
+     184/    6156 : 0420 626C           	blwp @MonitorFlags
+     185/    615A :                     	
+     186/    615A : 150F                	jgt	ResultGT		;Unsigned
+     187/    615C : 1113                	jlt ResultLT		;Unsigned
+     188/    615E :                     	
+     189/    615E : 1074                	jmp InfLoop        	;Branch to Infloop	
+     190/    6160 :                     	
+     191/    6160 :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+     192/    6160 :                     	
+     193/    6160 :                     TestCmpGl:
+     194/    6160 : 0200 6000           	li r0,6000h
+     195/    6164 : 0201 7000           	li r1,7000h
+     196/    6168 : 0202 8000           	li r2,8000h
+     197/    616C : 0203 9000           	li r3,9000h
+     198/    6170 : 0420 62E4           	blwp @Monitor4		;Monitor Dump
+     199/    6174 :                     	
+     200/    6174 :                     
+     201/    6174 :                     	
+     202/    6174 :                     	;c r1,r0				;r1>r0
+     203/    6174 :                     	;c r1,r2				;r1<r2
+     204/    6174 :                     	;c r2,r3				;r2<r3
+     205/    6174 :                     	
+     206/    6174 :                     	;c r0,r0				;r0=r0
+     207/    6174 :                     	
+     208/    6174 : 0420 626C           	blwp @MonitorFlags
+     209/    6178 :                     	
+     210/    6178 :                     	;jh	ResultGT		;Unsigned
+     211/    6178 :                     	;jl  ResultLT		;Unsigned
+     212/    6178 :                     	
+     213/    6178 :                     	;jh	ResultGT		;Unsigned
+     214/    6178 :                     	;jl  ResultLT		;Unsigned
+     215/    6178 :                     	
+     216/    6178 :                     	;jhe	ResultGT	;Unsigned
+     217/    6178 :                     	;jle ResultLT		;Unsigned
+     218/    6178 :                     	
+     219/    6178 : 1067                	jmp InfLoop        	;Branch to Infloop	
+     220/    617A :                     	
+     221/    617A :                     ResultGT:
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 5 - 3/16/2020 18:45:17
+
+
+     222/    617A : 0200 3E20           	li r0,'> '
+     223/    617E : 06A0 63D4           	bl @PrintChar
+     224/    6182 : 1062                	jmp InfLoop        	;Branch to Infloop	
+     225/    6184 :                     ResultLT:
+     226/    6184 : 0200 3C20           	li r0,'< '
+     227/    6188 : 06A0 63D4           	bl @PrintChar
+     228/    618C : 105D                	jmp InfLoop        	;Branch to Infloop	
+     229/    618E :                     
+     230/    618E :                     	
+     231/    618E :                     TestCarry:
+     232/    618E :                     
+     233/    618E : 0200 FFFD           	li r0,0FFFDh
+     234/    6192 : 0420 6296           	blwp @MonitorFlagsR0R1		;0FFFDh -
+     235/    6196 : 0580                	inc r0
+     236/    6198 : 0420 6296           	blwp @MonitorFlagsR0R1		;0FFFEh -
+     237/    619C : 0580                	inc r0
+     238/    619E : 0420 6296           	blwp @MonitorFlagsR0R1		;0FFFFh -
+     239/    61A2 : 0580                	inc r0
+     240/    61A4 : 0420 6296           	blwp @MonitorFlagsR0R1		;00000h Carry
+     241/    61A8 : 0580                	inc r0
+     242/    61AA : 0420 6296           	blwp @MonitorFlagsR0R1		;00001h -	
+     243/    61AE :                     	
+     244/    61AE : 1702                	jnc ResultNC
+     245/    61B0 : 1805                	joc ResultC
+     246/    61B2 : 104A                	jmp InfLoop        	;Branch to Infloop	
+     247/    61B4 :                     ResultNC:
+     248/    61B4 : 0200 4E20           	li r0,'N '
+     249/    61B8 : 06A0 63D4           	bl @PrintChar
+     250/    61BC :                     ResultC:
+     251/    61BC : 0200 4320           	li r0,'C '
+     252/    61C0 : 06A0 63D4           	bl @PrintChar
+     253/    61C4 : 1041                	jmp InfLoop        	;Branch to Infloop	
+     254/    61C6 :                     
+     255/    61C6 :                     TestOverflow:
+     256/    61C6 : 0200 7FFD           	li r0,07FFDh
+     257/    61CA : 0420 6296           	blwp @MonitorFlagsR0R1		;07FFDh +32765
+     258/    61CE : 0580                	inc r0
+     259/    61D0 : 0420 6296           	blwp @MonitorFlagsR0R1		;07FFEh +32766
+     260/    61D4 : 0580                	inc r0
+     261/    61D6 : 0420 6296           	blwp @MonitorFlagsR0R1		;07FFFh +32767
+     262/    61DA : 0580                	inc r0
+     263/    61DC : 0420 6296           	blwp @MonitorFlagsR0R1		;08000h -32768 Overflow
+     264/    61E0 : 0580                	inc r0
+     265/    61E2 : 0420 6296           	blwp @MonitorFlagsR0R1		;08001h -32767	
+     266/    61E6 :                     	
+     267/    61E6 : 1901                	jno ResultNV
+     268/    61E8 : 1004                	jmp ResultV
+     269/    61EA :                     ResultNV:
+     270/    61EA : 0200 4E20           	li r0,'N '
+     271/    61EE : 06A0 63D4           	bl @PrintChar
+     272/    61F2 :                     ResultV:
+     273/    61F2 : 0200 5620           	li r0,'V '
+     274/    61F6 : 06A0 63D4           	bl @PrintChar
+     275/    61FA : 1026                	jmp InfLoop        	;Branch to Infloop	
+     276/    61FC :                     
+     277/    61FC :                     TestParity:						;Parity bit set when odd
+     278/    61FC : 0200 0300           	li r0,0300h					;0000011b
+     279/    6200 : 0201 0100           	li r1,0100h
+     280/    6204 : B001                	ab r1,r0		
+     281/    6206 : 0420 6296           	blwp @MonitorFlagsR0R1		;0000100b	=1 bit Parity Odd
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 6 - 3/16/2020 18:45:17
+
+
+     282/    620A : B001                	ab r1,r0		
+     283/    620C : 0420 6296           	blwp @MonitorFlagsR0R1		;0000101b	=2 bits Even
+     284/    6210 : B001                	ab r1,r0		
+     285/    6212 : 0420 6296           	blwp @MonitorFlagsR0R1		;0000110b	=2 bits Even
+     286/    6216 : B001                	ab r1,r0		
+     287/    6218 : 0420 6296           	blwp @MonitorFlagsR0R1		;0000111b	=3 bits Parity Odd
+     288/    621C : B001                	ab r1,r0		
+     289/    621E : 0420 6296           	blwp @MonitorFlagsR0R1		;0001000b	=1 bit  Parity Odd
+     290/    6222 : B001                	ab r1,r0		
+     291/    6224 : 0420 6296           	blwp @MonitorFlagsR0R1		;0001001b	=2 bits Even
+     292/    6228 :                     	
+     293/    6228 :                     	
+     294/    6228 : 1C01                	jop ResultNP		;Odd Parity
+     295/    622A : 1004                	jmp ResultP
+     296/    622C :                     ResultNP:
+     297/    622C : 0200 4E20           	li r0,'N '
+     298/    6230 : 06A0 63D4           	bl @PrintChar
+     299/    6234 :                     ResultP:
+     300/    6234 : 0200 5020           	li r0,'P '
+     301/    6238 : 06A0 63D4           	bl @PrintChar
+     302/    623C : 1005                	jmp InfLoop        	;Branch to Infloop	
+     303/    623E :                     	
+     304/    623E :                     	
+     305/    623E :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     306/    623E :                     
+     307/    623E :                     TestData:
+     308/    623E : 1122 3344 5566 7788 	byte 11h,22h,33h,44h,55h,66h,77h,88h,99h,0AAh
+                    99AA                
+     309/    6248 :                     
+     310/    6248 :                     
+     311/    6248 :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+     312/    6248 :                     	
+     313/    6248 :                     InfLoop:
+     314/    6248 : 10FF                	jmp InfLoop        	;Branch to Infloop
+     315/    624A :                     
+     316/    624A :                     	
+     317/    624A :                     
+     318/    624A :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     319/    624A :                     LDIR:
+     320/    624A : CC70                		mov *r0+,*r1+		;copy from (R1) to (R0)
+     321/    624C : 0602                		dec r2
+     322/    624E : 16FD                		jne LDIR
+     323/    6250 : 045B                		B *R11				;Return
+     324/    6252 :                     ShowRam:
+     325/    6252 : 83E0                	word wspMonitor
+     326/    6254 : 6256                	word Doramdump
+     327/    6256 :                     	
+     328/    6256 :                     Doramdump:	
+     329/    6256 : 0204 8300           		li r4,userRam		;address to show
+     330/    625A : 0205 0005           		li r5,00005h		;words to show
+     331/    625E : 06A0 6378           		bl @ramdump			;Dump Memory
+     332/    6262 : 06A0 63F0           		bl @NewLine
+     333/    6266 : 06A0 63F0           		bl @NewLine
+     334/    626A : 0380                	RTWP
+     335/    626C :                     	
+     336/    626C :                     MonitorFlags:	
+     337/    626C : 83E0                	word wspMonitor
+     338/    626E : 6270                	word DoMonitorFlags
+     339/    6270 :                     	
+     340/    6270 :                     DoMonitorFlags:	
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 7 - 3/16/2020 18:45:17
+
+
+     341/    6270 : 02C4                		stst r4
+     342/    6272 : 0203 62D4           		li r3,FlagChars
+     343/    6276 : 0201 0010           		li r1,16
+     344/    627A :                     FlagAgain:
+     345/    627A : D033                		movb *r3+,r0
+     346/    627C : 0A14                		sla r4,1
+     347/    627E : 1802                		joc FlagOn
+     348/    6280 : 0200 2E20           		li r0,'. '
+     349/    6284 :                     FlagOn:
+     350/    6284 : 06A0 63D4           		bl @PrintChar
+     351/    6288 :                     		
+     352/    6288 : 0601                		dec r1
+     353/    628A : 16F7                		jne FlagAgain
+     354/    628C : 06A0 63F0           		bl @NewLine
+     355/    6290 : 06A0 63F0           		bl @NewLine
+     356/    6294 : 0380                	RTWP
+     357/    6296 :                     
+     358/    6296 :                     MonitorFlagsR0R1:	
+     359/    6296 : 83E0                	word wspMonitor
+     360/    6298 : 629A                	word DoMonitorFlagsR0R1
+     361/    629A :                     		
+     362/    629A :                     	
+     363/    629A :                     DoMonitorFlagsR0R1:	
+     364/    629A : 02C4                		stst r4
+     365/    629C : C14D                		mov r13,r5
+     366/    629E : 0206 0000           		li r6,0000h
+     367/    62A2 :                     DoMonitorAgain2:		
+     368/    62A2 : C0B5                		mov *r5+,r2
+     369/    62A4 : C046                		mov r6,r1
+     370/    62A6 : 06A0 6342           		bl @ShowReg
+     371/    62AA : 0226 0100           		ai r6,0100h
+     372/    62AE : 0286 0200           		ci r6,0200h 
+     373/    62B2 : 16F7                		jne DoMonitorAgain2
+     374/    62B4 :                     		
+     375/    62B4 : 0203 62D4           		li r3,FlagChars
+     376/    62B8 : 0201 0010           		li r1,16
+     377/    62BC :                     FlagAgainB:
+     378/    62BC : D033                		movb *r3+,r0
+     379/    62BE : 0A14                		sla r4,1
+     380/    62C0 : 1802                		joc FlagOnB
+     381/    62C2 : 0200 2E20           		li r0,'. '
+     382/    62C6 :                     FlagOnB:
+     383/    62C6 : 06A0 63D4           		bl @PrintChar
+     384/    62CA :                     		
+     385/    62CA : 0601                		dec r1
+     386/    62CC : 16F7                		jne FlagAgainB
+     387/    62CE : 06A0 63F0           		bl @NewLine
+     388/    62D2 : 0380                	RTWP
+     389/    62D4 :                     
+     390/    62D4 :                     	
+     391/    62D4 :                     FlagChars:	
+     392/    62D4 : 4C41 3D43 5650 5821 	byte 'L','A','=','C','V','P','X','!',  'I','I','I','I','!','!','!','!'
+                    4949 4949 2121 2121 
+     393/    62E4 :                     Monitor4:
+     394/    62E4 : 83E0                	word wspMonitor
+     395/    62E6 : 62E8                	word DoMonitor4
+     396/    62E8 :                     	
+     397/    62E8 :                     DoMonitor4:
+     398/    62E8 : C14D                		mov r13,r5
+     399/    62EA : 0206 0000           		li r6,0000h
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 8 - 3/16/2020 18:45:17
+
+
+     400/    62EE :                     DoMonitorAgain4:		
+     401/    62EE : C0B5                		mov *r5+,r2
+     402/    62F0 : C046                		mov r6,r1
+     403/    62F2 : 06A0 6342           		bl @ShowReg
+     404/    62F6 : 0226 0100           		ai r6,0100h
+     405/    62FA : 0286 0400           		ci r6,0400h 
+     406/    62FE : 16F7                		jne DoMonitorAgain4
+     407/    6300 :                     		
+     408/    6300 : 06A0 63F0           		bl @NewLine
+     409/    6304 : 0380                	RTWP
+     410/    6306 :                      
+     411/    6306 :                     
+     412/    6306 :                     	
+     413/    6306 :                     DoNewLineW:
+     414/    6306 : 83E0                	word wspMonitor
+     415/    6308 : 630A                	word DoNewLine
+     416/    630A :                     	
+     417/    630A :                     DoNewLine:
+     418/    630A : 06A0 63F0           		bl @NewLine
+     419/    630E : 0380                	RTWP
+     420/    6310 :                     		
+     421/    6310 :                     
+     422/    6310 :                     	include "\SrcAll\monitor.asm"
+(1)    1/    6310 :                     ShowHex:
+(1)    2/    6310 : 0220 3000           		ai r0,3000h				;0
+(1)    3/    6314 : 0280 3A00           		ci r0,3A00h
+(1)    4/    6318 : 1102                		jlt ShowHexDigitOk
+(1)    5/    631A : 0220 0700           		ai r0,0700h				;Letters
+(1)    6/    631E :                     ShowHexDigitOk:
+(1)    7/    631E : 0460 63D4           		b @PrintChar
+(1)    8/    6322 :                     		
+(1)    9/    6322 :                     ShowHexDigit:
+(1)   10/    6322 : C28B                	mov r11,r10
+(1)   11/    6324 : C002                		mov r2,r0
+(1)   12/    6326 : 0240 F000           		andi r0,0F000h
+(1)   13/    632A : 0940                		srl r0,4
+(1)   14/    632C : 06A0 6310           		bl @ShowHex
+(1)   15/    6330 : 0A42                		sla r2,4
+(1)   16/    6332 : 045A                	B *R10
+(1)   17/    6334 :                     	
+(1)   18/    6334 :                     ShowRegALT:
+(1)   19/    6334 : C24B                	mov r11,r9
+(1)   20/    6336 : 06A0 63D2           		bl @PrintCharR3
+(1)   21/    633A : 06C3                		swpb r3
+(1)   22/    633C : 06A0 63D2           		bl @PrintCharR3
+(1)   23/    6340 : 1008                		jmp ShowRegALT2
+(1)   24/    6342 :                     ShowReg:
+(1)   25/    6342 : C24B                	mov r11,r9
+(1)   26/    6344 : 0200 5220           		li r0,"R "
+(1)   27/    6348 : 06A0 63D4           		bl @PrintChar
+(1)   28/    634C :                     		
+(1)   29/    634C : C001                		mov r1,r0
+(1)   30/    634E : 06A0 6310           		bl @ShowHex
+(1)   31/    6352 :                     ShowRegALT2:
+(1)   32/    6352 : 0203 3A20           		li r3,": "
+(1)   33/    6356 : 06A0 63D2           		bl @PrintCharR3
+(1)   34/    635A : 06C3                		swpb r3
+(1)   35/    635C :                     ShowHex4b:		
+(1)   36/    635C : 06A0 6322           		bl @ShowHexDigit
+(1)   37/    6360 : 06A0 6322           		bl @ShowHexDigit
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm(monitor.asm) - page 9 - 3/16/2020 18:45:17
+
+
+(1)   38/    6364 : 06A0 6322           		bl @ShowHexDigit
+(1)   39/    6368 : 06A0 6322           		bl @ShowHexDigit
+(1)   40/    636C : 06A0 63D2           		bl @PrintCharR3		;Space
+(1)   41/    6370 : 0459                	B *r9
+(1)   42/    6372 :                     ShowHex4:		
+(1)   43/    6372 : C24B                	mov r11,r9
+(1)   44/    6374 : 0460 635C           	b @ShowHex4b
+(1)   45/    6378 :                     		;li r4,06000h
+(1)   46/    6378 :                     		;li r5,00010h
+(1)   47/    6378 :                     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(1)   48/    6378 :                     		
+(1)   49/    6378 :                     ramdump:
+(1)   50/    6378 : C20B                	mov r11,r8
+(1)   51/    637A : C084                	mov r4,r2
+(1)   52/    637C : 0203 3A20           	li r3,": "
+(1)   53/    6380 : 06A0 6372           	bl @ShowHex4
+(1)   54/    6384 : 06C3                	swpb r3
+(1)   55/    6386 :                     ramdumpAgain:		
+(1)   56/    6386 : C0B4                	mov *r4+,r2
+(1)   57/    6388 : 06A0 6372           	bl @ShowHex4
+(1)   58/    638C : 0605                	dec r5
+(1)   59/    638E : 16FB                	jne ramdumpAgain
+(1)   60/    6390 :                     	
+(1)   61/    6390 : 0458                	b *r8
+(1)   62/    6392 :                     Monitor:
+(1)   63/    6392 : 83E0                	word wspMonitor
+(1)   64/    6394 : 6396                	word DoMonitor	
+(1)   65/    6396 :                     	
+(1)   66/    6396 :                     	
+(1)   67/    6396 :                     DoMonitor:
+(1)   68/    6396 : 0203 5750           		li r3,'WP'
+(1)   69/    639A : C08D                		mov r13,r2
+(1)   70/    639C : 06A0 6334           		bl @ShowRegALT
+(1)   71/    63A0 :                     		
+(1)   72/    63A0 : 0203 5043           		li r3,'PC'
+(1)   73/    63A4 : C08E                		mov r14,r2
+(1)   74/    63A6 : 06A0 6334           		bl @ShowRegALT
+(1)   75/    63AA :                     		
+(1)   76/    63AA : 0203 5354           		li r3,'ST'
+(1)   77/    63AE : C08F                		mov r15,r2
+(1)   78/    63B0 : 06A0 6334           		bl @ShowRegALT
+(1)   79/    63B4 :                     		
+(1)   80/    63B4 : 06A0 63F0           		bl @NewLine
+(1)   81/    63B8 :                     
+(1)   82/    63B8 : C14D                		mov r13,r5
+(1)   83/    63BA : 0206 0000           		li r6,0000h
+(1)   84/    63BE :                     DoMonitorAgain:		
+(1)   85/    63BE : C0B5                		mov *r5+,r2
+(1)   86/    63C0 : C046                		mov r6,r1
+(1)   87/    63C2 : 06A0 6342           		bl @ShowReg
+(1)   88/    63C6 : 0226 0100           		ai r6,0100h
+(1)   89/    63CA : 0286 1000           		ci r6,1000h 
+(1)   90/    63CE : 16F7                		jne DoMonitorAgain
+(1)   91/    63D0 : 0380                	RTWP
+(1)   92/    63D2 :                     
+     423/    63D2 :                     	include "\SrcAll\functions.asm"
+(1)    1/    63D2 :                     PrintCharR3:		
+(1)    2/    63D2 : C003                	mov r3,r0			;Move R3 into R0
+(1)    3/    63D4 :                     PrintChar:
+(1)    4/    63D4 : 0280 6000           	ci r0,6000h			;compare to 96
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm(functions.asm) - page 10 - 3/16/2020 18:45:17
+
+
+(1)    5/    63D8 : 1102                	jlt PrintCharOk		;<96 then jump
+(1)    6/    63DA :                     	
+(1)    7/    63DA : 0220 E000           	ai r0,0E000h 		;R0=R0-32
+(1)    8/    63DE :                     PrintCharOk:
+(1)    9/    63DE :                     	;sb r2,r0
+(1)   10/    63DE : D800 8C00           	movb r0,@VDPWD     ;* put next char on screen
+(1)   11/    63E2 :                     	
+(1)   12/    63E2 : D020 8320           	movb @CursorX,r0	;Load Cursor X
+(1)   13/    63E6 : 0220 0100           	ai r0,0100h			;Inc 1 char
+(1)   14/    63EA : D800 8320           	movb r0,@CursorX	;Save back
+(1)   15/    63EE :                     		
+(1)   16/    63EE : 045B                	B *R11				;Return
+(1)   17/    63F0 :                     	
+(1)   18/    63F0 :                     	
+(1)   19/    63F0 :                     NewLine:
+(1)   20/    63F0 : D020 8320           	movb @CursorX,r0	;Get Xpos
+(1)   21/    63F4 :                     	
+(1)   22/    63F4 :                     NewLineb:
+(1)   23/    63F4 : 0201 0000           	li r1,0000h
+(1)   24/    63F8 : D801 8C00           	movb r1,@VDPWD     	;Put Char on screen
+(1)   25/    63FC : 0201 0100           	li r1,0100h
+(1)   26/    6400 : B001                	ab r1,r0			;Inc 1 byte
+(1)   27/    6402 : 0240 1F00           	andi r0,1F00h		;Line 32?
+(1)   28/    6406 : 16F6                	jne NewLineb		;Inc Xpos
+(1)   29/    6408 : D800 8320           	movb r0,@CursorX    ;Save New XPos
+(1)   30/    640C :                     	
+(1)   31/    640C : 045B                	B *R11				;Return
+(1)   32/    640E :                     	
+(1)   33/    640E :                     	
+(1)   34/    640E :                     	
+(1)   35/    640E :                     	
+(1)   36/    640E :                     
+(1)   37/    640E :                     ; set VDP RAM start address (low and high byte)
+(1)   38/    640E :                     ScrInit:
+(1)   39/    640E : 0200 4020           	LI      R0,4020h
+(1)   40/    6412 : 06C0                	SWPB    R0
+(1)   41/    6414 : D800 8C02           	MOVB    R0,@VDPWA		;L
+(1)   42/    6418 : 06C0                	SWPB    R0
+(1)   43/    641A : D800 8C02           	MOVB    R0,@VDPWA		;H
+(1)   44/    641E :                     
+(1)   45/    641E : 0200 0000           	li r0,0000h
+(1)   46/    6422 : D800 8320           	movb r0,@CursorX		;Xpos
+(1)   47/    6426 : 045B                	B *R11				;Return
+     424/    6428 :                     
+     425/    6428 :                     
+     426/    6428 :                     
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 11 - 3/16/2020 18:45:17
+
+
+  symbol table (* = unused):
+  ------------------------
+
+*ARCHITECTURE :  i386-unknown-win32 - | *BIGENDIAN :                      0 - |
+ BLTEST1 :                     60F6 C |  BLTEST2 :                     60FC C |
+*BRANCHEXT :                      0 - | *BRANCHTEST :                  60A4 C |
+ BRANCHTEST_SKIP1 :            60BA C |  BRANCHTEST_SKIP2 :            60CE C |
+*BUILDT99 :                       1 - |  BYTETESTS :                   604E C |
+*CASESENSITIVE :                  0 - | *CONSTPI :        3.141592653589793 - |
+ CURSORX :                     8320 - | *DATE :                   3/16/2020 - |
+ DOMONITOR :                   6396 C |  DOMONITOR4 :                  62E8 C |
+ DOMONITORAGAIN :              63BE C |  DOMONITORAGAIN2 :             62A2 C |
+ DOMONITORAGAIN4 :             62EE C |  DOMONITORFLAGS :              6270 C |
+ DOMONITORFLAGSR0R1 :          629A C |  DONEWLINE :                   630A C |
+ DONEWLINEW :                  6306 C |  DORAMDUMP :                   6256 C |
+*FALSE :                          0 - |  FLAGAGAIN :                   627A C |
+ FLAGAGAINB :                  62BC C |  FLAGCHARS :                   62D4 C |
+ FLAGON :                      6284 C |  FLAGONB :                     62C6 C |
+*FULLPMMU :                       1 - | *HAS64 :                          1 - |
+*HASDSP :                         0 - | *HASFPU :                         0 - |
+*HASPMMU :                        0 - | *INEXTMODE :                      0 - |
+ INFLOOP :                     6248 C | *INLWORDMODE :                    0 - |
+*INMAXMODE :                      0 - | *INSRCMODE :                      0 - |
+*INSUPMODE :                      0 - |  LDIR :                        624A C |
+*LISTON :                         1 - | *MACEXP :                         7 - |
+*MOMCPU :                      9900 - | *MOMCPUNAME :               TMS9900 - |
+*MONITOR :                     6392 C |  MONITOR4 :                    62E4 C |
+ MONITORFLAGS :                626C C |  MONITORFLAGSR0R1 :            6296 C |
+*NESTMAX :                      100 - |  NEWLINE :                     63F0 C |
+ NEWLINEB :                    63F4 C | *PACKING :                        0 - |
+*PADDING :                        1 - |  PRINTCHAR :                   63D4 C |
+ PRINTCHAROK :                 63DE C |  PRINTCHARR3 :                 63D2 C |
+ PROGA :                       600C C |  PROGRAMSTART :                6022 C |
+ RAMDUMP :                     6378 C |  RAMDUMPAGAIN :                6386 C |
+*RELAXED :                        0 - |  RESULTC :                     61BC C |
+ RESULTEQ :                    6134 C |  RESULTGT :                    617A C |
+ RESULTLT :                    6184 C |  RESULTNC :                    61B4 C |
+ RESULTNE :                    612C C |  RESULTNP :                    622C C |
+ RESULTNV :                    61EA C |  RESULTP :                     6234 C |
+ RESULTV :                     61F2 C |  SCRINIT :                     640E C |
+ SHOWHEX :                     6310 C |  SHOWHEX4 :                    6372 C |
+ SHOWHEX4B :                   635C C |  SHOWHEXDIGIT :                6322 C |
+ SHOWHEXDIGITOK :              631E C |  SHOWRAM :                     6252 C |
+ SHOWREG :                     6342 C |  SHOWREGALT :                  6334 C |
+ SHOWREGALT2 :                 6352 C | *TESTCARRY :                   618E C |
+*TESTCMPGL :                   6160 C | *TESTCMPGLSIGNED :             6140 C |
+*TESTCMPJE :                   610A C |  TESTDATA :                    623E C |
+*TESTOVERFLOW :                61C6 C |  TESTPARITY :                  61FC C |
+*TIME :                    18:45:17 - | *TRUE :                           1 - |
+ USERRAM :                     8300 - |  VDPWA :                       8C02 - |
+ VDPWD :                       8C00 - | *VERSION :                     142F - |
+ WSPDEFAULT :                  83C0 - |  WSPMONITOR :                  83E0 - |
+
+     98 symbols
+     36 unused symbols
+
+ AS V1.42 Beta [Bld 145] - source file Lesson3.asm - page 12 - 3/16/2020 18:45:17
+
+
+  codepages:
+  ----------
+
+STANDARD (0 changed characters)
+
+
+0.01 seconds assembly time
+
+    583 lines source file
+      2 passes
+      0 errors
+      0 warnings

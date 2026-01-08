@@ -1,0 +1,120 @@
+ScreenInitVGA:
+	mov     ah, 0           ; int 10,0
+    mov     al, 13h           ; mode 4 (cga 320x200 4 color)
+    int     10h             ; bios int
+	ret
+ ; VGA 320x200, 256-color (video mode 13H)
+ ; Segment: a000
+  ; Layout: Linear, packed-pixel.  This mode uses one byte (8 bits) per
+          ; pixel.  The colors displayed depend on the palette settings.
+
+          ; Each scan line is 320 bytes long and there are 200 scan lines
+          ; (regen size=64,000 bytes).  Each byte contains 1 pixel (64,000
+          ; total pixels).
+
+
+
+PrintCharVGA:
+	push ax
+		
+		mov ax,0A000h 
+		mov es,ax
+		
+	;	call domonitor
+		
+		mov ax,0
+		mov al,[ds:CursorY]
+		mov bx,320*8
+		mul bx
+		mov di,ax
+		
+		mov ax,0
+		mov al,[ds:CursorX]
+		rcl ax,1
+		rcl ax,1
+		rcl ax,1
+		add di,ax
+
+		mov si,offset BitmapFont+1
+	pop ax
+	sub al,32
+	mov ah,0
+	rcl ax,1
+	rcl ax,1
+	rcl ax,1
+	add si,ax
+	
+	mov ax, @data
+    mov ds, ax
+	mov cx,8
+	
+FontAgainVGA:	
+	Call DoPairVGA
+	add di,320
+	;add di,2000h
+	dec cx
+	jnz FontAgainVGA
+	inc [ds:CursorX]
+	 ;mov al,[ds:CursorX]
+	 ;inc al
+	 ;mov [ds:CursorX],al
+	;mov al,00000010b
+	;mov dx,3d8h
+	;out dx,al
+	
+	ret
+
+	
+DoPairVGA:
+	mov al,[ds:si]
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+	mov ah,0
+	rcl al,1
+	rcl ah,1	
+	mov es:[di],ah
+	inc di
+
+	dec di
+	dec di
+	dec di
+	dec di
+	dec di
+	dec di
+	dec di
+	dec di
+	inc si
+	ret	

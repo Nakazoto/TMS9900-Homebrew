@@ -1,0 +1,100 @@
+XA99 history
+============
+
+V1.0.0 First release
+
+V1.1.1 
+
+V1.2.1
+Fixed #if/#else/#endif preprocessor.
+
+V1.2.2 20/02/2017
+Xa99_Pass_One.cpp :: Xa99_Pass_One() : 
+Do not add unrecognized opcode to the symbol list.
+The name length (max 6 chars) is not checked at this point and
+could lead to destruction of the stack or heap space.
+
+This case occured when a leading space was forgotten before a
+DATA statement ("DATA >AA01,>XXXX,>YYYY,....") and the long
+data line was added as symbol name ruining the heap.
+
+V1.2.3 15/03/2017
+Xa99_Misc.cpp :: parse_operand() :
+Xa99_Misc.cpp :: parse_operand_R :
+Do not convert character to uppercase if character is in between 
+single or double quotes. This destroys BYTE 'x', DATA 'xy' and
+TEXT 'abc' strings.
+
+V2.1.1 28/08/2018
+Xa99.cpp      :: command line switch -D added
+Xa99.cpp      :: commandline options allowed with (-X y) and without
+                 (-Xy) spaces.
+Xa99_Misc.cpp :: symbol_add_define() added
+
+V2.2.1 15/02/2020
+Xa99_OpcFunc.cpp :: Format_II() - Displacement for TB, SBO abd SBZ is between
+                    -128 and 127 (and not only <= 127 ).
+
+V3.1.1 26/12/2022
+Xa99_Pass_One.cpp :: Xa_Pass_One() - Add undefined opcode as symbol name in symbol table
+Xa99_Pass_Two.cpp :: Xa_Pass_Two() - Added ASM_ERROR_OUT_OF_SYNC error if label
+                                     address is different between PASS1 and PASS2
+Xa99_OpcFunc.cpp :: Drt_Equ()      - Added ASM_ERROR_OUT_OF_SYNC error if symbol
+                                     address is different between PASS1 and PASS2
+                                     Added and error message for bad forward reference if
+                                     a complex EQU definition is used before it was defined.
+
+V3.1.2 05/01/2023
+All files :: all functions     - Removed most garbage. Some commented lines are left for reference
+                                 purposes so that a do not add the same wrong and stupid ideas :-)
+Xa99_List.cpp :: all functions - Removed all unused function arguments because <src_line> is
+                                 being used as the comment line in the listing so that the
+                                 listing is allmost exactly the same as the listing produced
+                                 by the Texas Instruments Assembler of the Ed/As module.
+Xa99.cpp :: print_error_text() - Errors are printed to stderr instead of stdout.
+
+V3.2.a 05/02/2023
+Xa99.cpp :: main()             - Added a new option -P to enable printing of the symbol table to
+                                 the console.
+
+V3.2.b 29/03/2023
+Xa99_Pass_Two.cpp :: Xa99_Pass_Two() - A better check for out of sync error
+Xa99_OpcFunc.cpp :: Force_Word_Boundary() - Set flag "even" if symbol is forced
+                                            to an even address (DATA or instructions)
+
+V3.4.a 20/04/2024
+Xa99.cpp :: main()             - Warning for using compressed objec code (-C)
+Xa99_Pass_Two.cpp :: Xa99_Pass_Two() -  Added check for program counter overflow
+Xa99_OpcFunc.cpp :: Drt_Bss()  - Added check for negative block size
+Xa99_OpcFunc.cpp :: Drt_Bes()  - Added check for negative block size
+Xa99_List.cpp                  - Added error code messages for the above
+Xa99_Misc.cpp :: evaluate()    - Added check for over/under flow and set overflow in value result
+Xa99_OpcFunc.cpp :: Format_II() - Added error code of no operand (JMP or JMP *Rx)
+
+V3.5.a 27/04/2024
+Xa99_misc.cpp::symbol_check_out_of_sync - Fixed out of sync test for AORG, RORG and DORG
+Xa99_OpcFunc.cpp::Drt_Aorg()
+Xa99_OpcFunc.cpp::Drt_Rorg()
+Xa99_OpcFunc.cpp::Drt_Dorg()
+Xa99_Pass_Two.cpp::Xa99_Pas_Two()
+
+V3.5.b 17/08/2024
+Xa99_object.cpp::write_start() - Auto start entry is a record only containing the start address
+
+V3.5.c 05/09/2024
+Xa99.h                         - Increased number of symbols MAX_SYMBOLS to 3000
+
+V3.5.d 07/09/2024
+Xa99_misc.cpp::evaluate()      - Revised the check for overflow (long result < 0 or > 0xFFFF)
+
+V3.5.e 23/03/2025
+Xa99_misc.cpp::evaluate()      - Syntax errof if misformed operand (like MOV R1,@X(R2- )
+
+V4.1.a 24/09/2025
+Xa99.cpp :: main()                  - Added value for definition of a symbol on the command line (-D SYMBOL:VALUE)
+Xa99_OpcFunc.cpp :: Drt_Text()      - Fixed negation of last character if the string is preceded by an unari minus
+Xa99_OpcFunc.cpp :: Drt_Text()      - Print all characters of text in output listing
+Xa99_OpcFunc.cpp :: Drt_Cstr()      - Added directive CSTR (C type string). Same as TEXT but a 0-byte is added as last byte
+Xa99_OpcFunc.cpp :: Drt_Pstr()      - Added directive PSTR (Pascal type string). Same as TEXT but the text is preceded by a length byte
+
+[EOF]

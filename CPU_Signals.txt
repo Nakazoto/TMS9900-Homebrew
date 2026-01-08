@@ -1,0 +1,8 @@
+/RESET    Global Reset Signal
+HOLDA     Hold Acknowledge - CPU says "I got you bro"
+WAIT      Wait State - CPU lets the world know it's in a wait state
+/HOLD     Hold - Tells CPU that something (DMA) is using the busses
+/WE       Write Enable - Memory data from CPU is on bus
+READY     Ready - Tells the CPU if memory is ready or not
+/MEMEN    Memory Enable - Address bus contains a memory address
+DBIN      Data Bus In - Memory can place read data on data bus

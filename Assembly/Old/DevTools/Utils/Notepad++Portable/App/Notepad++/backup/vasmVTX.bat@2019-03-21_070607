@@ -1,0 +1,15 @@
+@echo on
+cd %2
+\Utils\Asw\asw %1 -CPU 6809 -o "\BldVTX\Prog.bin" 
+
+rem \Utils\Vasm\vasm6502_oldstyle_win32.exe %1 -c02 -chklabels -nocase -Dvasm=1  -L \BldAP2\Listing.txt -DBuildVTX=1 -Fbin -o "\BldVTX\Prog.bin"
+if not "%errorlevel%"=="0" goto Abandon
+
+cd \BldVTX
+vecxgl -x 500 \BldVTX\Prog.bin
+
+
+
+:Abandon
+if "%3"=="nopause" exit
+pause

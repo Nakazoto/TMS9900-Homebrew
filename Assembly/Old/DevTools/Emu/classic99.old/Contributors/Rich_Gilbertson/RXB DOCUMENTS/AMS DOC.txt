@@ -1,0 +1,117 @@
+                                                              PAGE AMS1
+                              AMS MAPPER
+     ******************************************************************
+        The AMS card has tons of documents as to its function and use.
+       So to re-explain these docs would be pointless. Read the docs or
+       find some, sorry but the RXB package is already huge.
+ 
+     In PASS mode the mapper register setup is equivalent to:
+ 
+     mapper address  mapper  page num            address range
+     --------------  ------  --------            -------------
+      HEX     Dec            HEX  Dec             memory area
+      ---     ---            ---  ---             -----------
+     >4004 = 16388 is MR02 = >02 = 02 points to >2000 - >2FFF range
+     >4006 = 16390 is MR03 = >03 = 03 points to >3000 - >3FFF range
+ 
+     >4014 = 16404 is MR10 = >0A = 10 points to >A000 - >AFFF range
+     >4016 = 16406 is MR11 = >0B = 11 points to >B000 - >BFFF range
+     >4018 = 16408 is MR12 = >0C = 12 points to >C000 - >CFFF range
+     >401A = 16410 is MR13 = >0D = 13 points to >D000 - >DFFF range
+     >401C = 16412 is MR14 = >0E = 14 points to >E000 - >EFFF range
+     >401E = 16414 is MR15 = >0F = 15 points to >F000 - >FFFF range
+ 
+     (MR=Mapper Register)
+ 
+     In MAP mode the mapper register setup is equivalent to: EXAMPLE1
+ 
+     mapper address  mapper  page num            address range
+     --------------  ------  --------            -------------
+      HEX     Dec            HEX  Dec             memory area
+      ---     ---            ---  ---             -----------
+     >4004 = 16388 is MR02 = >10 = 16 points to >2000 - >2FFF range
+     >4006 = 16390 is MR03 = >11 = 17 points to >3000 - >3FFF range
+ 
+     >4014 = 16404 is MR10 = >12 = 18 points to >A000 - >AFFF range
+     >4016 = 16406 is MR11 = >13 = 19 points to >B000 - >BFFF range
+     >4018 = 16408 is MR12 = >14 = 20 points to >C000 - >CFFF range
+     >401A = 16410 is MR13 = >15 = 21 points to >D000 - >DFFF range
+     >401C = 16412 is MR14 = >16 = 22 points to >E000 - >EFFF range
+     >401E = 16414 is MR15 = >17 = 23 points to >F000 - >FFFF range
+ 
+     (MR=Mapper Register)
+
+
+
+
+                                                             PAGE AMS2
+     
+     In MAP mode the mapper register setup is equivalent to: 
+     EXAMPLE2
+ 
+     mapper address  mapper  page num            address range
+     --------------  ------  --------            -------------
+      HEX     Dec            HEX  Dec             memory area
+      ---     ---            ---  ---             -----------
+     >4004 = 16388 is MR02 = >19 = 31 points to >2000 - >2FFF range
+     >4006 = 16390 is MR03 = >01 = 01 points to >3000 - >3FFF range
+ 
+     >4014 = 16404 is MR10 = >09 = 09 points to >A000 - >AFFF range
+     >4016 = 16406 is MR11 = >00 = 00 points to >B000 - >BFFF range
+     >4018 = 16408 is MR12 = >07 = 07 points to >C000 - >CFFF range
+     >401A = 16410 is MR13 = >18 = 30 points to >D000 - >DFFF range
+     >401C = 16412 is MR14 = >05 = 05 points to >E000 - >EFFF range
+     >401E = 16414 is MR15 = >04 = 04 points to >F000 - >FFFF range
+ 
+     (MR=Mapper Register)
+                                                                
+       As you can see you can switch pages around all you want.
+ 
+       Each 4K page of the AMS memory can be engaged even into every
+      4K section of the 32K at once. Thus giving multiple copies of
+      the same 4K in every 4K chunk. Doing this has few uses but
+      it demonstrates the flexibility of the AMS mapper.
+       RXB uses AMS memory like this:
+ 
+      1. 32K is used for pass mode. Think of it like a normal TI.
+         24K for XB programs and variables, and lower 8K assembly
+         support.
+ 
+      2. 32K is used for future use. Stashed away for RXB future use.
+         Pages 0,1,4,5,6,7,8,9 are for future use.         
+ 
+      3. 4K pages of the rest of the AMS are for AMSBANK, a RXB
+         routine that needs two (2) 4K pages of the AMS for the
+         lower 8K of Assembly support. Pages 16 to 255 AMSBANK.
+ 
+      4. If a 256K AMS is used by RXB then 32K PASS mode, 32K future
+         use, and the rest for AMSBANK. So 32+32=64 and 256-64=192
+         then 192K of AMS 4K pages would be 192/4=48 or 48 pages of
+         AMSBANK. Now the lower 8K needs two 4K pages because of
+         course 8/4=2 so 48/2=24 and that means 24  8K assembly
+         support routines from one XB program.
+                                                           PAGE AMS3
+
+       5. BSAVE and BLOAD in RXB are subroutines to save or load the
+          lower 8K as Program Image files. 33 sectors in length they
+          are only used by BSAVE or BLOAD. The reasons for BSAVE is
+          to save the lower 8K in one easy to load chunk. ALSAVE
+          that creates hidden loaders has one huge disadvantage.
+          ALSAVE can only save one assembly support program at a
+          time. Also it can't load more than one support routine and
+          XB program to run it. BLOAD can load many support routines
+          into the AMS and control them from one XB program.
+          BLOAD and BSAVE can do what ALSAVE can't. Also up to 1Meg
+          can be loaded into the AMS from one XB program and the
+          same program run the assembly support routines.
+ 
+       6. ISR (Interrupt Service Routine) hooks are used by many XB
+          programs so CALL ISROFF and CALL ISRON are for RXB to
+          control the problems created by them. Also compatibility
+          between software packages is ensured.
+
+       7. AMSBANK is the primary way RXB manages memory. 
+          pages 16 to 255 are numbers in AMSBANK as 0 to 240 so
+          pages 2,3,10,11,12,13,14,15 are for pass mode and
+          pages 0,1,4,5,6,7,8,9 are unused for future use.
+          Thus 240*4=960K of AMS is in AMSBANK.

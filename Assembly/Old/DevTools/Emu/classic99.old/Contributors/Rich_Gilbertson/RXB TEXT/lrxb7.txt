@@ -1,0 +1,3782 @@
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0001 
+Version 2.0 (Weiand 1985)     Options : LCSFPF#########                         
+[0001]               ***********************************************************
+[0002]                      GROM >E000
+[0003]                      AORG >0000
+[0004]                      TITL  'Rich E/A GROM'
+[0005]               ***********************************************************
+[0006]               * CPU
+[0007]               *
+[0008] 8300          TMP    EQU   >8300
+[0009] 8301          TMP1   EQU   >8301
+[0010] 8302          TMP2   EQU   >8302
+[0011] 8303          TMP3   EQU   >8303
+[0012] 8304          TMP4   EQU   >8304
+[0013] 8306          TMP6   EQU   >8306
+[0014] 8307          TMP7   EQU   >8307
+[0015] 8308          TMP8   EQU   >8308
+[0016] 8310          SCADD  EQU   >8310
+[0017] 8311          SCADE  EQU   >8311
+[0018] 8316          TEMP   EQU   >8316
+[0019] 8317          TEMP1  EQU   >8317
+[0020] 8318          CHRCUR EQU   >8318
+[0021] 831C          PABPTR EQU   >831C
+[0022] 831E          COUNT  EQU   >831E            CATALOG COUNT FILES
+[0023] 8320          CURADD EQU   >8320
+[0024] 8322          CODE   EQU   >8322
+[0025] 8324          STLN   EQU   >8324
+[0026] 8326          ENDLN  EQU   >8326
+[0027] 8342          XTOKEN EQU   >8342
+[0028] 8347          LDFLAG EQU   >8347
+[0029] 8348          FLAG   EQU   >8348
+[0030] 8349          FLAG2  EQU   >8349
+[0031] 834A          FAC    EQU   >834A
+[0032] 834B          FAC1   EQU   >834B
+[0033] 834C          FAC2   EQU   >834C
+[0034] 834D          FAC3   EQU   >834D
+[0035] 834E          FAC4   EQU   >834E
+[0036] 834F          FAC5   EQU   >834F
+[0037] 8350          FAC6   EQU   >8350
+[0038] 8351          FAC7   EQU   >8351
+[0039] 8352          FAC8   EQU   >8352
+[0040] 8353          FAC9   EQU   >8353
+[0041] 8354          ERCODE EQU   >8354
+[0042] 8355          FAC11  EQU   >8355
+[0043] 8356          FAC12  EQU   >8356
+[0044] 8356          VPAB   EQU   >8356
+[0045] 835C          ARG    EQU   >835C
+[0046] 835D          ARG1   EQU   >835D
+[0047] 835E          ARG2   EQU   >835E
+[0048] 8360          ARG4   EQU   >8360
+[0049] 8362          ARG6   EQU   >8362
+[0050] 836E          VSTACK EQU   >836E
+[0051] 8373          SUBSTK EQU   >8373
+[0052] 8374          KBNO   EQU   >8374
+[0053] 8375          KEY    EQU   >8375
+[0054] 8379          ITIMER EQU   >8379
+[0055] 837D          VCHAR  EQU   >837D
+[0056]               ********************
+[0057]               * GENERAL
+[0058]               *
+[0059] 0001          AID    EQU   1
+[0060] 0002          CLEAR  EQU   2
+[0061] 0006          REDO   EQU   6
+[0062] 000C          PROCD  EQU   12
+[0063] 000D          ENTER  EQU   13
+[0064] 000E          BEGIN  EQU   14
+[0065] 000F          BACK   EQU   15
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0002 
+Rich E/A GROM
+[0066] 0020          SPACE  EQU   32
+[0067]               * XML's ************
+[0068]               *
+[0069] 0002          ROUND  EQU   >02
+[0070] 0023          CIF    EQU   >23
+[0071]               * VDP **************
+[0072]               *
+[0073] 077F          COLOR  EQU   >077F
+[0074]               * GROM *************
+[0075]               *
+[0076] 0010          DSRLNK EQU   >0010
+[0077] 0012          DSRRET EQU   >0012
+[0078] 001C          BERR   EQU   >001C
+[0079] 0038          BGETSS EQU   >0038
+[0080] 6372          RXB    EQU   >6372
+[0081]               ***********************************************************
+[0082]               * GROM Header
+[0083] E000 AA              BYTE  >AA              * Header byte
+[0084] E001 0B              BYTE  11               * Version #
+[0085] E002 01              BYTE  1                * # programs
+[0086] E003 00              BYTE  0                * Reserved
+[0087] E004 00,00           DATA >0000             * POWER UP
+[0088] E006 E0,10           DATA  MENU             * Cartridge menu
+[0089] E008 F6,F2           DATA  EADSR            * DSRs
+[0090] E00A 00,00           DATA  >0000            * Subroutines
+[0091] E00C 00,00           DATA  >0000            * Interupts
+[0092] E00E 00,00           DATA  >0000            * TI BASIC
+[0093] E010 00,00    MENU   DATA  >0000
+[0094] E012 E0,25           DATA  SETUP
+[0095] E014 10,52,45        STRI  'REA VERSION 2015'
+       E017 41,20,56
+       E01A 45,52,53
+       E01D 49,4F,4E
+       E020 20,32,30
+       E023 31,35
+[0096]               *********************************************************
+[0097]               * Set up configure paths       
+[0098] E025 D6,AE,FF SETUP  CEQ   >99,V@>0EFF      PREVIOUS RUN FLAG SET?
+       E028 99
+[0099] E029 60,6C           BS    SOLDEA           Yes
+[0100] E02B BE,AE,FF        ST    >99,V@>0EFF      No, SET PREVIOUS RUN FLAG
+       E02E 99
+[0101] E02F 86,AF,0F        CLR   V@>0F00      
+       E032 00
+[0102] E033 35,00,FF        MOVE  >FF,V@>0F00,V@>0F01
+       E036 AF,0F,01
+       E039 AF,0F,00
+[0103] E03C 31,00,0B        MOVE  11,G@C1,V@>0F00  DSK1.EDIT1
+       E03F AF,0F,00
+       E042 F7,22
+[0104] E044 31,00,0B        MOVE  11,G@C2,V@>0F28  DSK1.ASSM1
+       E047 AF,0F,28
+       E04A F7,2D
+[0105] E04C 31,00,0C        MOVE  12,G@C3,V@>0F50  DSK1.SOURCE 
+       E04F AF,0F,50
+       E052 F7,38
+[0106] E054 31,00,0C        MOVE  12,G@C4,V@>0F78  DSK1.OBJECT
+       E057 AF,0F,78
+       E05A F7,44
+[0107] E05C 31,00,0A        MOVE  10,G@C5,V@>0FA0  DSK1.LIST
+       E05F AF,0F,A0
+       E062 F7,50
+[0108] E064 31,00,02        MOVE  2,G@C6,V@>0FC8   L
+       E067 AF,0F,C8
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0003 
+Rich E/A GROM
+       E06A F7,5A
+[0109]               * NORMAL RXB START OF EA MODULE      
+[0110] E06C 06,E8,14 SOLDEA CALL  NESCRN
+[0111] E06F CA,42,38 OLDEA  CHE   >38,@XTOKEN      Flag to high?
+[0112] E072 60,79           BS    CLREA            Yes
+[0113] E074 CA,42,31        CHE   >31,@XTOKEN      Flag set?
+[0114] E077 60,82           BS    NEWEA            yes
+[0115] E079 06,ED,67 CLREA  CALL  CLRREA
+[0116] E07C 86,42           CLR   @XTOKEN          Reset RXB flag
+[0117] E07E 86,AF,3E        CLR   V@>3EF0   Clear RXB MENU Flag
+       E081 F0
+[0118] E082 87,8F,9D NEWEA  DCLR  @>2000
+       E085 00
+[0119] E086 06,E8,1A GE029  CALL  EASCRN
+[0120] E089 86,44           CLR   @>8344           * Disk SEARCH FLAG
+[0121] E08B BF,4A,0B        DST   >0B00,@FAC
+       E08E 00
+[0122] E08F 06,00,4A        CALL  UPCASE
+[0123] E092 BE,74,05 GE056  ST    5,@KBNO
+[0124] E095 BF,4A,09        DST   >0900,@FAC
+       E098 00
+[0125] E099 06,00,18        CALL  LOCASE
+[0126] E09C 86,A8,00        CLR   V@>0800
+[0127] E09F 35,00,FF        MOVE  >00FF,V@>0800,V@>0801
+       E0A2 A8,01,A8
+       E0A5 00
+[0128] E0A6 39,00,06        MOVE  6,G@VREGS,#1
+       E0A9 01,F8,BE
+[0129] E0AC 86,AF,10        CLR   V@>1000          * CLEAR PAB AREAS
+       E0AF 00
+[0130] E0B0 35,03,80        MOVE  >0380,V@>1000,V@>1001
+       E0B3 AF,10,01
+       E0B6 AF,10,00
+[0131] E0B9 B2,80,C2        AND   >EF,@>83C2
+       E0BC EF
+[0132] E0BD 31,00,10        MOVE  16,G@CURPAT,V@>08F0
+       E0C0 A8,F0,F8
+       E0C3 9E
+[0133] E0C4 31,00,10        MOVE  16,G@DARROW,V@>0C10
+       E0C7 AC,10,F8
+       E0CA AE
+[0134]               *
+[0135]               *  Display Main Menu
+[0136]               *
+[0137] E0CB BE,73,7E MMENU  ST    >7E,@SUBSTK       * Set SUBSTACK
+[0138] E0CE 87,22           DCLR  @CODE
+[0139] E0D0 87,48           DCLR  @FLAG
+[0140] E0D2 86,47           CLR   @LDFLAG
+[0141] E0D4 07,20           ALL   SPACE
+[0142] E0D6 CA,42,38 GE116  CHE   >38,@XTOKEN
+[0143] E0D9 60,E0           BS    MSCRN
+[0144] E0DB CA,42,31        CHE   >31,@XTOKEN
+[0145] E0DE 61,AA           BS    MYEAXB
+[0146] E0E0 87,7E    MSCRN  HOME
+[0147] E0E2 08              FMT
+[0148] E0E3 FF,01           COL   1
+[0149] E0E5 1D,52,69        HTEX  'Rich Editor & Assembler V=2015'
+       E0E8 63,68,20
+       E0EB 45,64,69
+       E0EE 74,6F,72
+       E0F1 20,26,20
+       E0F4 41,73,73
+       E0F7 65,6D,62
+       E0FA 6C,65,72
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0004 
+Rich E/A GROM
+       E0FD 20,56,3D
+       E100 32,30,31
+       E103 35
+[0150] E104 A0              ROW+  1
+[0151] E105 FF,00           COL   0
+[0152] E107 5F,5F           HCHA  32,95
+[0153] E109 A1              ROW+  2
+[0154] E10A FF,06           COL   6
+[0155] E10C 12,53,20        HTEX  'S    SET PATH NAMES'
+       E10F 20,20,20
+       E112 53,45,54
+       E115 20,50,41
+       E118 54,48,20
+       E11B 4E,41,4D
+       E11E 45,53
+[0156] E120 A3              ROW+  4
+[0157] E121 FF,06           COL   6
+[0158] E123 0D,44,20        HTEX  'D    DIRECTORY' 
+       E126 20,20,20
+       E129 44,49,52
+       E12C 45,43,54
+       E12F 4F,52,59
+[0159] E132 A2              ROW+  3
+[0160] E133 FF,06           COL   6
+[0161] E135 0D,41,20        HTEX  'A    ASSEMBLER'
+       E138 20,20,20
+       E13B 41,53,53
+       E13E 45,4D,42
+       E141 4C,45,52
+[0162] E144 A1              ROW+  2
+[0163] E145 FF,06           COL   6
+[0164] E147 0A,45,20        HTEX  'E    EDITOR'
+       E14A 20,20,20
+       E14D 45,44,49
+       E150 54,4F,52
+[0165] E153 A1              ROW+  2
+[0166] E154 FF,06           COL   6
+[0167] E156 0E,58,20        HTEX  'X    XB PROGRAM'   
+       E159 20,20,20
+       E15C 58,42,20
+       E15F 50,52,4F
+       E162 47,52,41
+       E165 4D
+[0168] E166 A1              ROW+  2
+[0169] E167 FF,06           COL   6
+[0170] E169 10,4C,20        HTEX  'L    LOAD and RUN'
+       E16C 20,20,20
+       E16F 4C,4F,41
+       E172 44,20,61
+       E175 6E,64,20
+       E178 52,55,4E
+[0171] E17B A1              ROW+  2
+[0172] E17C FF,06           COL   6
+[0173] E17E 10,50,20        HTEX  'P    PROGRAM FILE'
+       E181 20,20,20
+       E184 50,52,4F
+       E187 47,52,41
+       E18A 4D,20,46
+       E18D 49,4C,45
+[0174] E190 A3              ROW+  4
+[0175] E191 FF,06           COL   6
+[0176] E193 09,2E,20        HTEX  '.    R X B'
+       E196 20,20,20
+       E199 52,20,58
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0005 
+Rich E/A GROM
+       E19C 20,42
+[0177] E19E FB              FEND
+[0178] E19F 03       NEWSCN SCAN
+[0179] E1A0 41,9F           BR    NEWSCN
+[0180] E1A2 D6,75,2E        CEQ   >2E,@KEY         * .?
+[0181] E1A5 41,B4           BR    NSCAN            * Yes
+[0182] E1A7 05,63,72 RTRXB  B     RXB              * Go RXB
+[0183] E1AA 87,AF,22 MYEAXB DCLR  V@>2250          * Clear Pass flag
+       E1AD 50
+[0184] E1AE BC,75,42        ST    @XTOKEN,@KEY
+[0185] E1B1 BE,42,EA        ST    >EA,@XTOKEN      * Load Flag
+[0186] E1B4 D6,75,4C NSCAN  CEQ   'L',@KEY         * L?
+[0187] E1B7 61,C3           BS    NSCAN1
+[0188] E1B9 D6,75,6C        CEQ   'l',@KEY         * l?
+[0189] E1BC 61,C3           BS    NSCAN1
+[0190] E1BE D6,75,33        CEQ   '3',@KEY         * 3?
+[0191] E1C1 41,CB           BR    NSCAN2
+[0192] E1C3 BE,75,33 NSCAN1 ST    >33,@KEY         * Set LOAD & RUN
+[0193] E1C6 D6,75,33        CEQ   >33,@KEY         * LOAD AND RUN?
+[0194] E1C9 6A,0F           BS    LANDR
+[0195] E1CB D6,75,50 NSCAN2 CEQ   'P',@KEY         * P?
+[0196] E1CE 61,DA           BS    NSCAN3
+[0197] E1D0 D6,75,70        CEQ   'p',@KEY         * p?
+[0198] E1D3 61,DA           BS    NSCAN3
+[0199] E1D5 D6,75,35        CEQ   '5',@KEY         * 5
+[0200] E1D8 41,E2           BR    NSCAN4
+[0201] E1DA BE,75,35 NSCAN3 ST    >35,@KEY         * SET RUN PROGRAM
+[0202] E1DD D6,75,35        CEQ   >35,@KEY         * PROGRAM?
+[0203] E1E0 6B,E8           BS    PRGRM
+[0204] E1E2 D6,75,41 NSCAN4 CEQ   'A',@KEY         * A?
+[0205] E1E5 61,F1           BS    NSCAN5
+[0206] E1E7 D6,75,61        CEQ   'a',@KEY         * a?
+[0207] E1EA 61,F1           BS    NSCAN5
+[0208] E1EC D6,75,32        CEQ   '2',@KEY         * 2?
+[0209] E1EF 41,F9           BR    NSCAN6 
+[0210] E1F1 BE,75,32 NSCAN5 ST    >32,@KEY         * SET ASSEMBLER
+[0211] E1F4 D6,75,32        CEQ   >32,@KEY         * ASSEMBLER?
+[0212] E1F7 68,4F           BS    ASSEM                         
+[0213] E1F9 D6,75,45 NSCAN6 CEQ   'E',@KEY         * E?
+[0214] E1FC 62,08           BS    NSCAN7
+[0215] E1FE D6,75,65        CEQ   'e',@KEY         * e?
+[0216] E201 62,08           BS    NSCAN7
+[0217] E203 D6,75,31        CEQ   '1',@KEY         * 1?
+[0218] E206 42,10           BR    NSCAN8
+[0219] E208 BE,75,31 NSCAN7 ST    >31,@KEY         * SET EDITOR
+[0220] E20B D6,75,31        CEQ   >31,@KEY         * EDITOR? 
+[0221] E20E 63,8D           BS    EDITOR
+[0222] E210 D6,75,44 NSCAN8 CEQ   'D',@KEY         * D?  
+[0223] E213 6D,C9           BS    DIRECT
+[0224] E215 D6,75,64        CEQ   'd',@KEY         * d?
+[0225] E218 6D,C9           BS    DIRECT       
+[0226] E21A D6,75,58        CEQ   'X',@KEY         * X?
+[0227] E21D 6C,DB           BS    XBINP
+[0228] E21F D6,75,78        CEQ   'x',@KEY         * x?
+[0229] E222 6C,DB           BS    XBINP
+[0230] E224 D6,75,53        CEQ   'S',@KEY         * S?
+[0231] E227 62,2E           BS    CONFIG
+[0232] E229 D6,75,73        CEQ   's',@KEY         * s?
+[0233] E22C 41,9F           BR    NEWSCN
+[0234]               ******************************************************
+[0235]               * CONFIGURE PATHS
+[0236]               *
+[0237] E22E 06,E8,1A CONFIG CALL  EASCRN
+[0238] E231 86,42           CLR   @XTOKEN
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0006 
+Rich E/A GROM
+[0239] E233 06,ED,67        CALL  CLRREA
+[0240] E236 07,20           ALL   SPACE
+[0241] E238 87,7E           HOME
+[0242] E23A 08              FMT
+[0243] E23B FF,06           COL   6
+[0244] E23D 12,2A,20        HTEX  '* CONFIGURE PATHS *'
+       E240 43,4F,4E
+       E243 46,49,47
+       E246 55,52,45
+       E249 20,50,41
+       E24C 54,48,53
+       E24F 20,2A
+[0245] E251 FB              FEND
+[0246] E252 BE,A0,41        ST    49,V@65            1
+       E255 31
+[0247] E256 35,00,28        MOVE  40,V@>0F00,V@67    DSK1.EDIT1
+       E259 A0,43,AF
+       E25C 0F,00
+[0248] E25E BE,A0,A1        ST    50,V@161           2
+       E261 32
+[0249] E262 35,00,28        MOVE  40,V@>0F28,V@163   DSK1.ASSM1
+       E265 A0,A3,AF
+       E268 0F,28
+[0250] E26A BE,A1,01        ST    51,V@257           3
+       E26D 33
+[0251] E26E 35,00,28        MOVE  40,V@>0F50,V@259   DSK1.SOURCE
+       E271 A1,03,AF
+       E274 0F,50
+[0252] E276 BE,A1,61        ST    52,V@353 
+       E279 34
+[0253] E27A 35,00,28        MOVE  40,V@>0F78,V@355   DSK1.OBJECT
+       E27D A1,63,AF
+       E280 0F,78
+[0254] E282 BE,A1,C1        ST    53,V@449           5
+       E285 35
+[0255] E286 35,00,28        MOVE  40,V@>0FA0,V@451   DSK1.LIST
+       E289 A1,C3,AF
+       E28C 0F,A0
+[0256] E28E 08              FMT
+[0257] E28F FE,11           ROW   17
+[0258] E291 FF,01           COL   1
+[0259] E293 0A,36,20        HTEX  '6  OPTIONS:'
+       E296 20,4F,50
+       E299 54,49,4F
+       E29C 4E,53,3A
+[0260] E29F FE,15           ROW   21
+[0261] E2A1 FF,04           COL   4
+[0262] E2A3 19,43,54        HTEX  'CTRL 1 - 5 DRIVE SELECTION'
+       E2A6 52,4C,20
+       E2A9 31,20,2D
+       E2AC 20,35,20
+       E2AF 44,52,49
+       E2B2 56,45,20
+       E2B5 53,45,4C
+       E2B8 45,43,54
+       E2BB 49,4F,4E
+[0263] E2BE FE,17           ROW   23
+[0264] E2C0 FF,04           COL   4
+[0265] E2C2 19,41,4E        HTEX  'ANY OTHER KEY TO MAIN MENU'
+       E2C5 59,20,4F
+       E2C8 54,48,45
+       E2CB 52,20,4B
+       E2CE 45,59,20
+       E2D1 54,4F,20
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0007 
+Rich E/A GROM
+       E2D4 4D,41,49
+       E2D7 4E,20,4D
+       E2DA 45,4E,55
+[0266] E2DD FB              FEND
+[0267] E2DE 35,00,28        MOVE  40,V@>0FC8,V@556   OPTIONS: L
+       E2E1 A2,2C,AF
+       E2E4 0F,C8
+[0268] E2E6 03       CONFIH SCAN
+[0269] E2E7 42,E6           BR    CONFIH 
+[0270] E2E9 CA,75,37        CHE   '7',@KEY        <7?
+[0271] E2EC 63,42           BS    CONFIL          Exit out
+[0272] E2EE CA,75,31        CHE   '1',@KEY        1 to 6 only valid
+[0273] E2F1 40,79           BR    CLREA           Exit out
+[0274] E2F3 BF,20,00        DST   65,@CURADD      Cursor Location 
+       E2F6 41
+[0275] E2F7 CA,75,30        CHE   >30,@KEY        KEY>48?
+[0276] E2FA 42,E6           BR    CONFIH
+[0277] E2FC A6,75,30        SUB   >30,@KEY        KEY-48
+[0278] E2FF BC,00,75        ST    @KEY,@TMP       Save key 0-5
+[0279] E302 BC,08,75        ST    @KEY,@TMP8      Save key 1-6
+[0280] E305 92,00           DEC   @TMP            -1
+[0281] E307 AA,00,60        MUL   96,@TMP         Add 64 Cursor Address
+[0282] E30A A1,20,00        DADD  @TMP,@CURADD    Cursor address   
+[0283] E30D BE,B0,20        ST    130,V*CURADD    Left Arrow
+       E310 82
+[0284] E311 A3,20,00        DADD  35,@CURADD      Cursor
+       E314 23
+[0285] E315 BD,04,20        DST   @CURADD,@TMP4   Save address 
+[0286] E318 06,E6,C4 CONFIJ CALL  GETINP          Get input
+[0287] E31B 8F,50           DCZ   @FAC6           Length 0?
+[0288] E31D 62,2E           BS    CONFIG
+[0289] E31F CA,4A,27        CHE   39,@FAC         <39?
+[0290] E322 62,2E           BS    CONFIG
+[0291] E324 87,06           DCLR  @TMP6           Index
+[0292] E326 A3,06,00 CONFIK DADD  40,@TMP6        Index+40 
+       E329 28
+[0293] E32A 92,08           DEC   @TMP8           Copy of KEY
+[0294] E32C 43,26           BR    CONFIK
+[0295] E32E BC,EE,D8        ST    @FAC7,V@>0ED8(@TMP6)  Length
+       E331 06,51
+[0296] E333 35,00,27        MOVE  39,V*TMP4,V@>0ED9(@TMP6) String
+       E336 EE,D9,06
+       E339 B0,04
+[0297] E33B 42,2E           BR    CONFIG
+[0298] E33D BE,42,EA MMMENU ST    >EA,@XTOKEN     Set flag
+[0299] E340 40,CB           BR    MMENU           Exit
+[0300]               * CTRL keys ***************************************
+[0301] E342 CA,75,B6 CONFIL CHE   182,@KEY        CTRL 5?
+[0302] E345 62,2E           BS    CONFIG
+[0303] E347 CA,75,B1        CHE   177,@KEY
+[0304] E34A 42,2E           BR    CONFIG
+[0305] E34C 06,00,34        CALL  ACCTON          ACCEPT TONE
+[0306] E34F BC,04,75        ST    @KEY,@TMP4      SAVE KEY
+[0307] E352 A6,04,B0        SUB   176,@TMP4       CTRL=1 to 5
+[0308] E355 87,5C           DCLR  @ARG
+[0309] E357 BF,00,FF        DST   -25,@TMP        SCREEN ADDRESS
+       E35A E7
+[0310] E35B BF,5C,0E        DST   >0EDC,@ARG      MEMORY ADDRESS
+       E35E DC
+[0311] E35F A3,5C,00 CONFLP DADD  40,@ARG         40*VALUE
+       E362 28
+[0312] E363 A3,00,00        DADD  96,@TMP         96*VALUE 
+       E366 60
+[0313] E367 92,04           DEC   @TMP4
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0008 
+Rich E/A GROM
+[0314] E369 43,5F           BR    CONFLP 
+[0315] E36B BE,06,1E        ST    30,@TMP6
+[0316] E36E BF,02,01 CONDEU DST   >0160,@TMP2     COUNTER 
+       E371 60
+[0317] E372 03       CONDEV SCAN
+[0318] E373 63,80           BS    CONDST 
+[0319] E375 93,02           DDEC  @TMP2           COUNTER-1
+[0320] E377 43,72           BR    CONDEV
+[0321] E379 C0,06,B0        EX    V*TMP,@TMP6     SWAP
+       E37C 00
+[0322] E37D 05,E3,6E        B     CONDEU
+[0323] E380 06,00,34 CONDST CALL  ACCTON
+[0324] E383 BC,B0,00        ST    @KEY,V*TMP      SCREEN ADDRESS #
+       E386 75
+[0325] E387 BC,B0,5C        ST    @KEY,V*ARG      MEMORY ADDRESS #  
+       E38A 75
+[0326] E38B 42,2E           BR    CONFIG      
+[0327]               **************************************************
+[0328]               *  Main Menu Option 1: EDIT
+[0329]               *
+[0330] E38D 06,E8,1A EDITOR CALL  EASCRN
+[0331] E390 87,48           DCLR  @FLAG
+[0332] E392 86,47           CLR   @LDFLAG
+[0333] E394 BE,42,EA        ST    >EA,@XTOKEN
+[0334] E397 08              FMT
+[0335] E398 FF,0B           COL   >0B
+[0336] E39A FE,01           ROW   1
+[0337] E39C 09,2A,20        HTEX  '* EDITOR *'
+       E39F 45,44,49
+       E3A2 54,4F,52
+       E3A5 20,2A
+[0338] E3A7 A2              ROW+  3
+[0339] E3A8 FF,03           COL   3
+[0340] E3AA 08,31,20        HTEX  '1    LOAD'
+       E3AD 20,20,20
+       E3B0 4C,4F,41
+       E3B3 44
+[0341] E3B4 A0              ROW+  1
+[0342] E3B5 96              COL+  23
+[0343] E3B6 08,32,20        HTEX  '2    EDIT'
+       E3B9 20,20,20
+       E3BC 45,44,49
+       E3BF 54
+[0344] E3C0 A0              ROW+  1
+[0345] E3C1 96              COL+  23
+[0346] E3C2 08,33,20        HTEX  '3    SAVE'
+       E3C5 20,20,20
+       E3C8 53,41,56
+       E3CB 45
+[0347] E3CC A0              ROW+  1
+[0348] E3CD 96              COL+  23
+[0349] E3CE 09,34,20        HTEX  '4    PRINT'
+       E3D1 20,20,20
+       E3D4 50,52,49
+       E3D7 4E,54
+[0350] E3D9 A0              ROW+  1
+[0351] E3DA 95              COL+  22
+[0352] E3DB 09,35,20        HTEX  '5    PURGE'
+       E3DE 20,20,20
+       E3E1 50,55,52
+       E3E4 47,45
+[0353] E3E6 A0              ROW+  1
+[0354] E3E7 95              COL+  22
+[0355] E3E8 FB              FEND
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0009 
+Rich E/A GROM
+[0356] E3E9 03       GE19B  SCAN
+[0357] E3EA 43,E9           BR    GE19B
+[0358] E3EC D6,75,0F        CEQ   BACK,@KEY       * BACK KEY
+[0359] E3EF 60,79           BS    CLREA
+[0360] E3F1 A6,75,31        SUB   >31,@KEY
+[0361] E3F4 CA,75,06        CHE   >06,@KEY
+[0362] E3F7 63,E9           BS    GE19B
+[0363] E3F9 87,48           DCLR  @FLAG
+[0364] E3FB BE,73,7E        ST    >7E,@SUBSTK
+[0365] E3FE BC,00,75        ST    @KEY,@TMP       * Save KEY
+[0366] E401 AA,00,40        MUL   >40,@TMP
+[0367] E404 BF,20,00        DST   >0082,@CURADD
+       E407 82
+[0368] E408 A1,20,00        DADD  @TMP,@CURADD  
+[0369] E40B BE,B0,20        ST    130,V*CURADD    * SHOW ARROW 
+       E40E 82
+[0370] E40F BC,04,75        ST    @KEY,@TMP4
+[0371] E412 D6,75,04        CEQ   4,@KEY          * PURGE?
+[0372] E415 44,3C           BR    GE1E4           * No, next check
+[0373]               *  Edit Menu Option 5: PURGE
+[0374] E417 08              FMT
+[0375] E418 A1              ROW+  2
+[0376] E419 13,41,72        HTEX  'Are you sure (Y/N)? '
+       E41C 65,20,79
+       E41F 6F,75,20
+       E422 73,75,72
+       E425 65,20,28
+       E428 59,2F,4E
+       E42B 29,3F,20
+[0377] E42E FB              FEND
+[0378] E42F 06,E9,E8        CALL  YESNO
+[0379] E432 D6,75,59        CEQ   >59,@KEY
+[0380] E435 43,8D           BR    EDITOR
+[0381] E437 06,E8,41        CALL  CLRXOP
+[0382] E43A 43,8D    GE1E2  BR    EDITOR
+[0383] E43C D6,75,03 GE1E4  CEQ   >03,@KEY         * PRINT?
+[0384] E43F 64,C3           BS    GE237            * YES!
+[0385] E441 D7,8F,9D        DCEQ  >55AA,@>2000     * EDIT1 loaded?
+       E444 00,55,AA
+[0386] E447 64,85           BS    GE1FC            * Yes
+[0387] E449 35,00,63        MOVE  99,V@>2250,@>EA00
+       E44C 8F,67,00
+       E44F AF,22,50
+[0388] E452 BC,8F,7C        ST    @XTOKEN,@>FFFB
+       E455 FB,42
+[0389] E457 06,F6,55        CALL  P1000
+[0390] E45A 06,ED,96        CALL  NPAB       
+[0391] E45D 35,00,28        MOVE  40,V@>0F00,V@>1009  Get configured path EDIT1
+       E460 AF,10,09
+       E463 AF,0F,00
+[0392] E466 BE,47,01        ST    1,@LDFLAG           Set Editor flag
+[0393] E469 06,EC,9B GE1F6  CALL  PGMLOD
+[0394] E46C D7,8F,9D        DCEQ  >55AA,@>2000
+       E46F 00,55,AA
+[0395] E472 43,8D           BR    EDITOR
+[0396] E474 06,E8,41        CALL  CLRXOP
+[0397] E477 35,00,63        MOVE  99,@>EA00,V@>2250
+       E47A AF,22,50
+       E47D 8F,67,00
+[0398] E480 BC,42,8F        ST    @>FFFB,@XTOKEN
+       E483 7C,FB
+[0399] E485 D6,04,01 GE1FC  CEQ   >01,@TMP4       * Edit?
+[0400] E488 65,1D           BS    EMOPT2          * Yes
+[0401] E48A D6,04,02        CEQ   >02,@TMP4       * Save?
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0010 
+Rich E/A GROM
+[0402] E48D 44,C3           BR    GE237           * No
+[0403]               *  Edit Menu Option 3: SAVE
+[0404] E48F 86,42           CLR   @XTOKEN
+[0405] E491 08              FMT
+[0406] E492 FF,02           COL   2
+[0407] E494 FE,10           ROW   16
+[0408] E496 12,44,56        HTEX  'DV80 Format (Y/N)? '
+       E499 38,30,20
+       E49C 46,6F,72
+       E49F 6D,61,74
+       E4A2 20,28,59
+       E4A5 2F,4E,29
+       E4A8 3F,20
+[0409] E4AA FB              FEND
+[0410] E4AB 06,E9,E8        CALL  YESNO
+[0411] E4AE D6,75,59        CEQ   >59,@KEY
+[0412] E4B1 44,B6           BR    GE22C
+[0413] E4B3 B6,49,02        OR    >02,@FLAG2
+[0414] E4B6 D6,75,0F GE22C  CEQ   BACK,@KEY
+[0415] E4B9 63,8D           BS    EDITOR
+[0416] E4BB BF,20,02        DST   >0262,@CURADD
+       E4BE 62
+[0417] E4BF 44,CE           BR    GE23B
+[0418] E4C1 86,42    GE235  CLR   @XTOKEN          * CLEAR XTOKEN FLAG
+[0419] E4C3 BF,20,02 GE237  DST   >0202,@CURADD    * Print or Load
+       E4C6 02
+[0420] E4C7 35,00,FF        MOVE  255,V@>0200,V@>201
+       E4CA A2,01,A2
+       E4CD 00
+[0421] E4CE 31,00,0A GE23B  MOVE  10,G@FPATH,V*CURADD
+       E4D1 B0,20,F8
+       E4D4 80
+[0422] E4D5 A3,20,00        DADD  >0040,@CURADD
+       E4D8 40
+[0423]               * CONFIGURE PATH SOURCE *********************************
+[0424] E4D9 87,16           DCLR @TEMP
+[0425] E4DB BC,17,AF        ST   V@>0F50,@TEMP1
+       E4DE 0F,50
+[0426] E4E0 BD,AF,22        DST  @TEMP,V@>2255
+       E4E3 55,16
+[0427] E4E5 34,16,AF        MOVE @TEMP,V@>0F51,V@>2257 Save as SOURCE
+       E4E8 22,57,AF
+       E4EB 0F,51
+[0428] E4ED BE,EF,22        ST   >0D,V@>2258(@TEMP) 
+       E4F0 58,16,0D
+[0429]              
+[0430] E4F3 CA,04,02        CHE   >02,@TMP4       SAVE, PRINT ?
+[0431] E4F6 65,07           BS    EINPUT
+[0432] E4F8 D6,42,EA        CEQ   >EA,@XTOKEN
+[0433] E4FB 65,07           BS    EINPUT
+[0434] E4FD 45,07           BR    EINPUT
+[0435] E4FF 06,E6,8A        CALL  BLNKBU
+[0436] E502 06,E6,59        CALL  BLDPAB
+[0437] E505 45,0A           BR    EMOPT1              
+[0438] E507 06,E6,56 EINPUT CALL  GETALL
+[0439] E50A D6,75,0F EMOPT1 CEQ   BACK,@KEY       * BACK?
+[0440] E50D 60,79           BS    CLREA
+[0441] E50F D6,04,02        CEQ   >02,@TMP4       * Save?
+[0442] E512 65,6C           BS    GE2B5
+[0443] E514 D6,04,03        CEQ   >03,@TMP4       * Print?
+[0444] E517 65,90           BS    GE2D9
+[0445] E519 8E,04           CZ    @TMP4           * Load?
+[0446] E51B 65,26           BS    GE272
+[0447]               *  Edit Menu Option 2: EDIT
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0011 
+Rich E/A GROM
+[0448] E51D 0F,23    EMOPT2 XML   >23
+[0449] E51F 74,60           BS    GE8B0
+[0450] E521 06,F4,B2        CALL  GE8FC
+[0451] E524 43,8D           BR    EDITOR
+[0452] E526 BE,42,EA GE272  ST    >EA,@XTOKEN     SET XTOKEN
+[0453] E529 06,E5,32        CALL  GE27B
+[0454] E52C 0F,21           XML   >21
+[0455] E52E 74,63           BS    GE8B3
+[0456] E530 43,8D           BR    EDITOR
+[0457]               *********************************************
+[0458] E532 BE,E0,01 GE27B  ST    >04,V@1(@PABPTR)
+       E535 1C,04
+[0459] E537 B2,49,FD        AND   >FD,@FLAG2
+[0460] E53A BD,56,1C GE283  DST   @PABPTR,@VPAB
+[0461] E53D A3,56,00        DADD  >0009,@VPAB
+       E540 09
+[0462] E541 06,00,10        CALL  DSRLNK
+[0463] E544 08              BYTE  >08
+[0464] E545 75,0E           BS    CHKERR
+[0465] E547 DA,E0,01        CLOG  >E0,V@1(@PABPTR)
+       E54A 1C,E0
+[0466] E54C 45,53           BR    GE29C
+[0467] E54E BE,B0,1C        ST    >02,V*PABPTR
+       E551 02
+[0468] E552 00              RTN
+[0469]               **********************************************
+[0470] E553 BC,00,E0 GE29C  ST    V@1(@PABPTR),@TMP
+       E556 01,1C
+[0471] E558 B2,00,1F        AND   >1F,@TMP
+[0472] E55B D6,00,04        CEQ   >04,@TMP
+[0473] E55E 45,6A           BR    GE2B3
+[0474] E560 BE,E0,01        ST    >14,V@1(@PABPTR)
+       E563 1C,14
+[0475] E565 B6,49,02        OR    >02,@FLAG2
+[0476] E568 45,3A           BR    GE283
+[0477] E56A 55,0E    GE2B3  BR    CHKERR
+[0478] E56C BE,E0,01 GE2B5  ST    >02,V@1(@PABPTR)
+       E56F 1C,02
+[0479] E571 DA,49,02        CLOG  >02,@FLAG2
+[0480] E574 65,7B           BS    GE2C4
+[0481] E576 BE,E0,01        ST    >12,V@1(@PABPTR)
+       E579 1C,12
+[0482] E57B 06,E6,A3 GE2C4  CALL  DOIO
+[0483] E57E BE,B0,1C        ST    >03,V*PABPTR
+       E581 03
+[0484] E582 BE,E0,05        ST    >50,V@5(@PABPTR)
+       E585 1C,50
+[0485] E587 0F,22           XML   >22
+[0486] E589 74,63           BS    GE8B3
+[0487] E58B 06,E6,9F        CALL  CLOSE
+[0488] E58E 43,8D           BR    EDITOR
+[0489]               * Edit Menu Option 4 : PRINT output
+[0490] E590 06,E5,32 GE2D9  CALL  GE27B
+[0491] E593 08              FMT
+[0492] E594 FF,02           COL   2
+[0493] E596 FE,14           ROW   20
+[0494] E598 0B,44,45        HTEX  'DEVICE NAME?'
+       E59B 56,49,43
+       E59E 45,20,4E
+       E5A1 41,4D,45
+       E5A4 3F
+[0495] E5A5 FB              FEND
+[0496] E5A6 BF,20,02        DST   >02C2,@CURADD   * Cursor Address
+       E5A9 C2
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0012 
+Rich E/A GROM
+[0497] E5AA BF,1C,11        DST   >1100,@PABPTR   * PAB address
+       E5AD 00
+[0498] E5AE D6,04,04        CEQ   >04,@TMP4       * VIEW?
+[0499] E5B1 65,B8           BS    VFILE           * No
+[0500] E5B3 86,42           CLR   @XTOKEN
+[0501] E5B5 06,ED,67        CALL  CLRREA
+[0502] E5B8 06,E6,56 VFILE  CALL  GETALL
+[0503] E5BB 86,42           CLR   @XTOKEN
+[0504] E5BD BE,E0,05        ST    >50,V@5(@PABPTR)
+       E5C0 1C,50
+[0505] E5C2 BE,E0,01 GE30A  ST    >12,V@1(@PABPTR)
+       E5C5 1C,12
+[0506] E5C7 BF,E0,02        DST   >1080,V@2(@PABPTR)
+       E5CA 1C,10,80
+[0507] E5CD 06,E6,A3        CALL  DOIO
+[0508] E5D0 D6,E0,04        CEQ   >20,V@4(@PABPTR)
+       E5D3 1C,20
+[0509] E5D5 45,DA           BR    GE322
+[0510] E5D7 B6,48,02        OR    >02,@FLAG
+[0511] E5DA BE,B0,1C GE322  ST    >03,V*PABPTR
+       E5DD 03
+[0512] E5DE DA,48,02        CLOG  >02,@FLAG
+[0513] E5E1 66,44           BS    GE38D
+[0514] E5E3 06,F6,55 GE32B  CALL  P1000
+[0515] E5E6 06,E6,8A        CALL  BLNKBU
+[0516] E5E9 06,E6,A3        CALL  DOIO
+[0517] E5EC BF,1C,11        DST   >1100,@PABPTR
+       E5EF 00
+[0518] E5F0 BF,00,10        DST   >1080,@TMP
+       E5F3 80
+[0519] E5F4 A3,00,00        DADD  >004F,@TMP
+       E5F7 4F
+[0520] E5F8 BE,02,50        ST    >50,@TMP2
+[0521] E5FB BC,03,B0 GE344  ST    V*TMP,@TMP3
+       E5FE 00
+[0522] E5FF D6,03,20        CEQ   >20,@TMP3
+[0523] E602 66,18           BS    GE361
+[0524] E604 D6,03,0C        CEQ   >0C,@TMP3
+[0525] E607 46,16           BR    GE35F
+[0526] E609 BE,B0,00        ST    >20,V*TMP
+       E60C 20
+[0527] E60D 06,E6,A3        CALL  DOIO
+[0528] E610 06,E6,A3        CALL  DOIO
+[0529] E613 06,E6,A3        CALL  DOIO
+[0530] E616 46,1E    GE35F  BR    GE367
+[0531] E618 93,00    GE361  DDEC  @TMP
+[0532] E61A 92,02           DEC   @TMP2
+[0533] E61C 45,FB           BR    GE344
+[0534] E61E 06,E6,A3 GE367  CALL  DOIO
+[0535] E621 A6,02,20        SUB   >20,@TMP2
+[0536] E624 CE,02,00        CGT   >00,@TMP2
+[0537] E627 46,37           BR    GE380
+[0538] E629 A3,E0,02        DADD  >0020,V@2(@PABPTR)
+       E62C 1C,00,20
+[0539] E62F BC,E0,05        ST    @TMP2,V@5(@PABPTR)
+       E632 1C,02
+[0540] E634 05,E6,1E        B     GE367
+[0541] E637 BF,E0,02 GE380  DST   >1080,V@2(@PABPTR)
+       E63A 1C,10,80
+[0542] E63D BE,E0,05        ST    >20,V@5(@PABPTR)
+       E640 1C,20
+[0543] E642 45,E3           BR    GE32B
+[0544] E644 06,F6,55 GE38D  CALL  P1000
+[0545] E647 06,E6,8A        CALL  BLNKBU
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0013 
+Rich E/A GROM
+[0546] E64A 06,E6,A3        CALL  DOIO
+[0547] E64D BF,1C,11        DST   >1100,@PABPTR
+       E650 00
+[0548] E651 06,E6,A3        CALL  DOIO
+[0549] E654 46,44           BR    GE38D
+[0550] E656 06,E6,8A GETALL CALL  BLNKBU
+[0551]               *  Build PAB with name
+[0552] E659 06,E6,B8 BLDPAB CALL  VZERO
+[0553] E65C BD,E0,02        DST   @PABPTR,V@2(@PABPTR)
+       E65F 1C,1C
+[0554] E661 A3,E0,02        DADD  >0080,V@2(@PABPTR)
+       E664 1C,00,80
+[0555] E667 BE,E0,08        ST    >00,V@8(@PABPTR)
+       E66A 1C,00
+[0556] E66C BF,E0,04        DST   >5000,V@4(@PABPTR)
+       E66F 1C,50,00
+[0557] E672 87,AF,22        DCLR  V@>2250
+       E675 50
+[0558] E676 06,E6,C4        CALL  GETINP
+[0559] E679 8F,50           DCZ   @FAC6
+[0560] E67B 66,89           BS    GE3CF
+[0561] E67D 34,50,E0 PABNAM MOVE  @FAC6,V*FAC4,V@10(@PABPTR)
+       E680 0A,1C,B0
+       E683 4E
+[0562] E684 BC,E0,09        ST    @FAC7,V@9(@PABPTR)
+       E687 1C,51
+[0563] E689 00       GE3CF  RTN
+[0564] E68A A3,1C,00 BLNKBU DADD  >0080,@PABPTR
+       E68D 80
+[0565] E68E BE,B0,1C        ST    >20,V*PABPTR
+       E691 20
+[0566] E692 35,00,4F        MOVE  >004F,V*PABPTR,V@1(@PABPTR)
+       E695 E0,01,1C
+       E698 B0,1C
+[0567] E69A A7,1C,00        DSUB  >0080,@PABPTR
+       E69D 80
+[0568] E69E 00              RTN
+[0569] E69F BE,B0,1C CLOSE  ST    >01,V*PABPTR
+       E6A2 01
+[0570] E6A3 BD,56,1C DOIO   DST   @PABPTR,@VPAB
+[0571] E6A6 A3,56,00        DADD  >0009,@VPAB
+       E6A9 09
+[0572] E6AA 06,00,10        CALL  DSRLNK
+[0573] E6AD 08              BYTE  >08
+[0574] E6AE 75,0E           BS    CHKERR
+[0575] E6B0 DA,E0,01        CLOG  >E0,V@1(@PABPTR)
+       E6B3 1C,E0
+[0576] E6B5 55,0E           BR    CHKERR
+[0577] E6B7 00              RTN
+[0578] E6B8 86,B0,1C VZERO  CLR   V*PABPTR
+[0579] E6BB 35,00,45        MOVE  >0045,V*PABPTR,V@1(@PABPTR)
+       E6BE E0,01,1C
+       E6C1 B0,1C
+[0580] E6C3 00              RTN
+[0581] E6C4 06,E6,F7 GETINP CALL  GETKEY
+[0582] E6C7 BD,20,24        DST   @STLN,@CURADD
+[0583] E6CA BE,00,3C        ST    >3C,@TMP
+[0584] E6CD 87,50           DCLR  @FAC6
+[0585] E6CF D6,B0,20 GE415  CEQ   SPACE,V*CURADD
+       E6D2 20
+[0586] E6D3 46,E5           BR    GE42B
+[0587] E6D5 91,20           DINC  @CURADD
+[0588] E6D7 92,00           DEC   @TMP
+[0589] E6D9 46,CF           BR    GE415
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0014 
+Rich E/A GROM
+[0590] E6DB BD,20,24        DST   @STLN,@CURADD
+[0591] E6DE DA,48,04        CLOG  >04,@FLAG
+[0592] E6E1 46,F6           BR    GE43C
+[0593] E6E3 46,C4           BR    GETINP
+[0594] E6E5 BD,4E,20 GE42B  DST   @CURADD,@FAC4
+[0595] E6E8 D6,B0,20 GE42E  CEQ   SPACE,V*CURADD
+       E6EB 20
+[0596] E6EC 66,F6           BS    GE43C
+[0597] E6EE 91,50           DINC  @FAC6
+[0598] E6F0 91,20           DINC  @CURADD
+[0599] E6F2 92,00           DEC   @TMP
+[0600] E6F4 46,E8           BR    GE42E
+[0601] E6F6 00       GE43C  RTN
+[0602]               *  Key input routine
+[0603] E6F7 BE,18,1F GETKEY ST    >1F,@CHRCUR
+[0604] E6FA BD,26,20        DST   @CURADD,@ENDLN
+[0605] E6FD BD,24,20        DST   @CURADD,@STLN
+[0606] E700 86,79    GE446  CLR   @ITIMER
+[0607] E702 C0,18,B0        EX    V*CURADD,@CHRCUR
+       E705 20
+[0608]               *  REPEAT KEYS
+[0609] E706 03       GE44C  SCAN
+[0610] E707 67,2F           BS    GE456
+[0611] E709 CA,79,07        CHE   7,@ITIMER
+[0612] E70C 47,06           BR    GE44C
+[0613] E70E D6,42,EA        CEQ   >EA,@XTOKEN      * ANYTHING
+[0614] E711 47,00           BR    GE446
+[0615] E713 BD,76,AF PSCANX DST   V@>2250,@>8376
+       E716 22,50
+[0616] E718 BC,75,EF        ST    V@>2257(@>8376),@KEY
+       E71B 22,57,76
+[0617] E71E 91,76           DINC  @>8376
+[0618] E720 BD,AF,22        DST   @>8376,V@>2250
+       E723 50,76
+[0619] E725 D4,AF,22        CEQ   @>8376,V@>2256
+       E728 56,76
+[0620] E72A 47,2F           BR    GE456
+[0621] E72C BE,75,0D        ST    >0D,@KEY         * Store ENTER
+[0622] E72F D6,B0,20 GE456  CEQ   >1F,V*CURADD
+       E732 1F
+[0623] E733 47,39           BR    GE460
+[0624] E735 C0,18,B0        EX    V*CURADD,@CHRCUR
+       E738 20
+[0625] E739 BD,00,20 GE460  DST   @CURADD,@TMP
+[0626] E73C A5,00,24        DSUB  @STLN,@TMP
+[0627] E73F C6,75,19        CH    >19,@KEY         * SPACE key and higher?
+[0628] E742 67,5A           BS    GE46B
+[0629] E744 D6,75,07        CEQ   7,@KEY           * FCTN 3?
+[0630] E747 47,74           BR    GE485
+[0631] E749 BE,B0,24        ST    SPACE,V*STLN
+       E74C 20
+[0632] E74D 35,00,3F        MOVE  >003F,V*STLN,V@1(@STLN)
+       E750 E0,01,24
+       E753 B0,24
+[0633] E755 BD,20,24        DST   @STLN,@CURADD
+[0634] E758 46,F7           BR    GETKEY
+[0635] E75A DA,48,01 GE46B  CLOG  >01,@FLAG
+[0636] E75D 47,CC           BR    GE4DD
+[0637] E75F BC,B0,20 GE470  ST    @KEY,V*CURADD
+       E762 75
+[0638] E763 C5,20,26        DCH   @ENDLN,@CURADD
+[0639] E766 47,6B           BR    GE47C
+[0640] E768 BD,26,20        DST   @CURADD,@ENDLN
+[0641] E76B C6,01,3F GE47C  CH    >3F,@TMP1
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0015 
+Rich E/A GROM
+[0642] E76E 67,00           BS    GE446
+[0643] E770 91,20           DINC  @CURADD
+[0644] E772 47,00           BR    GE446
+[0645] E774 B2,48,FE GE485  AND   >FE,@FLAG
+[0646] E777 D6,75,0F        CEQ   BACK,@KEY
+[0647] E77A 47,88           BR    GE499
+[0648] E77C DA,48,20        CLOG  >20,@FLAG
+[0649] E77F 40,79           BR    CLREA            * GE97F
+[0650] E781 DA,48,04        CLOG  >04,@FLAG
+[0651] E784 40,79           BR    CLREA
+[0652] E786 43,8D           BR    EDITOR
+[0653] E788 D6,75,09 GE499  CEQ   >09,@KEY
+[0654] E78B 67,6B           BS    GE47C
+[0655] E78D D6,75,08        CEQ   >08,@KEY
+[0656] E790 47,9A           BR    GE4AB
+[0657] E792 8E,01           CZ    @TMP1
+[0658] E794 67,00           BS    GE446
+[0659] E796 93,20           DDEC  @CURADD
+[0660] E798 47,00           BR    GE446
+[0661] E79A D6,75,0D GE4AB  CEQ   >0D,@KEY
+[0662] E79D 67,F2           BS    GE503
+[0663] E79F D6,75,03        CEQ   >03,@KEY
+[0664] E7A2 47,C2           BR    GE4D3
+[0665] E7A4 BE,B0,20        ST    SPACE,V*CURADD
+       E7A7 20
+[0666] E7A8 BD,00,26        DST   @ENDLN,@TMP
+[0667] E7AB A5,00,20        DSUB  @CURADD,@TMP
+[0668] E7AE CE,01,00        CGT   >00,@TMP1
+[0669] E7B1 47,00           BR    GE446
+[0670] E7B3 34,00,B0        MOVE  @TMP,V@1(@CURADD),V*CURADD
+       E7B6 20,E0,01
+       E7B9 20
+[0671] E7BA BE,B0,26        ST    SPACE,V*ENDLN
+       E7BD 20
+[0672] E7BE 93,26           DDEC  @ENDLN
+[0673] E7C0 47,00           BR    GE446
+[0674] E7C2 D6,75,04 GE4D3  CEQ   >04,@KEY
+[0675] E7C5 47,F0           BR    GE501
+[0676] E7C7 B6,48,01        OR    >01,@FLAG
+[0677] E7CA 47,00           BR    GE446
+[0678] E7CC BD,00,26 GE4DD  DST   @ENDLN,@TMP
+[0679] E7CF A5,00,24        DSUB  @STLN,@TMP
+[0680] E7D2 C6,01,3F        CH    >3F,@TMP1
+[0681] E7D5 67,00           BS    GE446
+[0682] E7D7 BD,00,26        DST   @ENDLN,@TMP
+[0683] E7DA A5,00,20        DSUB  @CURADD,@TMP
+[0684] E7DD 91,00           DINC  @TMP
+[0685] E7DF 34,00,A3        MOVE  @TMP,V*CURADD,V@>03C0
+       E7E2 C0,B0,20
+[0686] E7E5 34,00,E0        MOVE  @TMP,V@>03C0,V@1(@CURADD)
+       E7E8 01,20,A3
+       E7EB C0
+[0687] E7EC 91,26           DINC  @ENDLN
+[0688] E7EE 47,5F           BR    GE470
+[0689] E7F0 47,00    GE501  BR    GE446
+[0690] E7F2 00       GE503  RTN
+[0691]               *  Check for Expansion Memory
+[0692] E7F3 BC,00,8F EXPMEM ST    @>2000,@TMP
+       E7F6 9D,00
+[0693] E7F8 BE,8F,9D        ST    >FF,@>2000
+       E7FB 00,FF
+[0694] E7FD D6,8F,9D        CEQ   >FF,@>2000
+       E800 00,FF
+[0695] E802 54,CE           BR    GE91D
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0016 
+Rich E/A GROM
+[0696] E804 86,8F,9D        CLR   @>2000
+       E807 00
+[0697] E808 8E,8F,9D        CZ    @>2000
+       E80B 00
+[0698] E80C 54,CE           BR    GE91D
+[0699] E80E BC,8F,9D        ST    @TMP,@>2000
+       E811 00,00
+[0700] E813 00              RTN
+[0701] E814 04,F4    NESCRN BACK  >F4
+[0702] E816 BE,A7,7F        ST    >F4,V@COLOR
+       E819 F4
+[0703] E81A BE,A3,00 EASCRN ST    >D0,V@>0300
+       E81D D0
+[0704] E81E BC,A3,80        ST    V@COLOR,V@>0380
+       E821 A7,7F
+[0705] E823 35,00,1F        MOVE  31,V@>0380,V@>0381
+       E826 A3,81,A3
+       E829 80
+[0706] E82A 07,20           ALL   SPACE
+[0707] E82C 3D,00,01        MOVE  1,V@COLOR,#7
+       E82F 07,A7,7F
+[0708] E832 00              RTN
+[0709] E833 BE,A3,80 USSCRN ST    >13,V@>0380
+       E836 13
+[0710] E837 35,00,1F        MOVE  31,V@>0380,V@>0381
+       E83A A3,81,A3
+       E83D 80
+[0711] E83E 07,20           ALL   SPACE
+[0712] E840 00              RTN
+[0713] E841 86,8F,7C CLRXOP CLR   @>FFD8
+       E844 D8
+[0714] E845 35,00,05        MOVE  5,@>FFD8,@>FFD9
+       E848 8F,7C,D9
+       E84B 8F,7C,D8
+[0715] E84E 00              RTN
+[0716]               ***********************************************************
+[0717]               *
+[0718]               * Main Menu Option 2: ASSEMBLER
+[0719]               *
+[0720] E84F 07,20    ASSEM  ALL   SPACE
+[0721] E851 08              FMT
+[0722] E852 FF,0A       COL   10
+[0723] E854 FE,01       ROW   1
+[0724] E856 0C,2A,20    HTEX  '* ASSEMBLER *'
+       E859 41,53,53
+       E85C 45,4D,42
+       E85F 4C,45,52
+       E862 20,2A
+[0725] E864 FB          FEND
+[0726] E865 87,48           DCLR  @FLAG
+[0727] E867 86,47           CLR   @LDFLAG
+[0728] E869 BE,73,7E        ST    >7E,@SUBSTK
+[0729] E86C B6,48,20        OR    >20,@FLAG
+[0730] E86F D7,8F,9D        DCEQ  >AA55,@>2000
+       E872 00,AA,55
+[0731] E875 68,A8           BS    GE687
+[0732] E877 35,00,63        MOVE  99,V@>2250,@>EA00
+       E87A 8F,67,00
+       E87D AF,22,50
+[0733] E880 BC,8F,7C        ST    @XTOKEN,@>FFFB
+       E883 FB,42
+[0734] E885 86,42           CLR   @XTOKEN
+[0735]               * Replacement for LODPGM
+[0736]               *       CALL  LODPGM
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0017 
+Rich E/A GROM
+[0737]               *       DATA  DASSM1
+[0738]               *       CALL  DEVICE
+[0739]               *       CEQ   BACK,@KEY
+[0740]               *       BS    CLREA
+[0741] E887 06,F6,55        CALL  P1000
+[0742] E88A 31,00,0F        MOVE  15,G@PAB,V*PABPTR        
+       E88D B0,1C,F7
+       E890 5C
+[0743] E891 35,00,28        MOVE  40,V@>0F28,V@>1009  Get configured path ASSM1
+       E894 AF,10,09
+       E897 AF,0F,28
+[0744]              
+[0745] E89A BE,47,02        ST    2,@LDFLAG
+[0746] E89D 06,EC,9B GE654  CALL  PGMLOD
+[0747] E8A0 D7,8F,9D        DCEQ  >AA55,@>2000
+       E8A3 00,AA,55
+[0748] E8A6 48,4F           BR    ASSEM
+[0749]               *  CALL FILES (4)
+[0750] E8A8 BF,AF,13 GE687  DST   >0116,V@>1380
+       E8AB 80,01,16
+[0751] E8AE BF,56,13        DST   >1380,@VPAB
+       E8B1 80
+[0752] E8B2 BE,4C,04        ST    >04,@FAC2
+[0753] E8B5 06,00,10        CALL  DSRLNK
+[0754] E8B8 0A              BYTE  >0A
+[0755] E8B9 35,00,63        MOVE  99,@>EA00,V@>2250
+       E8BC AF,22,50
+       E8BF 8F,67,00
+[0756] E8C2 BC,42,8F        ST    @>FFFB,@XTOKEN
+       E8C5 7C,FB
+[0757] E8C7 07,20           ALL   32
+[0758] E8C9 08              FMT
+[0759] E8CA FF,0A           COL   10
+[0760] E8CC FE,01           ROW   1
+[0761] E8CE 0C,2A,20        HTEX  '* ASSEMBLER *'
+       E8D1 41,53,53
+       E8D4 45,4D,42
+       E8D7 4C,45,52
+       E8DA 20,2A
+[0762] E8DC FB              FEND
+[0763] E8DD 06,F6,55        CALL  P1000
+[0764]               ** CONFIGURE PATH SOURCE ************************
+[0765] E8E0 06,E6,B8        CALL  VZERO
+[0766] E8E3 06,ED,9E        CALL  LPAB
+[0767] E8E6 BF,E0,02        DST   >1080,V@2(@PABPTR)
+       E8E9 1C,10,80
+[0768] E8EC BE,E0,08        ST    >00,V@8(@PABPTR)
+       E8EF 1C,00
+[0769] E8F1 BF,E0,04        DST   >5000,V@4(@PABPTR)
+       E8F4 1C,50,00
+[0770] E8F7 87,AF,22        DCLR  V@>2250 
+       E8FA 50
+[0771] E8FB 35,00,28        MOVE  40,V@>0F50,V@9(@PABPTR)   
+       E8FE E0,09,1C
+       E901 AF,0F,50
+[0772] E904 BF,E0,02        DST   >1080,V@2(@PABPTR)
+       E907 1C,10,80
+[0773] E90A 06,E5,32        CALL  GE27B
+[0774] E90D 86,42           CLR   @XTOKEN
+[0775] E90F BF,1C,11        DST   >1100,@PABPTR
+       E912 00
+[0776] E913 BF,20,01        DST   >0142,@CURADD
+       E916 42
+[0777]               ** CONFIGURE PATH OBJECT *************************
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0018 
+Rich E/A GROM
+[0778] E917 06,E6,B8        CALL  VZERO
+[0779] E91A 06,ED,9E        CALL  LPAB
+[0780] E91D BE,E0,01        ST    >00,V@1(@PABPTR)
+       E920 1C,00
+[0781] E922 BF,E0,02        DST   >1180,V@2(@PABPTR)
+       E925 1C,11,80
+[0782] E928 BE,E0,08        ST    >00,V@8(@PABPTR)
+       E92B 1C,00
+[0783] E92D BF,E0,04        DST   >5000,V@4(@PABPTR)
+       E930 1C,50,00
+[0784] E933 87,AF,22        DCLR  V@>2250     
+       E936 50
+[0785] E937 35,00,28        MOVE  40,V@>0F78,V@9(@PABPTR)
+       E93A E0,09,1C
+       E93D AF,0F,78
+[0786] E940 BF,E0,02        DST   >1180,V@2(@PABPTR)
+       E943 1C,11,80
+[0787] E946 06,E6,A3        CALL  DOIO
+[0788] E949 B6,48,40        OR    >40,@FLAG
+[0789] E94C BF,1C,12        DST   >1200,@PABPTR
+       E94F 00
+[0790] E950 B6,48,04        OR    >04,@FLAG
+[0791]               ** CONFIGURE PATH LIST **************************
+[0792] E953 06,E6,B8        CALL  VZERO
+[0793] E956 06,ED,9E        CALL  LPAB
+[0794] E959 BE,E0,01        ST    >12,V@1(@PABPTR)
+       E95C 1C,12
+[0795] E95E BF,E0,02        DST  >1280,V@2(@PABPTR)
+       E961 1C,12,80
+[0796] E964 BE,E0,08        ST    >00,V@8(@PABPTR)
+       E967 1C,00
+[0797] E969 BF,E0,04        DST   >5000,V@4(@PABPTR)
+       E96C 1C,50,00
+[0798] E96F 87,AF,22        DCLR  V@>2250     
+       E972 50
+[0799] E973 35,00,28        MOVE  40,V@>0FA0,V@9(@PABPTR)
+       E976 E0,09,1C
+       E979 AF,0F,A0
+[0800] E97C 8F,50           DCZ   @FAC6
+[0801] E97E 69,91           BS    GE736
+[0802] E980 BE,E0,01        ST    >12,V@1(@PABPTR)
+       E983 1C,12
+[0803] E985 BF,E0,02        DST   >1280,V@2(@PABPTR)
+       E988 1C,12,80
+[0804] E98B 06,E6,A3        CALL  DOIO
+[0805] E98E B6,48,80        OR    >80,@FLAG
+[0806] E991 08       GE736  FMT
+[0807] E992 FF,02           COL   2
+[0808] E994 FE,10           ROW   16
+[0809] E996 07,4F,70        HTEX  'Options?'
+       E999 74,69,6F
+       E99C 6E,73,3F
+[0810] E99F FB              FEND
+[0811] E9A0 BF,20,02        DST   >0242,@CURADD
+       E9A3 42
+[0812]               ** CONFIGURE PATH OPTIONS ********************
+[0813] E9A4 35,00,14        MOVE  20,V@>0FC9,V@>03C0
+       E9A7 A3,C0,AF
+       E9AA 0F,C9
+[0814] E9AC B2,48,FB        AND   >FB,@FLAG
+[0815] E9AF 8F,50           DCZ   @FAC6
+[0816] E9B1 49,B3           BR    GE756
+[0817] E9B3 35,00,0F GE756  MOVE  15,V@>0FC9,@>20D2
+       E9B6 8F,9D,D2
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0019 
+Rich E/A GROM
+       E9B9 AF,0F,C9
+[0818] E9BC 06,E8,41        CALL  CLRXOP
+[0819] E9BF 07,20           ALL   SPACE
+[0820] E9C1 0F,21           XML   >21
+[0821] E9C3 74,63           BS    GE8B3
+[0822] E9C5 06,E8,41 GE767  CALL  CLRXOP
+[0823] E9C8 06,F6,55        CALL  P1000
+[0824] E9CB 06,E6,9F        CALL  CLOSE
+[0825] E9CE BF,1C,11        DST   >1100,@PABPTR
+       E9D1 00
+[0826] E9D2 06,E6,9F        CALL  CLOSE
+[0827] E9D5 DA,48,80        CLOG  >80,@FLAG
+[0828] E9D8 69,E1           BS    GE784
+[0829] E9DA BF,1C,12        DST   >1200,@PABPTR
+       E9DD 00
+[0830] E9DE 06,E6,9F        CALL  CLOSE
+[0831] E9E1 86,48    GE784  CLR   @FLAG
+[0832] E9E3 06,F5,F4        CALL  WENTER
+[0833] E9E6 40,6F           BR    OLDEA
+[0834]               *  Get Yes/No reply
+[0835] E9E8 BE,18,1F YESNO  ST    >1F,@CHRCUR
+[0836] E9EB 86,79    GE7A2  CLR   @ITIMER
+[0837] E9ED C0,18,7D        EX    @VCHAR,@CHRCUR
+[0838] E9F0 03       GE7A7  SCAN
+[0839] E9F1 69,FA           BS    GE7B1
+[0840] E9F3 CA,79,06        CHE   >06,@ITIMER
+[0841] E9F6 49,F0           BR    GE7A7
+[0842] E9F8 49,EB           BR    GE7A2
+[0843] E9FA D6,75,0F GE7B1  CEQ   BACK,@KEY
+[0844] E9FD 6A,09           BS    GE7C0
+[0845] E9FF D6,75,59        CEQ   >59,@KEY
+[0846] EA02 6A,09           BS    GE7C0
+[0847] EA04 D6,75,4E        CEQ   >4E,@KEY
+[0848] EA07 49,EB           BR    GE7A2
+[0849] EA09 BC,7D,75 GE7C0  ST    @KEY,@VCHAR
+[0850] EA0C 86,42           CLR   @XTOKEN
+[0851] EA0E 00              RTN
+[0852]               ***************************************************
+[0853]               *  Main Menu Option 3: LOAD AND RUN
+[0854]               *
+[0855] EA0F 87,48    LANDR  DCLR  @FLAG
+[0856] EA11 B6,49,01        OR    >01,@FLAG2
+[0857] EA14 07,20           ALL   SPACE
+[0858] EA16 08              FMT
+[0859] EA17 FF,08           COL   8
+[0860] EA19 FE,00           ROW   0
+[0861] EA1B 0F,2A,20        HTEX  '* LOAD and RUN *'
+       EA1E 4C,4F,41
+       EA21 44,20,61
+       EA24 6E,64,20
+       EA27 52,55,4E
+       EA2A 20,2A
+[0862] EA2C 89              COL+  10
+[0863] EA2D A1              ROW+  2
+[0864] EA2E 09,50,41        HTEX  'PATH.NAME?'
+       EA31 54,48,2E
+       EA34 4E,41,4D
+       EA37 45,3F
+[0865] EA39 FB              FEND
+[0866] EA3A 06,E7,F3        CALL  EXPMEM
+[0867] EA3D B6,49,40        OR    >40,@FLAG2
+[0868] EA40 BE,A0,A2 GE7F2  ST    SPACE,V@162
+       EA43 20
+[0869] EA44 35,00,3B        MOVE  >003B,V@162,V@163
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0020 
+Rich E/A GROM
+       EA47 A0,A3,A0
+       EA4A A2
+[0870] EA4B BF,20,00        DST   162,@CURADD
+       EA4E A2
+[0871] EA4F B6,48,04        OR    >04,@FLAG
+[0872] EA52 06,F6,55        CALL  P1000
+[0873] EA55 06,E6,56        CALL  GETALL
+[0874] EA58 86,42           CLR   @XTOKEN
+[0875] EA5A 8F,50           DCZ   @FAC6
+[0876] EA5C 4A,65           BR    GE816
+[0877] EA5E 06,F6,12        CALL  BINIT2
+[0878] EA61 4A,83           BR    RUN
+[0879] EA63 4A,70           BR    GE821
+[0880] EA65 DA,49,40 GE816  CLOG  >40,@FLAG2
+[0881] EA68 6A,70           BS    GE821
+[0882] EA6A 06,F6,1A        CALL  BINIT3
+[0883] EA6D B2,49,BF        AND   >BF,@FLAG2
+[0884] EA70 BE,E0,01 GE821  ST    >04,V@1(@PABPTR)
+       EA73 1C,04
+[0885] EA75 BD,56,1C GE826  DST   @PABPTR,@VPAB
+[0886] EA78 A3,56,00        DADD  >0009,@VPAB
+       EA7B 09
+[0887] EA7C 0F,22           XML   >22
+[0888] EA7E 74,63           BS    GE8B3
+[0889] EA80 05,EA,40        B     GE7F2
+[0890]               ***************************************************
+[0891]               *  Main Menu Option 4: RUN
+[0892]               *
+[0893] EA83 07,20    RUN    ALL   SPACE
+[0894] EA85 BE,73,7E GE848  ST    >7E,@SUBSTK
+[0895] EA88 08              FMT
+[0896] EA89 FE,00           ROW   0
+[0897] EA8B FF,01           COL   1
+[0898] EA8D 06,2A,20        HTEX  '* RUN *'
+       EA90 52,55,4E
+       EA93 20,2A
+[0899] EA95 A1              ROW+  2
+[0900] EA96 FF,01           COL   1
+[0901] EA98 13,53,45        HTEX  'SELECT PROGRAM NAME:'
+       EA9B 4C,45,43
+       EA9E 54,20,50
+       EAA1 52,4F,47
+       EAA4 52,41,4D
+       EAA7 20,4E,41
+       EAAA 4D,45,3A
+[0902] EAAD FB              FEND
+[0903] EAAE 06,E7,F3        CALL  EXPMEM
+[0904] EAB1 86,42           CLR   @XTOKEN       SET XTOKEN=0
+[0905] EAB3 BF,06,00        DST   129,@TMP6     * Screen location LOCATION
+       EAB6 81
+[0906] EAB7 BF,08,3F        DST   >3FF8,@TMP8   * Locataion of LINK TABLE
+       EABA F8
+[0907] EABB BD,02,08 FNDLNK DST   @TMP8,@TMP2   * Copy it.
+[0908] EABE BE,04,06        ST    6,@TMP4       * MAX Length of each name.
+[0909] EAC1 CA,CF,7D FNDLP  CHE   128,@0(@TMP2) * ~?
+       EAC4 00,02,80
+[0910] EAC7 6B,0B           BS    FNDDON        * Yes, done.
+[0911] EAC9 CA,CF,7D        CHE   32,@0(@TMP2)  * Space or higher?
+       EACC 00,02,20
+[0912] EACF 4B,0B           BR    FNDDON        * No, done.
+[0913] EAD1 D6,CF,7D        CEQ   32,@0(@TMP2)  * Space?
+       EAD4 00,02,20
+[0914] EAD7 4A,DE           BR    FNDSHO        * No.
+[0915] EAD9 D6,04,06        CEQ   6,@TMP4       * 6?
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0021 
+Rich E/A GROM
+[0916] EADC 6B,0B           BS    FNDDON        * Yes.
+[0917] EADE BC,E0,00 FNDSHO ST    @0(@TMP2),V@0(@TMP6)
+       EAE1 06,CF,7D
+       EAE4 00,02
+[0918] EAE6 91,06           DINC  @TMP6         * COL+1
+[0919] EAE8 CB,06,03        DCHE  768,@TMP6     * End of screen?
+       EAEB 00
+[0920] EAEC 4A,FA           BR    MORSCN
+[0921] EAEE 31,00,14        MOVE  20,G@OUTSCN,V@>8
+       EAF1 A0,08,F7
+       EAF4 93
+[0922] EAF5 06,00,36        CALL  BADTON
+[0923] EAF8 4B,0B           BR    FNDDON
+[0924]               *
+[0925] EAFA 91,02    MORSCN DINC  @TMP2         * Next character.
+[0926] EAFC 92,04           DEC   @TMP4         * Length-1
+[0927] EAFE 4A,C1           BR    FNDLP         * No, keep looping.
+[0928] EB00 95,06           DINCT @TMP6         * Reset next column
+[0929] EB02 A7,08,00        DSUB  8,@TMP8       * Link Table Address+8
+       EB05 08
+[0930] EB06 D6,08,00        CEQ   >2600,@TMP8   * Last Table name?
+[0931] EB09 4A,BB           BR    FNDLNK        * No
+[0932]               * Get the name by using arrow keys
+[0933] EB0B B6,48,04 FNDDON OR    >04,@FLAG      
+[0934] EB0E BF,10,00        DST   >0080,@SCADD  ARROW LOCATION
+       EB11 80
+[0935] EB12 BE,B0,10 RUN00  ST    130,V*SCADD   LEFT ARROW
+       EB15 82
+[0936] EB16 BE,E0,07        ST    131,V@7(@SCADD)  RIGHT ARROW
+       EB19 10,83
+[0937] EB1B 03              SCAN
+[0938] EB1C 4B,12           BR    RUN00
+[0939] EB1E BE,B0,10        ST    32,V*SCADD    NO LEFT ARROW
+       EB21 20
+[0940] EB22 BE,E0,07        ST    32,V@7(@SCADD) NO RIGHT ARROW
+       EB25 10,20
+[0941] EB27 D6,75,0F        CEQ   BACK,@KEY     BACK?
+[0942] EB2A 6A,0F           BS    LANDR
+[0943] EB2C D6,75,0B        CEQ   11,@KEY       FCTN UP?
+[0944] EB2F 6B,36           BS    RUNUP
+[0945] EB31 D6,75,45        CEQ   'E',@KEY      UP (E)?
+[0946] EB34 4B,40           BR    RUN01
+[0947] EB36 A7,10,00 RUNUP  DSUB  32,@SCADD     ARROW-8
+       EB39 20
+[0948] EB3A CB,10,00        DCHE  >007F,@SCADD  TOP LINE LEFT?
+       EB3D 7F
+[0949] EB3E 4B,0B           BR    FNDDON
+[0950] EB40 D6,75,0A RUN01  CEQ   10,@KEY       FCTN DOWN?
+[0951] EB43 6B,4A           BS    RUNDN
+[0952] EB45 D6,75,58        CEQ   'X',@KEY      DOWN (X)?
+[0953] EB48 4B,60           BR    RUN02
+[0954] EB4A A3,10,00 RUNDN  DADD  32,@SCADD     ARROW+8
+       EB4D 20
+[0955] EB4E CB,10,02        DCHE  767,@SCADD    BOTTON LINE RIGHT?
+       EB51 FF
+[0956] EB52 6B,0B           BS    FNDDON
+[0957] EB54 D7,E0,01        DCEQ  >2020,V@1(@SCADD) SPACE SPACE?
+       EB57 10,20,20
+[0958] EB5A 4B,60           BR    RUN02
+[0959] EB5C A7,10,00        DSUB  32,@SCADD     ARROW-8
+       EB5F 20
+[0960] EB60 D6,75,08 RUN02  CEQ   8,@KEY        FCTN LEFT?
+[0961] EB63 6B,6A           BS    RUNLT
+[0962] EB65 D6,75,53        CEQ   83,@KEY       LEFT (S)?
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0022 
+Rich E/A GROM
+[0963] EB68 4B,74           BR    RUN03
+[0964] EB6A A7,10,00 RUNLT  DSUB  8,@SCADD      ARROW-32
+       EB6D 08
+[0965] EB6E CB,10,00        DCHE  >007F,@SCADD  TOP LINE LEFT?
+       EB71 7F
+[0966] EB72 4B,0B           BR    FNDDON
+[0967] EB74 D6,75,09 RUN03  CEQ   9,@KEY        FCTN RIGHT?
+[0968] EB77 6B,7E           BS    RUNRT
+[0969] EB79 D6,75,44        CEQ   68,@KEY       RIGHT (D)?
+[0970] EB7C 4B,94           BR    RUN04
+[0971] EB7E A3,10,00 RUNRT  DADD  8,@SCADD      ARROW+8
+       EB81 08
+[0972] EB82 CB,10,02        DCHE  767,@SCADD    BOTTOM LINE RIGHT? 
+       EB85 FF
+[0973] EB86 6B,0B           BS    FNDDON
+[0974] EB88 D7,E0,01        DCEQ  >2020,V@1(@SCADD) SPACE SPACE?
+       EB8B 10,20,20
+[0975] EB8E 4B,94           BR    RUN04
+[0976] EB90 A7,10,00        DSUB  8,@SCADD      ARROW-8
+       EB93 08
+[0977] EB94 D6,75,0D RUN04  CEQ   ENTER,@KEY    ENTER?
+[0978] EB97 6B,9B           BS    RUN05   
+[0979] EB99 4B,12           BR    RUN00
+[0980]               * Fetch the name match and address
+[0981] EB9B 35,00,06 RUN05  MOVE  6,V@1(@SCADD),@FAC          
+       EB9E 4A,E0,01
+       EBA1 10
+[0982] EBA2 BF,16,40        DST   >4000,@TEMP   * Locataion of LINK TABLE
+       EBA5 00
+[0983] EBA6 A7,16,00 RUN06  DSUB  8,@TEMP       * MINUS offset 
+       EBA9 08
+[0984] EBAA 35,00,08        MOVE  8,@0(@TEMP),@ARG * Copy it.
+       EBAD 5C,CF,7D
+       EBB0 00,16
+[0985] EBB2 D5,5C,4A        DCEQ  @FAC,@ARG     * First two characters?
+[0986] EBB5 4B,A6           BR    RUN06
+[0987] EBB7 D5,5E,4C        DCEQ  @FAC2,@ARG2   * Secod two characters?
+[0988] EBBA 4B,A6           BR    RUN06
+[0989] EBBC D5,60,4E        DCEQ  @FAC4,@ARG4   * Third two characters?
+[0990] EBBF 4B,A6           BR    RUN06 
+[0991] EBC1 35,00,02        MOVE  2,@ARG6,@>2022
+       EBC4 8F,9D,22
+       EBC7 62
+[0992]               * Normal EA 3 start up    
+[0993] EBC8 D7,8F,9D GE883  DCEQ  >A55A,@>2000
+       EBCB 00,A5,5A
+[0994] EBCE 54,C7           BR    GE916
+[0995] EBD0 06,E8,33        CALL  USSCRN
+[0996] EBD3 87,22    GE88E  DCLR  @CODE
+[0997] EBD5 0F,21           XML   >21
+[0998] EBD7 74,93           BS    GE8E3
+[0999] EBD9 DA,49,20        CLOG  >20,@FLAG2
+[1000] EBDC 74,58           BS    GE8A8
+[1001] EBDE 94,73           INCT  @SUBSTK
+[1002] EBE0 BF,90,73        DST   GE88E,*SUBSTK
+       EBE3 EB,D3
+[1003] EBE5 94,73           INCT  @SUBSTK
+[1004] EBE7 00              RTN
+[1005]               ***************************************************
+[1006]               *
+[1007]               *  Main Menu Option 5: RUN PROGRAM FILE
+[1008]               *
+[1009] EBE8 07,20    PRGRM  ALL   SPACE
+[1010] EBEA 08              FMT
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0023 
+Rich E/A GROM
+[1011] EBEB FF,06           COL   6
+[1012] EBED FE,01           ROW   1
+[1013] EBEF 13,2A,20        HTEX  '* RUN PROGRAM FILE *'
+       EBF2 52,55,4E
+       EBF5 20,50,52
+       EBF8 4F,47,52
+       EBFB 41,4D,20
+       EBFE 46,49,4C
+       EC01 45,20,2A
+[1014] EC04 FB              FEND
+[1015] EC05 D6,42,FF        CEQ   >FF,@XTOKEN         RXB flag set?  
+[1016] EC08 4C,16           BR    NOEABF              No
+[1017] EC0A 35,00,40        MOVE  64,V@>2400,V@>2255  Get RXB buffer
+       EC0D AF,22,55
+       EC10 AF,24,00
+[1018] EC13 BE,42,EA        ST    >EA,@XTOKEN         Set RXB flag
+[1019] EC16 06,F6,12 NOEABF CALL  BINIT2              * INITILIZE LOW8K
+[1020] EC19 B6,49,08        OR    >08,@FLAG2          Set flag  
+[1021] EC1C BF,20,01        DST   >0102,@CURADD       Cursor address   
+       EC1F 02
+[1022] EC20 31,00,0A        MOVE  10,G@FPATH,V*CURADD * FILE NAME?
+       EC23 B0,20,F8
+       EC26 80
+[1023] EC27 A3,20,00        DADD  >0040,@CURADD       Cursor address+64
+       EC2A 40
+[1024] EC2B B6,48,04        OR    >04,@FLAG           Set flag
+[1025] EC2E 06,E6,C4        CALL  GETINP              Get path.file
+[1026] EC31 D6,51,01        CEQ   1,@FAC7             Length=1?           
+[1027] EC34 4C,4C           BR    NO1KEY              No
+[1028] EC36 BF,AF,24        DST   >000B,V@>2400       Length 
+       EC39 00,00,0B
+[1029] EC3C 06,ED,A6        CALL  GDDSK               Load DSK1. Address
+[1030] EC3F 31,00,06        MOVE  6,G@DUTIL1,V@>2407  Load UTIL1
+       EC42 AF,24,07
+       EC45 F7,75
+[1031] EC47 BE,42,FF        ST    >FF,@XTOKEN         Set RXB flag
+[1032] EC4A 4B,E8           BR    PRGRM               Restart 
+[1033] EC4C 8F,50    NO1KEY DCZ   @FAC6               * ENTER?
+[1034] EC4E 4C,5A           BR    GE597               * No
+[1035] EC50 BE,44,31        ST    '1',@>8344          * Search flag
+[1036] EC53 06,EC,75 MYSRCH CALL  LODPGM              * Load DATA
+[1037] EC56 F7,75           DATA  DUTIL1              * DSK1.UTIL1
+[1038] EC58 4C,69           BR    GE5A6               
+[1039] EC5A 06,EC,82 GE597  CALL  LODUSR
+[1040] EC5D 06,E6,7D        CALL  PABNAM
+[1041] EC60 D7,B0,4E        DCEQ  >4353,V*FAC4        * CS ??
+       EC63 43,53
+[1042] EC65 4C,69           BR    GE5A6               * No
+[1043] EC67 07,20           ALL   SPACE
+[1044] EC69 06,EC,9B GE5A6  CALL  PGMLOD
+[1045] EC6C 06,E8,33        CALL  USSCRN
+[1046] EC6F 0F,F0           XML   >F0
+[1047] EC71 74,93           BS    GE8E3
+[1048] EC73 54,58           BR    GE8A8
+[1049] EC75 88,10    LODPGM FETCH @SCADD
+[1050] EC77 88,11           FETCH @SCADE
+[1051] EC79 33,00,05        MOVE  5,G@0(@SCADD),V@>100F
+       EC7C AF,10,0F
+       EC7F 00,00,10
+[1052] EC82 87,00    LODUSR DCLR  @TMP
+[1053] EC84 06,F6,55        CALL  P1000
+[1054] EC87 06,ED,96        CALL  NPAB
+[1055] EC8A 8E,44           CZ    @>8344               * Check Search flag
+[1056] EC8C 6C,93           BS    PMSG                 * No, go on
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0024 
+Rich E/A GROM
+[1057] EC8E BC,E0,0D        ST    @>8344,V@13(@PABPTR) * Yes, store next drive #
+       EC91 1C,44
+[1058] EC93 31,00,0F PMSG   MOVE  15,G@PLEASE,V@>02A2
+       EC96 A2,A2,F8
+       EC99 8A
+[1059] EC9A 00              RTN
+[1060]               *  Load Program
+[1061] EC9B 06,E6,A3 PGMLOD CALL  DOIO
+[1062] EC9E 35,00,06        MOVE  6,V@>1380,@SCADD
+       ECA1 10,AF,13
+       ECA4 80
+[1063] ECA5 8F,00           DCZ   @TMP
+[1064] ECA7 4C,AC           BR    GE5E5
+[1065] ECA9 BD,00,14        DST   @>8314,@TMP
+[1066] ECAC A7,14,83 GE5E5  DSUB  TMP,@>8314
+       ECAF 00
+[1067] ECB0 34,12,C0        MOVE  @>8312,V@>1386,@TMP(@>8314)
+       ECB3 00,14,AF
+       ECB6 13,86
+[1068] ECB8 8F,10           DCZ   @SCADD
+[1069] ECBA 6C,CC           BS    GE605
+[1070] ECBC 87,02           DCLR  @TMP2
+[1071] ECBE BC,03,AF        ST    V@>1009,@TMP3
+       ECC1 10,09
+[1072] ECC3 A3,02,10        DADD  >1009,@TMP2
+       ECC6 09
+[1073] ECC7 90,B0,02        INC   V*TMP2
+[1074] ECCA 4C,9B           BR    PGMLOD
+[1075] ECCC BE,A2,A2 GE605  ST    SPACE,V@>02A2
+       ECCF 20
+[1076] ECD0 35,00,13        MOVE  19,V@>02A2,V@>02A3
+       ECD3 A2,A3,A2
+       ECD6 A2
+[1077] ECD7 06,E6,B8        CALL  VZERO
+[1078] ECDA 00              RTN
+[1079]               ********************************************************
+[1080]               * RXB Loader
+[1081] ECDB 07,20    XBINP  ALL   SPACE
+[1082] ECDD BE,4A,01        ST    1,@FAC
+[1083] ECE0 08       XBAGN  FMT
+[1084] ECE1 FF,08           COL   8
+[1085] ECE3 FE,01           ROW   1
+[1086] ECE5 08,2A,20        HTEX  '* R X B *'
+       ECE8 52,20,58
+       ECEB 20,42,20
+       ECEE 2A
+[1087] ECEF A3              ROW+  4
+[1088] ECF0 FF,02           COL   2
+[1089] ECF2 09,50,41        HTEX  'PATH.NAME?'
+       ECF5 54,48,2E
+       ECF8 4E,41,4D
+       ECFB 45,3F
+[1090] ECFD FB              FEND
+[1091] ECFE 92,4A           DEC   @FAC
+[1092] ED00 4C,E0           BR    XBAGN
+[1093] ED02 D6,42,FF        CEQ   >FF,@XTOKEN       XTOKEN=>EA?
+[1094] ED05 4D,13           BR    XBINP1
+[1095] ED07 35,00,40        MOVE  64,V@>2400,V@>2255
+       ED0A AF,22,55
+       ED0D AF,24,00
+[1096] ED10 BE,42,EA        ST    >EA,@XTOKEN       SET XTOKEN=>EA
+[1097] ED13 BF,20,01 XBINP1 DST   >0102,@CURADD
+       ED16 02
+[1098] ED17 BF,1C,10        DST   >1000,@PABPTR
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0025 
+Rich E/A GROM
+       ED1A 00
+[1099] ED1B B6,48,20        OR    >20,@FLAG
+[1100] ED1E 06,E6,56        CALL  GETALL
+[1101] ED21 8F,50           DCZ   @FAC6
+[1102] ED23 6D,5D           BS    XBINP3
+[1103] ED25 D6,51,01        CEQ   1,@FAC7
+[1104] ED28 4D,4B           BR    XBINP2
+[1105] ED2A BF,AF,24        DST   >000A,V@>2400
+       ED2D 00,00,0A
+[1106] ED30 31,00,05        MOVE  5,G@DDSK1,V@>2402
+       ED33 AF,24,02
+       ED36 F7,66
+[1107] ED38 BC,AF,24        ST    V*STLN,V@>2405
+       ED3B 05,B0,24
+[1108] ED3E 31,00,05        MOVE  5,G@DLOAD,V@>2407
+       ED41 AF,24,07
+       ED44 F7,7B
+[1109] ED46 BE,42,FF        ST    >FF,@XTOKEN      SET XTOKEN=>FF
+[1110] ED49 4C,DB           BR    XBINP
+[1111] ED4B 06,ED,67 XBINP2 CALL  CLRREA
+[1112] ED4E BF,AF,22        DST   >994A,V@>2254
+       ED51 54,99,4A
+[1113] ED54 35,00,50        MOVE  80,V@9(@PABPTR),V@>2256
+       ED57 AF,22,56
+       ED5A E0,09,1C
+[1114] ED5D 86,00    XBINP3 CLR   @TMP
+[1115] ED5F 35,00,6E        MOVE  >006E,@TMP,@TMP1
+       ED62 01,00
+[1116] ED64 05,63,72        B     RXB
+[1117]               ***********************************************************
+[1118] ED67 86,AF,22 CLRREA CLR   V@>2250                Clear RXB buffer
+       ED6A 50
+[1119] ED6B 35,00,50        MOVE 80,V@>2250,V@>2251      Ripple
+       ED6E AF,22,51
+       ED71 AF,22,50
+[1120] ED74 00              RTN
+[1121] ED75 D6,E0,09 ONEKEY CEQ  1,V@9(@PABPTR)    One character for drive#?
+       ED78 1C,01
+[1122] ED7A 4D,95           BR   TWOKEY            No, normal continue
+[1123] ED7C BC,80,C0        ST   V@10(@PABPTR),@>83C0    Yes, save # character
+       ED7F E0,0A,1C
+[1124] ED82 31,00,05        MOVE 5,G@DDSK1,V@10(@PABPTR) DSK1. loaded into pab
+       ED85 E0,0A,1C
+       ED88 F7,66
+[1125] ED8A BE,E0,09        ST   >05,V@9(@PABPTR)        DSK1. has 5 characters
+       ED8D 1C,05
+[1126] ED8F BC,E0,0D        ST   @>83C0,V@13(@PABPTR)    Load charcter drive#/le
+       ED92 1C,80,C0
+[1127] ED95 00       TWOKEY RTN
+[1128]               *
+[1129] ED96 31,00,14 NPAB   MOVE  20,G@PAB,V*PABPTR
+       ED99 B0,1C,F7
+       ED9C 5C
+[1130] ED9D 00              RTN
+[1131]               * 
+[1132] ED9E 31,00,0A LPAB   MOVE  10,G@PAB80,V*PABPTR
+       EDA1 B0,1C,F7
+       EDA4 80
+[1133] EDA5 00              RTN
+[1134]               *
+[1135] EDA6 D6,A1,42 GDDSK  CEQ   '0',V@>0142
+       EDA9 30
+[1136] EDAA 4D,BA           BR    GDDSKN
+[1137] EDAC 31,00,05        MOVE  5,G@WDS1,V@>2402
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0026 
+Rich E/A GROM
+       EDAF AF,24,02
+       EDB2 F8,99
+[1138] EDB4 BE,A1,42        ST    '1',V@>0142
+       EDB7 31
+[1139] EDB8 4D,C2           BR    GDWDS 
+[1140] EDBA 31,00,05 GDDSKN MOVE  5,G@DDSK1,V@>2402
+       EDBD AF,24,02
+       EDC0 F7,66
+[1141] EDC2 BC,AF,24 GDWDS  ST    V*STLN,V@>2405
+       EDC5 05,B0,24
+[1142] EDC8 00              RTN
+[1143]               ***********************************************************
+[1144]               *
+[1145]               * CATALOG HARD/DISK
+[1146]               *
+[1147] EDC9 06,ED,CE DIRECT CALL DMENU
+[1148] EDCC 4E,B4           BR   DIREC2
+[1149] EDCE 07,20    DMENU  ALL  SPACE             Clear screen
+[1150] EDD0 08              FMT
+[1151] EDD1 FF,09           COL 9
+[1152] EDD3 FE,00           ROW 0
+[1153] EDD5 0E,2A,20        HTEX '* DIRECTORY *  '
+       EDD8 44,49,52
+       EDDB 45,43,54
+       EDDE 4F,52,59
+       EDE1 20,2A,20
+       EDE4 20
+[1154] EDE5 A3              ROW+ 4
+[1155] EDE6 89              COL+ 10
+[1156] EDE7 12,44,65        HTEX 'Device? (# or path)'
+       EDEA 76,69,63
+       EDED 65,3F,20
+       EDF0 28,23,20
+       EDF3 6F,72,20
+       EDF6 70,61,74
+       EDF9 68,29
+[1157] EDFB A6              ROW+ 7
+[1158] EDFC FF,02           COL  2
+[1159] EDFE 19,41,43        HTEX 'ACTIVE KEYS: CLEAR, BEGIN,'
+       EE01 54,49,56
+       EE04 45,20,4B
+       EE07 45,59,53
+       EE0A 3A,20,43
+       EE0D 4C,45,41
+       EE10 52,2C,20
+       EE13 42,45,47
+       EE16 49,4E,2C
+[1160] EE19 A1              ROW+ 2
+[1161] EE1A FF,02           COL  2
+[1162] EE1C 18,42,41        HTEX 'BACK, PROCEED, REDO, AID,'
+       EE1F 43,4B,2C
+       EE22 20,50,52
+       EE25 4F,43,45
+       EE28 45,44,2C
+       EE2B 20,52,45
+       EE2E 44,4F,2C
+       EE31 20,41,49
+       EE34 44,2C
+[1163] EE36 A1              ROW+ 2
+[1164] EE37 FF,02           COL  2
+[1165] EE39 19,28,41        HTEX '(Arrows), E,e,X,x,S,s,D,d,'
+       EE3C 72,72,6F
+       EE3F 77,73,29
+       EE42 2C,20,45
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0027 
+Rich E/A GROM
+       EE45 2C,65,2C
+       EE48 58,2C,78
+       EE4B 2C,53,2C
+       EE4E 73,2C,44
+       EE51 2C,64,2C
+[1166] EE54 A1              ROW+ 2
+[1167] EE55 FF,02           COL  2
+[1168] EE57 18,41,20        HTEX 'A (Assembler), 1 (Editor)'
+       EE5A 28,41,73
+       EE5D 73,65,6D
+       EE60 62,6C,65
+       EE63 72,29,2C
+       EE66 20,31,20
+       EE69 28,45,64
+       EE6C 69,74,6F
+       EE6F 72,29
+[1169] EE71 A1              ROW+ 2
+[1170] EE72 FF,02           COL  2
+[1171] EE74 1B,45,4E        HTEX 'ENTER (Tag file to autorun),'
+       EE77 54,45,52
+       EE7A 20,28,54
+       EE7D 61,67,20
+       EE80 66,69,6C
+       EE83 65,20,74
+       EE86 6F,20,61
+       EE89 75,74,6F
+       EE8C 72,75,6E
+       EE8F 29,2C
+[1172] EE91 A1              ROW+ 2
+[1173] EE92 FF,02           COL  2
+[1174] EE94 1C,53,50        HTEX 'SPACE BAR (XB programs only).'
+       EE97 41,43,45
+       EE9A 20,42,41
+       EE9D 52,20,28
+       EEA0 58,42,20
+       EEA3 70,72,6F
+       EEA6 67,72,61
+       EEA9 6D,73,20
+       EEAC 6F,6E,6C
+       EEAF 79,29,2E
+[1175] EEB2 FB              FEND
+[1176] EEB3 00              RTN
+[1177] EEB4 BF,20,01 DIREC2 DST  >0102,@CURADD     Prompt location
+       EEB7 02
+[1178] EEB8 BF,1C,10        DST  >1000,@PABPTR     Use first PAB area
+       EEBB 00
+[1179] EEBC B6,48,20        OR   >20,@FLAG         Set return bit for error
+[1180] EEBF 06,E6,56        CALL GETALL            Input the filename
+[1181] EEC2 86,42    DIREC3 CLR  @XTOKEN
+[1182] EEC4 06,ED,67        CALL CLRREA
+[1183] EEC7 31,00,09        MOVE 9,G@CATDAT,V*PABPTR Prepare PAB
+       EECA B0,1C,F2
+       EECD 44
+[1184] EECE 06,ED,75        CALL ONEKEY
+[1185] EED1 06,E6,A3        CALL DOIO              Open the file
+[1186] EED4 BF,B0,1C        DST  >020D,V*PABPTR    Read opcode to PAB
+       EED7 02,0D
+[1187] EED9 06,E6,A3        CALL DOIO              Read first record
+[1188] EEDC 07,20           ALL  SPACE             Clear screen again
+[1189] EEDE 06,F2,55        CALL SCREEN            Set up header
+[1190] EEE1 BE,AF,25        ST   >20,V@>2500
+       EEE4 00,20
+[1191] EEE6 35,11,00        MOVE >1100,V@>2500,V@>2501
+       EEE9 AF,25,01
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0028 
+Rich E/A GROM
+       EEEC AF,25,00
+[1192] EEEF BF,40,25        DST  >2580,@>8340
+       EEF2 80
+[1193] EEF3 BE,02,59        ST   >59,@TMP2         Y
+[1194] EEF6 03       TSTKEY SCAN                   Scan the keyboard
+[1195] EEF7 4F,11           BR   TSTKE5            Any key?
+[1196] EEF9 D6,75,20        CEQ  SPACE,@KEY        SPACE KEY?
+[1197] EEFC 6F,0E           BS   TSTKE4            Yes, wait.
+[1198] EEFE D6,75,0F        CEQ  BACK,@KEY         BACK key?
+[1199] EF01 4F,0A           BR   TSTKE3            No
+[1200] EF03 86,42    TSTKE2 CLR  @XTOKEN           Yes, so restart
+[1201] EF05 06,E6,9F        CALL CLOSE             Close disk
+[1202] EF08 4D,C9           BR   DIRECT            Start Catalog again
+[1203] EF0A 86,42    TSTKE3 CLR  @XTOKEN           Clear flag
+[1204] EF0C 4F,1B           BR   ARROWS
+[1205] EF0E 03       TSTKE4 SCAN                   Wait for any key.
+[1206] EF0F 4F,0E           BR   TSTKE4            Loop
+[1207] EF11 06,E6,A3 TSTKE5 CALL DOIO              Read file info
+[1208] EF14 06,F3,40        CALL FILNAM            Put it on screen
+[1209] EF17 4E,F6           BR   TSTKEY            Loop till done
+[1210] EF19 92,1E           DEC  @COUNT            COUNT-1
+[1211] EF1B 06,F6,4D ARROWS CALL CLRFAC
+[1212] EF1E BC,4B,1E        ST   @COUNT,@FAC1
+[1213] EF21 CB,4A,00        DCHE 100,@FAC
+       EF24 64
+[1214] EF25 4F,2F           BR   ARROW1
+[1215] EF27 A7,4A,00        DSUB 100,@FAC
+       EF2A 64
+[1216] EF2B BE,A0,1C        ST   49,V@28           Show it 1__
+       EF2E 31
+[1217] EF2F CB,4A,00 ARROW1 DCHE 9,@FAC
+       EF32 09
+[1218] EF33 4F,48           BR   ARROW2
+[1219] EF35 AE,4A,0A        DIV  10,@FAC
+[1220] EF38 A2,4A,30        ADD  >30,@FAC
+[1221] EF3B BC,A0,1D        ST   @FAC,V@29         Show it _#_
+       EF3E 4A
+[1222] EF3F A2,4B,30        ADD  >30,@FAC1
+[1223] EF42 BC,A0,1E        ST   @FAC1,V@30        Show it __#
+       EF45 4B
+[1224] EF46 4F,4F           BR   ARROW3
+[1225] EF48 A2,4B,30 ARROW2 ADD  >30,@FAC1
+[1226] EF4B BC,A0,1E        ST   @FAC1,V@30
+       EF4E 4B
+[1227] EF4F BF,10,00 ARROW3 DST  >0081,@SCADD      Arrows location
+       EF52 81
+[1228] EF53 BF,04,25        DST  >2580,@TMP4       Recall buffer
+       EF56 80
+[1229] EF57 35,02,60 OKKEY  MOVE >0260,V*TMP4,V@>0080 Fill screen
+       EF5A A0,80,B0
+       EF5D 04
+[1230] EF5E BE,B0,10 NOKEY  ST   130,V*SCADD       Left arrow
+       EF61 82
+[1231] EF62 BE,E0,0B        ST   131,V@11(@SCADD)  Right arrow
+       EF65 10,83
+[1232] EF67 03              SCAN
+[1233] EF68 D6,75,01        CEQ  AID,@KEY          AID
+[1234] EF6B 4F,86           BR   NAID
+[1235] EF6D 35,03,00        MOVE 768,V@0,V@>2000   Save screen
+       EF70 AF,20,00
+       EF73 A0,00
+[1236] EF75 06,ED,CE        CALL DMENU
+[1237] EF78 03       YAID   SCAN                   Any key?
+[1238] EF79 4F,78           BR   YAID              No.
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0029 
+Rich E/A GROM
+[1239] EF7B 35,03,00        MOVE 768,V@>2000,V@0   Restore screen
+       EF7E A0,00,AF
+       EF81 20,00
+[1240] EF83 03       WAID   SCAN                   Any key?
+[1241] EF84 4F,83           BR   WAID
+[1242] EF86 D6,75,02 NAID   CEQ  CLEAR,@KEY        CLEAR
+[1243] EF89 6F,03           BS   TSTKE2
+[1244] EF8B D6,75,0C        CEQ  PROCD,@KEY        PROCEED
+[1245] EF8E 70,7D           BS   ENTER0
+[1246] EF90 D6,75,06        CEQ  REDO,@KEY         REDO
+[1247] EF93 6F,03           BS   TSTKE2
+[1248] EF95 D6,75,0F BACK0  CEQ  BACK,@KEY         BACK
+[1249] EF98 4F,D1           BR   BEGIN0
+[1250] EF9A D7,AF,10        DCEQ 'DS',V@>100A      DS?   DISK ONLY?
+       EF9D 0A,44,53
+[1251] EFA0 6F,03           BS   TSTKE2
+[1252] EFA2 06,F2,29        CALL CLRBUF            Clear buffers and FAC
+[1253] EFA5 BD,4A,AF        DST  V@>1008,@FAC      Get length
+       EFA8 10,08
+[1254] EFAA D7,4A,00        DCEQ 5,@FAC            DSK#. or SCS#. or WDS#.
+       EFAD 05
+[1255] EFAE 6F,FF           BS   BEGIN3
+[1256] EFB0 CB,4A,00        DCHE 4,@FAC
+       EFB3 04
+[1257] EFB4 4F,FF           BR   BEGIN3
+[1258] EFB6 06,F2,29        CALL CLRBUF            Clear buffers and FAC
+[1259] EFB9 BD,4A,AF        DST  V@>1008,@FAC      Get length
+       EFBC 10,08
+[1260] EFBE 93,4A    BACK1  DDEC @FAC              Length -1
+[1261] EFC0 D6,EF,10        CEQ  >2E,V@>1009(@FAC) .?
+       EFC3 09,4A,2E
+[1262] EFC6 4F,BE           BR   BACK1             No, keep searching
+[1263] EFC8 CB,4A,00        DCHE 5,@FAC            DSK. or SCS. or WDS. or DSK#.
+       EFCB 05
+[1264] EFCC 6F,FF           BS   BEGIN3
+[1265] EFCE BE,75,0E BACK3  ST   BEGIN,@KEY
+[1266] EFD1 D6,75,0E BEGIN0 CEQ  BEGIN,@KEY        BEGIN
+[1267] EFD4 50,1E           BR   FCTNUP
+[1268] EFD6 06,F6,4D        CALL CLRFAC            Clear buffers and FAC
+[1269] EFD9 BD,4A,AF        DST  V@>1008,@FAC      Get length
+       EFDC 10,08
+[1270] EFDE D7,4A,00        DCEQ 5,@FAC            DSK#. or SCS#. or WDS#.
+       EFE1 05
+[1271] EFE2 6F,F6           BS   BEGIN2
+[1272] EFE4 87,4A           DCLR @FAC              Clear FAC
+[1273] EFE6 91,4A    BEGIN1 DINC @FAC              COUNT +1
+[1274] EFE8 D6,EF,10        CEQ  >2E,V@>1009(@FAC) .?
+       EFEB 09,4A,2E
+[1275] EFEE 4F,E6           BR   BEGIN1            No, keep searching
+[1276] EFF0 D7,4A,00        DCEQ 4,@FAC            DSK. Length?
+       EFF3 04
+[1277] EFF4 6F,E6           BS   BEGIN1            Yes, look for Volume.
+[1278] EFF6 91,4A    BEGIN2 DINC @FAC              LENGTH+1
+[1279] EFF8 BF,EF,10        DST  >0D0D,V@>1009(@FAC)
+       EFFB 09,4A,0D
+       EFFE 0D
+[1280] EFFF BD,AF,10 BEGIN3 DST  @FAC,V@>1008
+       F002 08,4A
+[1281] F004 A3,4A,00        DADD 2,@FAC
+       F007 02
+[1282] F008 34,4A,AF        MOVE @FAC,V@>1008,V@>2255
+       F00B 22,55,AF
+       F00E 10,08
+[1283] F010 34,4A,AF        MOVE @FAC,V@>1008,V@>2400
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0030 
+Rich E/A GROM
+       F013 24,00,AF
+       F016 10,08
+[1284] F018 BE,42,37        ST   >37,@XTOKEN
+[1285] F01B 05,E0,6F        B    OLDEA
+[1286] F01E D6,75,0B FCTNUP CEQ  11,@KEY           FCTN UP?
+[1287] F021 71,86           BS   UPKEY
+[1288] F023 D6,75,45        CEQ  'E',@KEY          E?
+[1289] F026 71,86           BS   UPKEY
+[1290] F028 D6,75,65        CEQ  'e',@KEY          e?
+[1291] F02B 71,86           BS   UPKEY
+[1292] F02D D6,75,0A        CEQ  10,@KEY           FCTN DOWN?
+[1293] F030 71,9E           BS   DKEY
+[1294] F032 D6,75,58        CEQ  'X',@KEY          X?
+[1295] F035 71,9E           BS   DKEY
+[1296] F037 D6,75,78        CEQ  'x',@KEY          x?
+[1297] F03A 71,9E           BS   DKEY
+[1298] F03C D6,75,08        CEQ  8,@KEY            FCTN LEFT?
+[1299] F03F 71,C2           BS   LKEY
+[1300] F041 D6,75,53        CEQ  'S',@KEY          S?
+[1301] F044 71,C2           BS   LKEY
+[1302] F046 D6,75,73        CEQ  's',@KEY          s?
+[1303] F049 71,C2           BS   LKEY
+[1304] F04B D6,75,09        CEQ  9,@KEY            FCTN RIGHT?
+[1305] F04E 71,E7           BS   RKEY
+[1306] F050 D6,75,44        CEQ  'D',@KEY          D?
+[1307] F053 71,E7           BS   RKEY
+[1308] F055 D6,75,64        CEQ  'd',@KEY          d?
+[1309] F058 71,E7           BS   RKEY
+[1310] F05A D6,75,20        CEQ  ' ',@KEY          SPACE BAR
+[1311] F05D 70,7D           BS   ENTER0
+[1312] F05F D6,75,41        CEQ  'A',@KEY          A?
+[1313] F062 70,7D           BS   ENTER0
+[1314] F064 D6,75,61        CEQ  'a',@KEY          a?
+[1315] F067 70,7D           BS   ENTER0
+[1316] F069 D6,75,47        CEQ  'G',@KEY          G?
+[1317] F06C 70,7D           BS   ENTER0
+[1318] F06E D6,75,67        CEQ  'g',@KEY          g?
+[1319] F071 70,7D           BS   ENTER0
+[1320] F073 D6,75,0D        CEQ  ENTER,@KEY        ENTER
+[1321] F076 70,7D           BS   ENTER0
+[1322] F078 D6,75,31        CEQ  '1',@KEY          1=EDITOR
+[1323] F07B 4F,5E           BR   NOKEY
+[1324] F07D 06,F2,29 ENTER0 CALL CLRBUF
+[1325] F080 BD,06,AF ENTR   DST  V@>1008,@TMP6    Get length of device
+       F083 10,08
+[1326] F085 BE,EF,10        ST   >2E,V@>1009(@TMP6)
+       F088 09,06,2E
+[1327] F08B 34,06,AF        MOVE @TMP6,V@>100A,V@>2402
+       F08E 24,02,AF
+       F091 10,0A
+[1328] F093 BD,4C,10        DST  @SCADD,@FAC2
+[1329] F096 90,11           INC  @SCADE
+[1330] F098 90,4D    ENTER1 INC  @FAC3             Index+1
+[1331] F09A 90,4B           INC  @FAC1             Count+1
+[1332] F09C D6,B0,4C        CEQ  SPACE,V*FAC2      Space?
+       F09F 20
+[1333] F0A0 70,A7           BS   ENTER2            Yes
+[1334] F0A2 D6,4B,0B        CEQ  11,@FAC1          To long?
+[1335] F0A5 50,98           BR   ENTER1
+[1336] F0A7 BE,B0,4C ENTER2 ST   ENTER,V*FAC2      cr
+       F0AA 0D
+[1337] F0AB D7,E0,10        DCEQ 'Di',V@16(@SCADD) Directory?
+       F0AE 10,44,69
+[1338] F0B1 50,C1           BR   NODIR             No
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0031 
+Rich E/A GROM
+[1339] F0B3 D6,E0,12        CEQ  'r',V@18(@SCADD)
+       F0B6 10,72
+[1340] F0B8 50,C1           BR   NODIR
+[1341] F0BA BF,B0,4C        DST  >2E0D,V*FAC2      .cr
+       F0BD 2E,0D
+[1342] F0BF 90,4A           INC  @FAC              Count+1
+[1343] F0C1 34,4A,EF NODIR  MOVE @FAC,V*SCADD,V@>100A(@TMP6)
+       F0C4 10,0A,06
+       F0C7 B0,10
+[1344] F0C9 A1,4A,06        DADD @TMP6,@FAC
+[1345] F0CC 34,4A,AF        MOVE @FAC,V@>100A,V@>2257
+       F0CF 22,57,AF
+       F0D2 10,0A
+[1346] F0D4 BD,AF,22        DST  @FAC,V@>2255
+       F0D7 55,4A
+[1347] F0D9 90,07           INC  @TMP7
+[1348] F0DB BD,AF,24        DST  @TMP6,V@>2400
+       F0DE 00,06
+[1349] F0E0 06,E6,9F        CALL CLOSE
+[1350] F0E3 BE,42,EA        ST   >EA,@XTOKEN       Set flag
+[1351] F0E6 D6,75,20        CEQ  32,@KEY           SPACE BAR
+[1352] F0E9 71,60           BS   XBPGM
+[1353] F0EB D7,E0,10        DCEQ 'Di',V@16(@SCADD) Directory?
+       F0EE 10,44,69
+[1354] F0F1 50,FA           BR   PORVI
+[1355] F0F3 D6,E0,12        CEQ  'r',V@18(@SCADD)
+       F0F6 10,72
+[1356] F0F8 6D,C9           BS   DIRECT
+[1357] F0FA D6,E0,10 PORVI  CEQ  'P',V@16(@SCADD)  Program?
+       F0FD 10,50
+[1358] F0FF 6B,E8           BS   PRGRM
+[1359] F101 D6,E0,14        CEQ  'V',V@20(@SCADD)  Variable?
+       F104 10,56
+[1360] F106 51,1E           BR   DORF80
+[1361] F108 D6,E0,10        CEQ  'I',V@16(@SCADD)  Internal?
+       F10B 10,49
+[1362] F10D 51,1E           BR   DORF80
+[1363] F10F D7,E0,18        DCEQ '25',V@24(@SCADD) Length 25_?
+       F112 10,32,35
+[1364] F115 51,1E           BR   DORF80
+[1365] F117 D6,E0,1A        CEQ  '4',V@26(@SCADD)  Length 254?
+       F11A 10,34
+[1366] F11C 6C,DB           BS   XBINP
+[1367] F11E D7,E0,19 DORF80 DCEQ '80',V@25(@SCADD) Length 80?
+       F121 10,38,30
+[1368] F124 51,4D           BR   DF80      
+[1369]               ************************** Save as SOURCE *******
+[1370] F126 87,16           DCLR @TEMP
+[1371] F128 BC,AF,0F        ST   @TEMP,V@>0F50      clear byte at setup
+       F12B 50,16
+[1372] F12D 35,00,27        MOVE 39,V@>0F50,V@>0F51 Ripple it
+       F130 AF,0F,51
+       F133 AF,0F,50
+[1373] F136 BC,17,AF        ST   V@>2256,@TEMP1     Get length byte
+       F139 22,56
+[1374] F13B 92,17           DEC  @TEMP1             Length-1
+[1375] F13D BC,AF,0F        ST   @TEMP1,V@>0F50     Get length byte
+       F140 50,17
+[1376] F142 34,16,AF        MOVE @TEMP,V@>2257,V@>0F51 Save as SOURCE 
+       F145 0F,51,AF
+       F148 22,57
+[1377] F14A 06,E8,41        CALL CLRXOP             CLEAR EDIT BUFFER
+[1378]               ******************************
+[1379] F14D D6,E0,14 DF80   CEQ  'F',V@20(@SCADD)  Fixed?
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0032 
+Rich E/A GROM
+       F150 10,46
+[1380] F152 6A,0F           BS   LANDR
+[1381] F154 D6,75,41 LEAASM CEQ  'A',@KEY          Assemble file
+[1382] F157 68,4F           BS   ASSEM
+[1383] F159 D6,75,47        CEQ  'G',@KEY          GPL Assemble file
+[1384] F15C 68,4F           BS   ASSEM
+[1385] F15E 40,CB           BR   MMENU
+[1386] F160 D6,E0,10 XBPGM  CEQ  'P',V@16(@SCADD)  Program?
+       F163 10,50
+[1387] F165 6C,DB           BS   XBINP
+[1388] F167 D6,E0,14        CEQ  'V',V@20(@SCADD)  Variable?
+       F16A 10,56
+[1389] F16C 40,CB           BR   MMENU
+[1390] F16E D6,E0,10        CEQ  'I',V@16(@SCADD)  Internal?
+       F171 10,49
+[1391] F173 40,CB           BR   MMENU
+[1392] F175 D7,E0,18        DCEQ '25',V@24(@SCADD) Length 25_?
+       F178 10,32,35
+[1393] F17B 40,CB           BR   MMENU
+[1394] F17D D6,E0,1A        CEQ  '4',V@26(@SCADD)  Length 254?
+       F180 10,34
+[1395] F182 6C,DB           BS   XBINP
+[1396] F184 40,CB           BR   MMENU
+[1397] F186 D7,10,00 UPKEY  DCEQ >0081,@SCADD      Top of screen?
+       F189 81
+[1398] F18A 71,92           BS   GLESS             So scroll screen down
+[1399] F18C A7,10,00        DSUB 32,@SCADD         Up one.
+       F18F 20
+[1400] F190 51,9C           BR   GLESS2            Return
+[1401] F192 D7,04,25 GLESS  DCEQ >2580,@TMP4      Start of buffer?
+       F195 80
+[1402] F196 6F,57           BS   OKKEY             Yes
+[1403] F198 A7,04,00        DSUB >20,@TMP4         One more line down
+       F19B 20
+[1404] F19C 4F,57    GLESS2 BR   OKKEY
+[1405] F19E D6,E0,01 DKEY   CEQ  >20,V@1(@SCADD)   Blank line?
+       F1A1 10,20
+[1406] F1A3 71,86           BS   UPKEY
+[1407] F1A5 D7,10,02        DCEQ >02C1,@SCADD      Bottom of screen?
+       F1A8 C1
+[1408] F1A9 71,B1           BS   GMORE             So scroll screen up
+[1409] F1AB A3,10,00        DADD 32,@SCADD         Down one.
+       F1AE 20
+[1410] F1AF 4F,57           BR   OKKEY             No
+[1411] F1B1 D5,04,40 GMORE  DCEQ @>8340,@TMP4      End of buffer?
+[1412] F1B4 6F,57           BS   OKKEY             Yes
+[1413] F1B6 D6,A0,A2        CEQ  >20,V@>00A2       Last line in buffer?
+       F1B9 20
+[1414] F1BA 6F,57           BS   OKKEY             Yes
+[1415] F1BC A3,04,00        DADD >20,@TMP4         One more line up
+       F1BF 20
+[1416] F1C0 4F,57           BR   OKKEY
+[1417] F1C2 BE,76,12 LKEY   ST   18,@>8376         Line Counter
+[1418] F1C5 D7,10,00 LUPKEY DCEQ >0081,@SCADD      Top of screen?
+       F1C8 81
+[1419] F1C9 71,D1           BS   LGLESS            So scroll screen down
+[1420] F1CB A7,10,00        DSUB 32,@SCADD         Up one.
+       F1CE 20
+[1421] F1CF 51,DB           BR   LGLES2            Return
+[1422] F1D1 D7,04,25 LGLESS DCEQ >2580,@TMP4       Start of buffer?
+       F1D4 80
+[1423] F1D5 71,DD           BS   LOKKEY            Yes
+[1424] F1D7 A7,04,00        DSUB >20,@TMP4         One more line down
+       F1DA 20
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0033 
+Rich E/A GROM
+[1425] F1DB 51,DD    LGLES2 BR   LOKKEY
+[1426] F1DD 06,F2,18 LOKKEY CALL FLSCR
+[1427] F1E0 92,76           DEC  @>8376            Line counter -1
+[1428] F1E2 51,C5           BR   LUPKEY            Continue Loop
+[1429] F1E4 05,EF,5E        B    NOKEY             Done.
+[1430] F1E7 BE,76,12 RKEY   ST   18,@>8376         Line Counter
+[1431] F1EA D6,E0,01 RDKEY  CEQ  >20,V@1(@SCADD)   Blank line?
+       F1ED 10,20
+[1432] F1EF 71,86           BS   UPKEY
+[1433] F1F1 D7,10,02        DCEQ >02C1,@SCADD      Bottom of screen?
+       F1F4 C1
+[1434] F1F5 71,FD           BS   RGMORE            So scroll screen up
+[1435] F1F7 A3,10,00        DADD 32,@SCADD         Down one.
+       F1FA 20
+[1436] F1FB 52,0E           BR   ROKKEY            No
+[1437] F1FD D5,04,40 RGMORE DCEQ @>8340,@TMP4      End of buffer?
+[1438] F200 72,0E           BS   ROKKEY            Yes
+[1439] F202 D6,A0,A2        CEQ  >20,V@>00A2       Last line in buffer?
+       F205 20
+[1440] F206 72,0E           BS   ROKKEY            Yes
+[1441] F208 A3,04,00        DADD >20,@TMP4         One more line up
+       F20B 20
+[1442] F20C 52,0E           BR   ROKKEY
+[1443] F20E 06,F2,18 ROKKEY CALL FLSCR
+[1444] F211 92,76           DEC  @>8376            Line counter -1
+[1445] F213 51,EA           BR   RDKEY             Continue Loop
+[1446] F215 05,EF,5E        B    NOKEY             Done.
+[1447] F218 35,02,60 FLSCR  MOVE >0260,V*TMP4,V@>0080 Fill screen
+       F21B A0,80,B0
+       F21E 04
+[1448] F21F BE,B0,10        ST   130,V*SCADD       Left arrow
+       F222 82
+[1449] F223 BE,E0,0B        ST   131,V@11(@SCADD)  Right arrow
+       F226 10,83
+[1450] F228 00              RTN
+[1451] F229 BE,AF,22 CLRBUF ST   ENTER,V@>2257     Clear buffer
+       F22C 57,0D
+[1452] F22E 35,00,3F        MOVE 63,V@>2257,V@>2258
+       F231 AF,22,58
+       F234 AF,22,57
+[1453] F237 35,00,3F        MOVE 63,V@>2257,V@>2402
+       F23A AF,24,02
+       F23D AF,22,57
+[1454] F240 06,F6,4D        CALL CLRFAC
+[1455] F243 00              RTN
+[1456]               *
+[1457]               * PAB data
+[1458]               *
+[1459] F244 00,0D,08 CATDAT BYTE 0,>D,8,>36,0,0,0,0,0
+       F247 36,00,00
+       F24A 00,00,00
+[1460]               *
+[1461] F24D 40,02,00 HALVE  BYTE >40,>02,0,0,0,0,0,0
+       F250 00,00,00
+       F253 00,00
+[1462]               *
+[1463]               * Screen - prints initial screen and disk info
+[1464]               *
+[1465] F255 08       SCREEN FMT
+[1466] F256 FE,00            ROW  0
+[1467] F258 FF,02            COL  2
+[1468] F25A 1C,44,69         HTEX 'Directory=           Files000'
+       F25D 72,65,63
+       F260 74,6F,72
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0034 
+Rich E/A GROM
+       F263 79,3D,20
+       F266 20,20,20
+       F269 20,20,20
+       F26C 20,20,20
+       F26F 20,46,69
+       F272 6C,65,73
+       F275 30,30,30
+[1469] F278 A0               ROW+ 1
+[1470] F279 FF,02            COL  2
+[1471] F27B 14,46,72         HTEX 'Free=           Used='
+       F27E 65,65,3D
+       F281 20,20,20
+       F284 20,20,20
+       F287 20,20,20
+       F28A 20,20,55
+       F28D 73,65,64
+       F290 3D
+[1472] F291 A0               ROW+ 1
+[1473] F292 FF,02            COL  2
+[1474] F294 1C,20,46         HTEX ' Filename  Size    Type     P'
+       F297 69,6C,65
+       F29A 6E,61,6D
+       F29D 65,20,20
+       F2A0 53,69,7A
+       F2A3 65,20,20
+       F2A6 20,20,54
+       F2A9 79,70,65
+       F2AC 20,20,20
+       F2AF 20,20,50
+[1475] F2B2 A0               ROW+ 1
+[1476] F2B3 FF,02            COL  2
+[1477] F2B5 1C,2D,2D         HTEX '---------- ---- ----------- -'
+       F2B8 2D,2D,2D
+       F2BB 2D,2D,2D
+       F2BE 2D,2D,20
+       F2C1 2D,2D,2D
+       F2C4 2D,20,2D
+       F2C7 2D,2D,2D
+       F2CA 2D,2D,2D
+       F2CD 2D,2D,2D
+       F2D0 2D,20,2D
+[1478] F2D3 FB              FEND
+[1479] F2D4 86,1E           CLR  @COUNT            Clear file counter
+[1480] F2D6 06,F4,3E        CALL DISSTR            Get string into FAC
+[1481] F2D9 8E,4B           CZ   @FAC1             Skip if zero length
+[1482] F2DB 72,E5           BS   CAT3
+[1483] F2DD 08              FMT
+[1484] F2DE FE,00            ROW 0
+[1485] F2E0 FF,0C            COL 12
+[1486] F2E2 E9,4C            HSTR 10,@FAC2
+[1487] F2E4 FB              FEND
+[1488] F2E5 A1,10,4A CAT3   DADD @FAC,@SCADD       Go to next field
+[1489] F2E8 A3,10,00        DADD 19,@SCADD         Continue to last field
+       F2EB 13
+[1490] F2EC BF,14,00        DST  >28,@>8314        Set up screen addr
+       F2EF 28
+[1491] F2F0 D7,AF,10        DCEQ >4453,V@>100A     DSK?
+       F2F3 0A,44,53
+[1492] F2F6 52,FE           BR   CAT4              No, must be HARD
+[1493] F2F8 06,F4,1B        CALL DISNUM            Display available DSK space
+[1494] F2FB 05,F3,0F        B    CAT4A
+[1495] F2FE 35,00,08 CAT4   MOVE 8,V*SCADD,@ARG    Get Available space *2
+       F301 5C,B0,10
+[1496] F304 31,00,08        MOVE 8,G@HALVE,@FAC    Get divisor 
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0035 
+Rich E/A GROM
+       F307 4A,F2,4D
+[1497] F30A 0F,02           XML  ROUND
+[1498] F30C 06,F4,21        CALL DISNU1            Display available HARD space
+[1499]               * Display used space
+[1500] F30F 35,00,08 CAT4A  MOVE 8,V*SCADD,@FAC    Get Available space
+       F312 4A,B0,10
+[1501] F315 A7,10,00        DSUB 9,@SCADD          Point to formatted space
+       F318 09
+[1502] F319 35,00,08        MOVE 8,V*SCADD,@ARG    Move it to ARG
+       F31C 5C,B0,10
+[1503] F31F 0F,07           XML  FSUB              Develop used value *2
+[1504] F321 BF,14,00        DST  >38,@>8314        Set up screen addr
+       F324 38
+[1505] F325 D7,AF,10        DCEQ >4453,V@>100A     DSK?
+       F328 0A,44,53
+[1506] F32B 73,3C           BS   CAT4B             Yes, must be DISK
+[1507] F32D 35,00,08        MOVE 8,@FAC,@ARG       Get Unused space *2
+       F330 5C,4A
+[1508] F332 31,00,08        MOVE 8,G@HALVE,@FAC    Get divisor
+       F335 4A,F2,4D
+[1509] F338 0F,09           XML  FDIV
+[1510] F33A 0F,02           XML  ROUND
+[1511] F33C 06,F4,21 CAT4B  CALL DISNU1            Display used space
+[1512] F33F 00              RTN                    Return
+[1513]               *
+[1514]               * Display one file on screen
+[1515]               *
+[1516] F340 06,F4,3E FILNAM CALL DISSTR            Get string into FAC
+[1517] F343 90,1E           INC  @COUNT            FILE COUNT +1
+[1518] F345 8E,4B           CZ   @FAC1             Skip display if zero
+[1519] F347 73,51           BS   CAT5              length
+[1520] F349 08              FMT                    Put disk name on screen
+[1521] F34A FE,17            ROW   23              .
+[1522] F34C FF,02            COL   02              .
+[1523] F34E E9,4C            HSTR 10,@FAC2         .
+[1524] F350 FB              FEND                   .
+[1525] F351 A1,10,4A CAT5   DADD @FAC,@SCADD       Go to next field
+[1526] F354 A3,10,00        DADD 10,@SCADD         Continue another field
+       F357 0A
+[1527] F358 8F,B0,10        DCZ  V*SCADD           Time to get out if
+[1528] F35B 74,16           BS   FILNA1            zero file size
+[1529] F35D BF,14,02        DST  >2EA,@>8314       Set up screen address
+       F360 EA
+[1530] F361 06,F4,1B        CALL DISNUM            Display file length
+[1531] F364 A7,10,00        DSUB 9,@SCADD          Back a field
+       F367 09
+[1532] F368 35,00,08        MOVE 8,V*SCADD,@FAC    Move it into FAC
+       F36B 4A,B0,10
+[1533] F36E 0F,12           XML  CFI               Convert it to an int.
+[1534] F370 8E,4A           CZ   @FAC              Non-negative?
+[1535] F372 73,7A           BS   CAT5A             YES! File not protected
+[1536] F374 BC,A2,FE        ST   @TMP2,V@>2FE      Put a 'Y' on screen
+       F377 02
+[1537] F378 83,4A           DNEG @FAC              Make number positive
+[1538] F37A 92,4B    CAT5A  DEC  @FAC1             Adjust for CASE
+[1539] F37C 8A,4B           CASE @FAC1             Show file type
+[1540] F37E 53,8A           BR   DF                .
+[1541] F380 53,9A           BR   DV                .
+[1542] F382 53,AA           BR   IF                .
+[1543] F384 53,BA           BR   IV                .
+[1544] F386 53,CA           BR   PR                .
+[1545] F388 53,DA           BR   DI
+[1546] F38A 08       DF     FMT
+[1547] F38B FE,17            ROW   23
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0036 
+Rich E/A GROM
+[1548] F38D FF,12            COL   18
+[1549] F38F 06,44,69         HTEX 'Dis/Fix'
+       F392 73,2F,46
+       F395 69,78
+[1550] F397 FB              FEND
+[1551] F398 53,EC           BR   CAT6
+[1552] F39A 08       DV     FMT
+[1553] F39B FE,17            ROW   23
+[1554] F39D FF,12            COL   18
+[1555] F39F 06,44,69         HTEX 'Dis/Var'
+       F3A2 73,2F,56
+       F3A5 61,72
+[1556] F3A7 FB              FEND
+[1557] F3A8 53,EC           BR   CAT6
+[1558] F3AA 08       IF     FMT
+[1559] F3AB FE,17            ROW   23
+[1560] F3AD FF,12            COL   18
+[1561] F3AF 06,49,6E         HTEX 'Int/Fix'
+       F3B2 74,2F,46
+       F3B5 69,78
+[1562] F3B7 FB              FEND
+[1563] F3B8 53,EC           BR   CAT6
+[1564] F3BA 08       IV     FMT
+[1565] F3BB FE,17            ROW   23
+[1566] F3BD FF,12            COL   18
+[1567] F3BF 06,49,6E         HTEX 'Int/Var'
+       F3C2 74,2F,56
+       F3C5 61,72
+[1568] F3C7 FB              FEND
+[1569] F3C8 53,EC           BR   CAT6
+[1570] F3CA 08       PR     FMT
+[1571] F3CB FE,17            ROW   23
+[1572] F3CD FF,12            COL   18
+[1573] F3CF 06,50,72         HTEX 'Program'
+       F3D2 6F,67,72
+       F3D5 61,6D
+[1574] F3D7 FB              FEND
+[1575] F3D8 53,F7           BR   CAT7              Return
+[1576] F3DA 08       DI     FMT
+[1577] F3DB FE,17            ROW    23
+[1578] F3DD FF,12            COL    18
+[1579] F3DF 08,44,69         HTEX 'Directory'
+       F3E2 72,65,63
+       F3E5 74,6F,72
+       F3E8 79
+[1580] F3E9 FB              FEND
+[1581] F3EA 53,F7           BR   CAT7
+[1582] F3EC A3,10,00 CAT6   DADD 18,@SCADD         Advavce two fields
+       F3EF 12
+[1583] F3F0 BF,14,02        DST  >2F6,@>8314       Set up screen address
+       F3F3 F6
+[1584] F3F4 06,F4,1B        CALL DISNUM            Display record length
+[1585] F3F7 35,00,1F CAT7   MOVE >1F,V@>02E0,V@0(@>8340)
+       F3FA E0,00,40
+       F3FD A2,E0
+[1586] F3FF A3,40,00        DADD >20,@>8340
+       F402 20
+[1587]                
+[1588]               *
+[1589]               * Scroll the screen
+[1590]               *
+[1591] F403 35,02,60 SCROLL MOVE >260,V@>A0,V@>80  Scroll screen
+       F406 A0,80,A0
+       F409 A0
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0037 
+Rich E/A GROM
+[1592] F40A BE,A2,E0        ST   SPACE,V@>2E0      Clear last line
+       F40D 20
+[1593] F40E 35,00,1F        MOVE >1F,V@>2E0,V@>2E1
+       F411 A2,E1,A2
+       F414 E0
+[1594] F415 00              RTN                    Return
+[1595] F416 87,12    FILNA1 DCLR @>8312            Clear a byte
+[1596] F418 8E,12           CZ   @>8312            Set COND bit
+[1597] F41A 01              RTNC                   Return w/COND
+[1598]               * Display number subroutine
+[1599]               *  ENTER: Floating number in FAC for DISNU1
+[1600]               *         Screen address in >8314
+[1601]               *
+[1602] F41B 35,00,08 DISNUM MOVE 8,V*SCADD,@FAC    Move FLP number to FAC
+       F41E 4A,B0,10
+[1603] F421 86,55    DISNU1 CLR  @FAC11            Indicate a free format
+[1604] F423 06,00,14        CALL CNS               Convert FAC to a string
+[1605] F426 BF,16,00        DST  7,@>8316          Right justify number
+       F429 07
+[1606] F42A A4,17,56        S    @FAC12,@>8317
+[1607] F42D A1,14,16        DADD @>8316,@>8314
+[1608] F430 BC,B0,14 DISNU2 ST   *FAC11,V*>8314    Put a char on the screen
+       F433 90,55
+[1609] F435 91,14           DINC @>8314            Increment screen addr.
+[1610] F437 90,55           INC  @FAC11            Increment FAC addr.
+[1611] F439 92,56           DEC  @FAC12            Decrement string length count
+[1612] F43B 54,30           BR   DISNU2            Loop until done
+[1613] F43D 00              RTN                    Return to caller
+[1614]               *
+[1615]               * Prepare a VDP string for FORMAT statement
+[1616]               *  LEAVE: FAC has string length (word)
+[1617]               *         FAC2  has string
+[1618]               *         SCADD pointing to next string in record
+[1619]               *
+[1620] F43E BF,10,08 DISSTR DST  >0836,@SCADD      Get buffer address
+       F441 36
+[1621] F442 86,4A           CLR  @FAC              Clear MSB of FAC word
+[1622] F444 BC,4B,B0        ST   V*SCADD,@FAC1     Store disk name length
+       F447 10
+[1623] F448 91,10           DINC @SCADD            Point to string
+[1624] F44A BE,4C,20        ST   >20,@FAC2         Clear out string space
+[1625] F44D 35,00,09        MOVE 9,@FAC2,@FAC3     .
+       F450 4D,4C
+[1626] F452 34,4A,4C        MOVE @FAC,V*SCADD,@FAC2 Move disk name into FAC
+       F455 B0,10
+[1627] F457 00              RTN
+[1628]               ***********************************************************
+[1629]               * ERRORS 
+[1630]               *
+[1631] F458 06,E8,1A GE8A8  CALL  EASCRN
+[1632] F45B 06,F5,F4        CALL  WENTER
+[1633] F45E 40,86           BR    GE029
+[1634] F460 06,E8,1A GE8B0  CALL  EASCRN
+[1635] F463 06,F4,B2 GE8B3  CALL  GE8FC
+[1636] F466 CA,22,08        CHE   >08,@CODE
+[1637] F469 55,0E           BR    CHKERR
+[1638] F46B A6,22,08        SUB   >08,@CODE
+[1639] F46E C6,22,05        CH    >05,@CODE
+[1640] F471 74,84           BS    GE8D4
+[1641] F473 06,F5,61        CALL  CLSALL
+[1642] F476 8A,22           CASE  @CODE
+[1643] F478 54,C0           BR    GE90F
+[1644] F47A 54,B9           BR    GE908
+[1645] F47C 54,D9           BR    GE928
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0038 
+Rich E/A GROM
+[1646] F47E 54,E0           BR    GE92F
+[1647] F480 54,E7           BR    GE936
+[1648] F482 54,EE           BR    GE93D
+[1649] F484 DA,48,20 GE8D4  CLOG  >20,@FLAG
+[1650] F487 49,C5           BR    GE767
+[1651] F489 DA,49,01        CLOG  >01,@FLAG2
+[1652] F48C 4A,0F           BR    LANDR
+[1653] F48E 06,F5,7D        CALL  CLSPAB
+[1654] F491 43,8D           BR    EDITOR
+[1655] F493 06,F4,B2 GE8E3  CALL  GE8FC
+[1656] F496 06,E8,1A        CALL  EASCRN
+[1657] F499 D6,22,0F        CEQ   >0F,@CODE
+[1658] F49C 54,A5           BR    GE8F5
+[1659] F49E 06,F5,9D        CALL  ERRMSG
+[1660] F4A1 F8,6E           DATA  ERRPNF  * ERROR PROGRAM NOT FOUND
+[1661] F4A3 54,FA           BR    GE949
+[1662] F4A5 06,F5,9D GE8F5  CALL  ERRMSG
+[1663] F4A8 F8,04           DATA  ERRC
+[1664] F4AA 40,86           BR    GE029
+[1665] F4AC 06,F4,B2        CALL  GE8FC
+[1666] F4AF 05,E0,86        B     GE029
+[1667] F4B2 39,00,01 GE8FC  MOVE  1,G@VREGS,#1
+       F4B5 01,F8,BE
+[1668] F4B8 00       GE907  RTN
+[1669] F4B9 06,F5,91 GE908  CALL  WRNMSG
+[1670] F4BC F8,0F           DATA  CCRMSG  * WARNING CONTROL CHARACTERS REMOVED
+[1671] F4BE 54,84           BR    GE8D4
+[1672] F4C0 06,F5,9D GE90F  CALL  ERRMSG
+[1673] F4C3 F7,C7           DATA  ERRMF   * ERROR MEMORY FULL
+[1674] F4C5 54,84           BR    GE8D4
+[1675] F4C7 06,F5,9D GE916  CALL  ERRMSG
+[1676] F4CA F8,6E           DATA  ERRPNF  * ERROR PROGRAM NOT FOUND
+[1677] F4CC 40,6F           BR    OLDEA
+[1678] F4CE DA,48,08 GE91D  CLOG  >08,@FLAG
+[1679] F4D1 54,D3           BR    GE9E2
+[1680] F4D3 06,F5,9D GE9E2  CALL  ERRMSG
+[1681] F4D6 F7,E2           DATA  ERRNME  * ERROR NO MEMORY EXPANSION
+[1682] F4D8 0B              EXIT
+[1683] F4D9 06,F5,9D GE928  CALL  ERRMSG
+[1684] F4DC F8,29           DATA  ERRIT   * ERROR ILLEGAL TAG
+[1685] F4DE 4A,0F           BR    LANDR
+[1686] F4E0 06,F5,9D GE92F  CALL  ERRMSG
+[1687] F4E3 F8,35           DATA  ERRCE   * CHECKSUM ERROR
+[1688] F4E5 4A,0F           BR    LANDR
+[1689] F4E7 06,F5,9D GE936  CALL  ERRMSG
+[1690] F4EA F8,44           DATA  ERRDD   * ERROR DUPLICATE DEFINITION
+[1691] F4EC 4A,0F           BR    LANDR
+[1692] F4EE 06,F5,9D GE93D  CALL  ERRMSG
+[1693] F4F1 F8,59           DATA  ERRUR   * ERROR UNRESOLVED REFERENCE
+[1694] F4F3 4A,0F           BR    LANDR
+[1695] F4F5 06,F5,9D GE944  CALL  ERRMSG
+[1696] F4F8 F7,F6           DATA  ERRNTL  * ERROR NAME TO LONG
+[1697] F4FA 8F,50    GE949  DCZ   @FAC6
+[1698] F4FC 75,09           BS    GE958
+[1699] F4FE BE,B0,4E        ST    SPACE,V*FAC4
+       F501 20
+[1700] F502 34,50,E0        MOVE  @FAC6,V*FAC4,V@1(@FAC4)
+       F505 01,4E,B0
+       F508 4E
+[1701] F509 06,F6,06 GE958  CALL  CLRMSG
+[1702] F50C 4A,85           BR    GE848
+[1703] F50E 8E,44    CHKERR CZ    @>8344           * Check Search flag
+[1704] F510 75,19           BS    CHKER2           * Yes, normal error
+[1705] F512 90,44           INC   @>8344           * Drive # + 1
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0039 
+Rich E/A GROM
+[1706] F514 CA,44,3A        CHE   58,@>8344        * Last drive?
+[1707] F517 4C,53           BR    MYSRCH           * No, continue Search
+[1708] F519 BC,4E,E0 CHKER2 ST    V@1(@PABPTR),@FAC4
+       F51C 01,1C
+[1709] F51E B2,4E,E0        AND   >E0,@FAC4
+[1710] F521 E6,4E,05        SRL   >05,@FAC4
+[1711] F524 B6,4E,30        OR    >30,@FAC4
+[1712] F527 B2,E0,01        AND   >1F,V@1(@PABPTR)
+       F52A 1C,1F
+[1713] F52C D6,4E,35        CEQ   >35,@FAC4        Error Read past EOF
+[1714] F52F 55,3E           BR    GE97A
+[1715] F531 06,F5,61        CALL  CLSALL
+[1716] F534 D6,47,01        CEQ   1,@LDFLAG
+[1717] F537 43,8D           BR    EDITOR           EDITOR
+[1718] F539 D6,47,02        CEQ   2,@LDFLAG
+[1719] F53C 48,4F           BR    ASSEM            ASSEMBLER
+[1720] F53E 06,F5,9D GE97A  CALL  ERRMSG
+[1721] F541 F7,D3           DATA  ERRIOC         * I O ERROR CODE
+[1722] F543 D6,47,01        CEQ   1,@LDFLAG
+[1723] F546 63,8D           BS    EDITOR
+[1724] F548 D6,47,02        CEQ   2,@LDFLAG
+[1725] F54B 68,4F           BS    ASSEM
+[1726] F54D 06,F5,61 GE97F  CALL  CLSALL
+[1727] F550 DA,48,20        CLOG  >20,@FLAG
+[1728] F553 40,6F           BR    OLDEA
+[1729] F555 DA,49,01        CLOG  >01,@FLAG2
+[1730] F558 4A,0F           BR    LANDR
+[1731] F55A DA,49,08        CLOG  >08,@FLAG2
+[1732] F55D 40,6F           BR    OLDEA
+[1733] F55F 43,8D           BR    EDITOR
+[1734] F561 06,F6,55 CLSALL CALL  P1000
+[1735] F564 06,F5,7D        CALL  CLSPAB
+[1736] F567 BF,1C,11        DST   >1100,@PABPTR
+       F56A 00
+[1737] F56B 06,F5,7D        CALL  CLSPAB
+[1738] F56E BF,1C,12        DST   >1200,@PABPTR
+       F571 00
+[1739] F572 06,F5,7D        CALL  CLSPAB
+[1740] F575 BF,1C,13        DST   >1300,@PABPTR
+       F578 00
+[1741] F579 06,F5,7D        CALL  CLSPAB
+[1742] F57C 00              RTN
+[1743] F57D BD,56,1C CLSPAB DST   @PABPTR,@VPAB
+[1744] F580 A3,56,00        DADD  >0009,@VPAB
+       F583 09
+[1745] F584 BE,B0,1C        ST    >01,V*PABPTR
+       F587 01
+[1746] F588 06,00,10        CALL  DSRLNK
+[1747] F58B 08              BYTE  >08
+[1748] F58C 86,E0,09        CLR   V@>0009(@PABPTR)
+       F58F 1C
+[1749] F590 00              RTN
+[1750] F591 06,F6,06 WRNMSG CALL  CLRMSG
+[1751] F594 31,00,0B        MOVE  11,G@WARN,V@>02A2
+       F597 A2,A2,F7
+       F59A BC
+[1752] F59B 55,A7           BR    GE9DA
+[1753] F59D 06,F6,06 ERRMSG CALL  CLRMSG
+[1754] F5A0 31,00,09        MOVE  9,G@ERROR,V@>02A2
+       F5A3 A2,A2,F7
+       F5A6 8A
+[1755] F5A7 88,4A    GE9DA  FETCH @FAC
+[1756] F5A9 88,4B           FETCH @FAC1
+[1757] F5AB 86,4C           CLR   @FAC2
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0040 
+Rich E/A GROM
+[1758] F5AD 33,00,01        MOVE  1,G@0(@FAC),@FAC3
+       F5B0 4D,00,00
+       F5B3 4A
+[1759] F5B4 32,4C,A2        MOVE  @FAC2,G@1(@FAC),V@>02C2
+       F5B7 C2,00,01
+       F5BA 4A
+[1760] F5BB D7,4A,F7        DCEQ  ERRIOC,@FAC
+       F5BE D3
+[1761] F5BF 55,C5           BR    GE9F8
+[1762] F5C1 BC,A2,D2        ST    @FAC4,V@>02D2
+       F5C4 4E
+[1763] F5C5 D7,4A,F8 GE9F8  DCEQ  ERRC,@FAC
+       F5C8 04
+[1764] F5C9 55,F4           BR    WENTER
+[1765] F5CB E7,22,00        DSRL  >0004,@CODE
+       F5CE 04
+[1766] F5CF E6,23,04        SRL   >04,@>8323
+[1767] F5D2 C6,22,09        CH    >09,@CODE
+[1768] F5D5 55,DF           BR    GEA12
+[1769] F5D7 C6,22,0F        CH    >0F,@CODE
+[1770] F5DA 75,F4           BS    WENTER
+[1771] F5DC A2,22,07        ADD   >07,@CODE
+[1772] F5DF C6,23,09 GEA12  CH    >09,@>8323
+[1773] F5E2 55,EC           BR    GEA1F
+[1774] F5E4 C6,23,0F        CH    >0F,@>8323
+[1775] F5E7 75,F4           BS    WENTER
+[1776] F5E9 A2,23,07        ADD   >07,@>8323
+[1777] F5EC A3,22,30 GEA1F  DADD  >3030,@CODE
+       F5EF 30
+[1778] F5F0 BD,A2,D0        DST   @CODE,V@>02D0
+       F5F3 22
+[1779]               *  Wait for ENTER
+[1780] F5F4 31,00,17 WENTER MOVE  23,G@PRESS,V@>02E2
+       F5F7 A2,E2,F7
+       F5FA A5
+[1781] F5FB 03       GEA2E  SCAN
+[1782] F5FC 55,FB           BR    GEA2E
+[1783] F5FE D6,75,0D        CEQ   >0D,@KEY
+[1784] F601 55,FB           BR    GEA2E
+[1785] F603 05,E0,25        B     SETUP  cHANGED FROM RETURN
+[1786]               ***************************************
+[1787] F606 BE,A2,A0 CLRMSG ST    SPACE,V@>02A0
+       F609 20
+[1788] F60A 35,00,5F        MOVE  >005F,V@>02A0,V@>02A1
+       F60D A2,A1,A2
+       F610 A0
+[1789] F611 00              RTN
+[1790]               ********************************************
+[1791]               *  CALL INIT
+[1792]               *
+[1793] F612 D7,8F,9D BINIT2 DCEQ  >A55A,@>2000
+       F615 00,A5,5A
+[1794] F618 76,4C           BS    GEBBD
+[1795] F61A 06,E7,F3 BINIT3 CALL  EXPMEM
+[1796] F61D 86,8F,9D        CLR   @>2000
+       F620 00
+[1797] F621 35,1F,FF        MOVE  8191,@>2000,@>2001 CLEAR MEMORY
+       F624 8F,9D,01
+       F627 8F,9D,00
+[1798] F62A 31,00,08        MOVE  8,G@LOW1,@>2000
+       F62D 8F,9D,00
+       F630 F8,C4
+[1799] F632 31,00,08        MOVE  8,G@LOW2,@>2024
+       F635 8F,9D,24
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0041 
+Rich E/A GROM
+       F638 F8,CC
+[1800] F63A 31,05,7B        MOVE  1403,G@LOW3,@>20FA
+       F63D 8F,9D,FA
+       F640 F8,D4
+[1801] F642 31,00,C8        MOVE  200,G@LOW4,@>3F38  
+       F645 8F,BC,38
+       F648 FE,54
+[1802] F64A 48,41           BR    CLRXOP
+[1803] F64C 00       GEBBD  RTN
+[1804]               *******************************
+[1805] F64D 86,4A    CLRFAC CLR   @FAC
+[1806] F64F 35,00,07        MOVE  7,@FAC,@FAC1
+       F652 4B,4A
+[1807] F654 00              RTN
+[1808]               *******************************
+[1809] F655 BF,1C,10 P1000  DST   >1000,@PABPTR
+       F658 00
+[1810] F659 00              RTN
+[1811]               *******************************
+[1812] F65A 06,E7,F3 DEVICE CALL  EXPMEM               Clear expansion memory
+[1813] F65D 35,00,80        MOVE  128,V@>027F,V@>0280
+       F660 A2,80,A2
+       F663 7F
+[1814] F664 BC,06,75        ST    @KEY,@TMP6           Save key
+[1815] F667 08              FMT
+[1816] F668 FE,10           ROW   16
+[1817] F66A FF,02           COL   2
+[1818] F66C 0B,53,65        HTEX  'Select DSK#.'
+       F66F 6C,65,63
+       F672 74,20,44
+       F675 53,4B,23
+       F678 2E
+[1819] F679 FB              FEND
+[1820] F67A 35,00,05        MOVE  5,V@>100F,V@>020E     EDIT1 or ASSM1
+       F67D A2,0E,AF
+       F680 10,0F
+[1821] F682 03       DEV1   SCAN                        KEY?
+[1822] F683 56,82           BR    DEV1                  No.
+[1823] F685 D6,75,20        CEQ   SPACE,@KEY            SPACE BAR?
+[1824] F688 76,9F           BS    DEV4                  Yes
+[1825] F68A D6,75,0F        CEQ   BACK,@KEY             BACK?
+[1826] F68D 76,9E           BS    DEV3                  Yes
+[1827] F68F BC,A2,0C        ST    @KEY,V@>020C          Any other key SAVE
+       F692 75
+[1828] F693 BC,AF,10        ST    @KEY,V@>100D          Put into PAB
+       F696 0D,75
+[1829] F698 BC,75,06 DEVNO  ST    @TMP6,@KEY            Restore old key
+[1830] F69B 06,EC,93 DEV2   CALL  PMSG                  PLEASE WAIT...
+[1831] F69E 00       DEV3   RTN
+[1832] F69F 08       DEV4   FMT
+[1833] F6A0 FE,10           ROW   16
+[1834] F6A2 FF,02           COL   2
+[1835] F6A4 10,45,78        HTEX  'Example: WDS1.EA.'
+       F6A7 61,6D,70
+       F6AA 6C,65,3A
+       F6AD 20,57,44
+       F6B0 53,31,2E
+       F6B3 45,41,2E
+[1836] F6B6 FE,12           ROW   18
+[1837] F6B8 FF,02           COL   2
+[1838] F6BA 09,46,55        HTEX  'FULL PATH?'
+       F6BD 4C,4C,20
+       F6C0 50,41,54
+       F6C3 48,3F
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0042 
+Rich E/A GROM
+[1839] F6C5 FB              FEND
+[1840] F6C6 35,00,05        MOVE  5,V@>100F,V@>0213     EDIT1 or ASSM1
+       F6C9 A2,13,AF
+       F6CC 10,0F
+[1841] F6CE BF,20,02        DST   >0282,@CURADD
+       F6D1 82
+[1842] F6D2 86,44           CLR   @>8344                Clear search flag
+[1843] F6D4 B6,48,04        OR    >04,@FLAG             Set return flag
+[1844] F6D7 06,E6,C4        CALL  GETINP
+[1845] F6DA BD,00,20        DST   @CURADD,@TMP
+[1846] F6DD A6,01,82        SUB   >82,@TMP1
+[1847] F6E0 BC,AF,10        ST    @TMP1,V@>1009
+       F6E3 09,01
+[1848] F6E5 34,00,AF        MOVE  @TMP,V@>0282,V@>100A
+       F6E8 10,0A,A2
+       F6EB 82
+[1849] F6EC BE,48,20        ST    >20,@FLAG
+[1850] F6EF 05,F6,98        B     DEVNO
+[1851]               **********************************************************
+[1852] F6F2 F6,F9    EADSR  DATA SEADSR
+[1853] F6F4 E0,25           DATA SETUP
+[1854] F6F6 02,45,41        STRI 'EA'
+[1855] F6F9 F7,00    SEADSR DATA XBDSR
+[1856] F6FB E0,25           DATA SETUP
+[1857] F6FD 02,65,61        STRI 'ea'
+[1858]               ************************************
+[1859] F700 F7,07    XBDSR  DATA SXBDSR
+[1860] F702 63,72           DATA RXB
+[1861] F704 02,58,42        STRI 'XB'
+[1862] F707 F7,0E    SXBDSR DATA BASIC
+[1863] F709 63,72           DATA RXB
+[1864] F70B 02,78,62        STRI 'xb'
+[1865]               ************************************
+[1866] F70E F7,18    BASIC  DATA SBASIC
+[1867] F710 21,6F           DATA >216F
+[1868] F712 05,42,41        STRI 'BASIC'
+       F715 53,49,43
+[1869] F718 00,00    SBASIC DATA >0000
+[1870] F71A 21,6F           DATA >216F
+[1871] F71C 05,62,61        STRI 'basic'
+       F71F 73,69,63
+[1872]               ***********************************************************
+[1873] F722 0A,44,53 C1     STRI  'DSK1.EDIT1'
+       F725 4B,31,2E
+       F728 45,44,49
+       F72B 54,31
+[1874] F72D 0A,44,53 C2     STRI  'DSK1.ASSM1'
+       F730 4B,31,2E
+       F733 41,53,53
+       F736 4D,31
+[1875] F738 0B,44,53 C3     STRI  'DSK1.SOURCE'
+       F73B 4B,31,2E
+       F73E 53,4F,55
+       F741 52,43,45
+[1876] F744 0B,44,53 C4     STRI  'DSK1.OBJECT'
+       F747 4B,31,2E
+       F74A 4F,42,4A
+       F74D 45,43,54
+[1877] F750 09,44,53 C5     STRI  'DSK1.LIST'
+       F753 4B,31,2E
+       F756 4C,49,53
+       F759 54
+[1878] F75A 01,4C    C6     STRI  'L'
+[1879] F75C 05,00,13 PAB    BYTE  >05,>00,>13,>80,>00,>00,>21,>00
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0043 
+Rich E/A GROM
+       F75F 80,00,00
+       F762 21,00
+[1880] F764 00,0A    DLEN   BYTE  >00,>0A
+[1881] F766 44,53,4B DDSK1  TEXT  'DSK1.'
+       F769 31,2E
+[1882] F76B 45,44,49 DEDIT1 TEXT  'EDIT1'
+       F76E 54,31
+[1883] F770 41,53,53 DASSM1 TEXT  'ASSM1'
+       F773 4D,31
+[1884] F775 55,54,49 DUTIL1 TEXT  'UTIL1'
+       F778 4C,31
+[1885] F77A 0D              BYTE  >0D
+[1886] F77B 4C,4F,41 DLOAD  TEXT  'LOAD'
+       F77E 44
+[1887] F77F 0D              BYTE  >0D
+[1888] F780 00,12,10 PAB80  BYTE  >00,>12,>10,>00,>50,>00,>00,>00,>00,>00
+       F783 00,50,00
+       F786 00,00,00
+       F789 00
+[1889] F78A 2A,20,45 ERROR  TEXT  '* ERROR *'
+       F78D 52,52,4F
+       F790 52,20,2A
+[1890] F793 2A,20,37 OUTSCN TEXT  '* 72 NAMES SHOWN *'
+       F796 32,20,4E
+       F799 41,4D,45
+       F79C 53,20,53
+       F79F 48,4F,57
+       F7A2 4E,20,2A
+[1891] F7A5 50,72,65 PRESS  TEXT  'Press ENTER to continue'
+       F7A8 73,73,20
+       F7AB 45,4E,54
+       F7AE 45,52,20
+       F7B1 74,6F,20
+       F7B4 63,6F,6E
+       F7B7 74,69,6E
+       F7BA 75,65
+[1892] F7BC 2A,20,57 WARN   TEXT  '* WARNING *'
+       F7BF 41,52,4E
+       F7C2 49,4E,47
+       F7C5 20,2A
+[1893] F7C7 0B,4D,45 ERRMF  STRI  'MEMORY FULL'
+       F7CA 4D,4F,52
+       F7CD 59,20,46
+       F7D0 55,4C,4C
+[1894] F7D3 0E,49,2F ERRIOC STRI  'I/O ERROR CODE'
+       F7D6 4F,20,45
+       F7D9 52,52,4F
+       F7DC 52,20,43
+       F7DF 4F,44,45
+[1895] F7E2 13,4E,4F ERRNME STRI  'NO MEMORY EXPANSION'
+       F7E5 20,4D,45
+       F7E8 4D,4F,52
+       F7EB 59,20,45
+       F7EE 58,50,41
+       F7F1 4E,53,49
+       F7F4 4F,4E
+[1896] F7F6 0D,4E,41 ERRNTL STRI  'NAME TOO LONG'
+       F7F9 4D,45,20
+       F7FC 54,4F,4F
+       F7FF 20,4C,4F
+       F802 4E,47
+[1897] F804 0A,45,52 ERRC   STRI  'ERROR CODE'
+       F807 52,4F,52
+       F80A 20,43,4F
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0044 
+Rich E/A GROM
+       F80D 44,45
+[1898] F80F 19,43,4F CCRMSG STRI  'CONTROL CHARACTER REMOVED'
+       F812 4E,54,52
+       F815 4F,4C,20
+       F818 43,48,41
+       F81B 52,41,43
+       F81E 54,45,52
+       F821 20,52,45
+       F824 4D,4F,56
+       F827 45,44
+[1899] F829 0B,49,4C ERRIT  STRI  'ILLEGAL TAG'
+       F82C 4C,45,47
+       F82F 41,4C,20
+       F832 54,41,47
+[1900] F835 0E,43,48 ERRCE  STRI  'CHECKSUM ERROR'
+       F838 45,43,4B
+       F83B 53,55,4D
+       F83E 20,45,52
+       F841 52,4F,52
+[1901] F844 14,44,55 ERRDD  STRI  'DUPLICATE DEFINITION'
+       F847 50,4C,49
+       F84A 43,41,54
+       F84D 45,20,44
+       F850 45,46,49
+       F853 4E,49,54
+       F856 49,4F,4E
+[1902] F859 14,55,4E ERRUR  STRI  'UNRESOLVED REFERENCE'
+       F85C 52,45,53
+       F85F 4F,4C,56
+       F862 45,44,20
+       F865 52,45,46
+       F868 45,52,45
+       F86B 4E,43,45
+[1903] F86E 11,50,52 ERRPNF STRI  'PROGRAM NOT FOUND'
+       F871 4F,47,52
+       F874 41,4D,20
+       F877 4E,4F,54
+       F87A 20,46,4F
+       F87D 55,4E,44
+[1904] F880 50,41,54 FPATH  TEXT  'PATH.NAME?'
+       F883 48,2E,4E
+       F886 41,4D,45
+       F889 3F
+[1905] F88A 50,6C,65 PLEASE TEXT  'Please wait ...'
+       F88D 61,73,65
+       F890 20,77,61
+       F893 69,74,20
+       F896 2E,2E,2E
+[1906] F899 57,44,53 WDS1   TEXT  'WDS1.'
+       F89C 31,2E
+[1907] F89E FF,FF,FF CURPAT BYTE  >FF,>FF,>FF,>FF,>FF,>FF,>FF,>FF
+       F8A1 FF,FF,FF
+       F8A4 FF,FF
+[1908] F8A6 FF,FF,FF        BYTE  >FF,>FF,>FF,>FF,>FF,>FF,>FF,>FF
+       F8A9 FF,FF,FF
+       F8AC FF,FF
+[1909] F8AE 00,10,18 DARROW DATA  >0010,>18FC,>1810,>0000 * RIGHT ARROW
+       F8B1 FC,18,10
+       F8B4 00,00
+[1910] F8B6 00,20,60        DATA  >0020,>60FC,>6020,>0000 * LEFT ARROW
+       F8B9 FC,60,20
+       F8BC 00,00
+[1911] F8BE E0,00,0E VREGS  BYTE  >E0,>00,>0E,>01,>06,>00
+       F8C1 01,06,00
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0045 
+Rich E/A GROM
+[1912]               ***********************************************************
+[1913]               *
+[1914]               *  Data for Initialization of
+[1915]               *  Memory Expansion
+[1916]               *
+[1917] F8C4 A5,5A,21 LOW1  DATA  >A55A,>2128,>2398,>225A
+       F8C7 28,23,98
+       F8CA 22,5A
+[1918] F8CC A0,00,FF LOW2  DATA  >A000,>FFD7,>2676,>3F38
+       F8CF D7,26,76
+       F8D2 3F,38
+[1919] F8D4 00,64,20 LOW3  DATA  >0064,>2000,>2EAA,>2094
+       F8D7 00,2E,AA
+       F8DA 20,94
+[1920] F8DC 21,C4,20       DATA  >21C4,>2094,>2196,>2094,>21DE,>2094,>21F4
+       F8DF 94,21,96
+       F8E2 20,94,21
+       F8E5 DE,20,94
+       F8E8 21,F4
+[1921] F8EA 20,94,22       DATA  >2094,>2200,>2094,>220E,>2094,>221A,>2094,>2228
+       F8ED 00,20,94
+       F8F0 22,0E,20
+       F8F3 94,22,1A
+       F8F6 20,94,22
+       F8F9 28
+[1922] F8FA 20,9A,22       DATA  >209A,>22B2,>20DA,>23BA,>C80B,>2030,>D060
+       F8FD B2,20,DA
+       F900 23,BA,C8
+       F903 0B,20,30
+       F906 D0,60
+[1923] F908 83,49,20       DATA  >8349,>2060,>20FC,>132A,>C020,>8350,>1311,>06A0
+       F90B 60,20,FC
+       F90E 13,2A,C0
+       F911 20,83,50
+       F914 13,11,06
+       F917 A0
+[1924] F918 26,46,10       DATA  >2646,>101E,>0281,>3F38,>1319,>C001,>0202
+       F91B 1E,02,81
+       F91E 3F,38,13
+       F921 19,C0,01
+       F924 02,02
+[1925] F926 83,4A,8C       DATA  >834A,>8CB0,>1611,>8CB0,>160F,>8CB0,>160D,>C810
+       F929 B0,16,11
+       F92C 8C,B0,16
+       F92F 0F,8C,B0
+       F932 16,0D,C8
+       F935 10
+[1926] F936 20,22,02       DATA  >2022,>02E0,>20BA,>C020,>2022,>1309,>0690
+       F939 E0,20,BA
+       F93C C0,20,20
+       F93F 22,13,09
+       F942 06,90
+[1927] F944 02,E0,83       DATA  >02E0,>83E0,>C2E0,>2030,>045B,>0221,>0008,>10E4
+       F947 E0,C2,E0
+       F94A 20,30,04
+       F94D 5B,02,21
+       F950 00,08,10
+       F953 E4
+[1928] F954 02,00,0F       DATA  >0200,>0F00,>D800,>8322,>02E0,>83E0,>0460
+       F957 00,D8,00
+       F95A 83,22,02
+       F95D E0,83,E0
+       F960 04,60
+[1929] F962 00,CE,58       DATA  >00CE,>5820,>20FC,>8349,>02E0,>2094,>0380,>C83E
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0046 
+Rich E/A GROM
+       F965 20,20,FC
+       F968 83,49,02
+       F96B E0,20,94
+       F96E 03,80,C8
+       F971 3E
+[1930] F972 83,E2,02       DATA  >83E2,>02E0,>83E0,>C80B,>20AA,>C081,>0281
+       F975 E0,83,E0
+       F978 C8,0B,20
+       F97B AA,C0,81
+       F97E 02,81
+[1931] F980 80,00,1B       DATA  >8000,>1B07,>09C1,>0A11,>0A42,>09B2,>A0A1,>0CFA
+       F983 07,09,C1
+       F986 0A,11,0A
+       F989 42,09,B2
+       F98C A0,A1,0C
+       F98F FA
+[1932] F990 C0,92,06       DATA  >C092,>0692,>02E0,>2094,>C80B,>83F6,>0380
+       F993 92,02,E0
+       F996 20,94,C8
+       F999 0B,83,F6
+       F99C 03,80
+[1933] F99E D0,60,83       DATA  >D060,>8373,>0981,>C87E,>8304,>F820,>20FC,>8349
+       F9A1 73,09,81
+       F9A4 C8,7E,83
+       F9A7 04,F8,20
+       F9AA 20,FC,83
+       F9AD 49
+[1934] F9AE 02,E0,83       DATA  >02E0,>83E0,>C2E0,>2030,>045B,>02E0,>83E0
+       F9B1 E0,C2,E0
+       F9B4 20,30,04
+       F9B7 5B,02,E0
+       F9BA 83,E0
+[1935] F9BC C8,0B,20       DATA  >C80B,>20AA,>06A0,>000E,>02E0,>2094,>C80B,>83F6
+       F9BF AA,06,A0
+       F9C2 00,0E,02
+       F9C5 E0,20,94
+       F9C8 C8,0B,83
+       F9CB F6
+[1936] F9CC 03,80,06       DATA  >0380,>06A0,>223A,>D82D,>0002,>8C00,>0380
+       F9CF A0,22,3A
+       F9D2 D8,2D,00
+       F9D5 02,8C,00
+       F9D8 03,80
+[1937] F9DA 06,A0,22       DATA  >06A0,>223A,>D831,>8C00,>0602,>16FC,>0380,>06A0
+       F9DD 3A,D8,31
+       F9E0 8C,00,06
+       F9E3 02,16,FC
+       F9E6 03,80,06
+       F9E9 A0
+[1938] F9EA 22,40,DB       DATA  >2240,>DB60,>8800,>0002,>0380,>06A0,>2240
+       F9ED 60,88,00
+       F9F0 00,02,03
+       F9F3 80,06,A0
+       F9F6 22,40
+[1939] F9F8 DC,60,88       DATA  >DC60,>8800,>0602,>16FC,>0380,>C05D,>D82D,>0001
+       F9FB 00,06,02
+       F9FE 16,FC,03
+       FA01 80,C0,5D
+       FA04 D8,2D,00
+       FA07 01
+[1940] FA08 8C,02,02       DATA  >8C02,>0261,>8000,>D801,>8C02,>0380,>0201
+       FA0B 61,80,00
+       FA0E D8,01,8C
+       FA11 02,03,80
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0047 
+Rich E/A GROM
+       FA14 02,01
+[1941] FA16 40,00,10       DATA  >4000,>1001,>04C1,>C09D,>D820,>2099,>8C02,>E081
+       FA19 01,04,C1
+       FA1C C0,9D,D8
+       FA1F 20,20,99
+       FA22 8C,02,E0
+       FA25 81
+[1942] FA26 D8,02,8C       DATA  >D802,>8C02,>C06D,>0002,>C0AD,>0004,>045B
+       FA29 02,C0,6D
+       FA2C 00,02,C0
+       FA2F AD,00,04
+       FA32 04,5B
+[1943] FA34 02,04,83       DATA  >0204,>834A,>C014,>C184,>04F6,>04F6,>C140,>1323
+       FA37 4A,C0,14
+       FA3A C1,84,04
+       FA3D F6,04,F6
+       FA40 C1,40,13
+       FA43 23
+[1944] FA44 07,40,02       DATA  >0740,>0203,>0040,>04F6,>04D6,>0280,>0064
+       FA47 03,00,40
+       FA4A 04,F6,04
+       FA4D D6,02,80
+       FA50 00,64
+[1945] FA52 1A,13,02       DATA  >1A13,>0280,>2710,>1A08,>0583,>C040,>04C0,>3C20
+       FA55 80,27,10
+       FA58 1A,08,05
+       FA5B 83,C0,40
+       FA5E 04,C0,3C
+       FA61 20
+[1946] FA62 20,FA,D9       DATA  >20FA,>D920,>83E3,>0003,>0583,>C040,>04C0
+       FA65 20,83,E3
+       FA68 00,03,05
+       FA6B 83,C0,40
+       FA6E 04,C0
+[1947] FA70 3C,20,20       DATA  >3C20,>20FA,>D920,>83E3,>0002,>D920,>83E1,>0001
+       FA73 FA,D9,20
+       FA76 83,E3,00
+       FA79 02,D9,20
+       FA7C 83,E1,00
+       FA7F 01
+[1948] FA80 D5,20,83       DATA  >D520,>83E7,>0545,>1101,>0514,>045B,>C17E
+       FA83 E7,05,45
+       FA86 11,01,05
+       FA89 14,04,5B
+       FA8C C1,7E
+[1949] FA8E 53,E0,20       DATA  >53E0,>20FC,>C020,>8356,>C240,>0229,>FFF8,>0420
+       FA91 FC,C0,20
+       FA94 83,56,C2
+       FA97 40,02,29
+       FA9A FF,F8,04
+       FA9D 20
+[1950] FA9E 21,14,D0       DATA  >2114,>D0C1,>0983,>0704,>0202,>208C,>0580
+       FAA1 C1,09,83
+       FAA4 07,04,02
+       FAA7 02,20,8C
+       FAAA 05,80
+[1951] FAAC 05,84,80       DATA  >0584,>80C4,>1306,>0420,>2114,>DC81,>9801,>20FE
+       FAAF C4,13,06
+       FAB2 04,20,21
+       FAB5 14,DC,81
+       FAB8 98,01,20
+       FABB FE
+[1952] FABC 16,F6,C1       DATA  >16F6,>C104,>1352,>0284,>0007,>154F,>04E0
+       FABF 04,13,52
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0048 
+Rich E/A GROM
+       FAC2 02,84,00
+       FAC5 07,15,4F
+       FAC8 04,E0
+[1953] FACA 83,D0,C8       DATA  >83D0,>C804,>8354,>C804,>2036,>0584,>A804,>8356
+       FACD 04,83,54
+       FAD0 C8,04,20
+       FAD3 36,05,84
+       FAD6 A8,04,83
+       FAD9 56
+[1954] FADA C8,20,83       DATA  >C820,>8356,>2038,>02E0,>83E0,>04C1,>020C
+       FADD 56,20,38
+       FAE0 02,E0,83
+       FAE3 E0,04,C1
+       FAE6 02,0C
+[1955] FAE8 0F,00,C3       DATA  >0F00,>C30C,>1301,>1E00,>022C,>0100,>04E0,>83D0
+       FAEB 0C,13,01
+       FAEE 1E,00,02
+       FAF1 2C,01,00
+       FAF4 04,E0,83
+       FAF7 D0
+[1956] FAF8 02,8C,20       DATA  >028C,>2000,>1332,>C80C,>83D0,>1D00,>0202
+       FAFB 00,13,32
+       FAFE C8,0C,83
+       FB01 D0,1D,00
+       FB04 02,02
+[1957] FB06 40,00,98       DATA  >4000,>9812,>20FF,>16EE,>A0A0,>20A4,>1003,>C0A0
+       FB09 12,20,FF
+       FB0C 16,EE,A0
+       FB0F A0,20,A4
+       FB12 10,03,C0
+       FB15 A0
+[1958] FB16 83,D2,1D       DATA  >83D2,>1D00,>C092,>13E6,>C802,>83D2,>05C2
+       FB19 00,C0,92
+       FB1C 13,E6,C8
+       FB1F 02,83,D2
+       FB22 05,C2
+[1959] FB24 C2,72,D1       DATA  >C272,>D160,>8355,>1309,>9C85,>16F2,>0985,>0206
+       FB27 60,83,55
+       FB2A 13,09,9C
+       FB2D 85,16,F2
+       FB30 09,85,02
+       FB33 06
+[1960] FB34 20,8C,9C       DATA  >208C,>9CB6,>16ED,>0605,>16FC,>0581,>C801
+       FB37 B6,16,ED
+       FB3A 06,05,16
+       FB3D FC,05,81
+       FB40 C8,01
+[1961] FB42 20,3A,C8       DATA  >203A,>C809,>2034,>C80C,>2032,>0699,>10E2,>1E00
+       FB45 09,20,34
+       FB48 C8,0C,20
+       FB4B 32,06,99
+       FB4E 10,E2,1E
+       FB51 00
+[1962] FB52 02,E0,20       DATA  >02E0,>209A,>C009,>0420,>2114,>09D1,>1604
+       FB55 9A,C0,09
+       FB58 04,20,21
+       FB5B 14,09,D1
+       FB5E 16,04
+[1963] FB60 03,80,02       DATA  >0380,>02E0,>209A,>04C1,>06C1,>D741,>F3E0,>20FC
+       FB63 E0,20,9A
+       FB66 04,C1,06
+       FB69 C1,D7,41
+       FB6C F3,E0,20
+       FB6F FC
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0049 
+Rich E/A GROM
+[1964] FB70 03,80,C8       DATA  >0380,>C80B,>2030,>02E0,>20BA,>0420,>2124
+       FB73 0B,20,30
+       FB76 02,E0,20
+       FB79 BA,04,20
+       FB7C 21,24
+[1965] FB7E 02,E0,83       DATA  >02E0,>83E0,>1303,>C2E0,>2030,>045B,>D820,>20BA
+       FB81 E0,13,03
+       FB84 C2,E0,20
+       FB87 30,04,5B
+       FB8A D8,20,20
+       FB8D BA
+[1966] FB8E 83,22,04       DATA  >8322,>0460,>00CE,>04E0,>2022,>53E0,>20FC
+       FB91 60,00,CE
+       FB94 04,E0,20
+       FB97 22,53,E0
+       FB9A 20,FC
+[1967] FB9C C0,20,83       DATA  >C020,>8356,>0420,>2120,>0008,>1332,>0220,>FFF7
+       FB9F 56,04,20
+       FBA2 21,20,00
+       FBA5 08,13,32
+       FBA8 02,20,FF
+       FBAB F7
+[1968] FBAC 02,01,02       DATA  >0201,>0200,>0420,>210C,>0580,>C800,>202E
+       FBAF 00,04,20
+       FBB2 21,0C,05
+       FBB5 80,C8,00
+       FBB8 20,2E
+[1969] FBBA C1,E0,20       DATA  >C1E0,>2024,>C147,>04CC,>06A0,>25E0,>0283,>0001
+       FBBD 24,C1,47
+       FBC0 04,CC,06
+       FBC3 A0,25,E0
+       FBC6 02,83,00
+       FBC9 01
+[1970] FBCA 16,24,05       DATA  >1624,>058C,>04C3,>1023,>0283,>0046,>161E
+       FBCD 8C,04,C3
+       FBD0 10,23,02
+       FBD3 83,00,46
+       FBD6 16,1E
+[1971] FBD8 04,C2,06       DATA  >04C2,>06A0,>262E,>0283,>003A,>16F7,>C020,>202E
+       FBDB A0,26,2E
+       FBDE 02,83,00
+       FBE1 3A,16,F7
+       FBE4 C0,20,20
+       FBE7 2E
+[1972] FBE8 06,00,02       DATA  >0600,>0201,>0100,>0420,>210C,>06A0,>25E0
+       FBEB 01,01,00
+       FBEE 04,20,21
+       FBF1 0C,06,A0
+       FBF4 25,E0
+[1973] FBF6 C0,20,20       DATA  >C020,>2022,>1307,>06A0,>2646,>1005,>CB4E,>0016
+       FBF9 22,13,07
+       FBFC 06,A0,26
+       FBFF 46,10,05
+       FC02 CB,4E,00
+       FC05 16
+[1974] FC06 C3,A0,20       DATA  >C3A0,>2022,>0380,>D740,>F3E0,>20FC,>0380
+       FC09 22,03,80
+       FC0C D7,40,F3
+       FC0F E0,20,FC
+       FC12 03,80
+[1975] FC14 06,A0,25       DATA  >06A0,>25C2,>04C4,>D123,>2662,>0974,>C808,>202C
+       FC17 C2,04,C4
+       FC1A D1,23,26
+       FC1D 62,09,74
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0050 
+Rich E/A GROM
+       FC20 C8,08,20
+       FC23 2C
+[1976] FC24 06,A0,25       DATA  >06A0,>2594,>0464,>23F8,>0580,>0240,>FFFE
+       FC27 94,04,64
+       FC2A 23,F8,05
+       FC2D 80,02,40
+       FC30 FF,FE
+[1977] FC32 C1,20,20       DATA  >C120,>2024,>A100,>1808,>8804,>2026,>1B05,>C160
+       FC35 24,A1,00
+       FC38 18,08,88
+       FC3B 04,20,26
+       FC3E 1B,05,C1
+       FC41 60
+[1978] FC42 20,24,C8       DATA  >2024,>C804,>2024,>100A,>C120,>2028,>A100
+       FC45 04,20,24
+       FC48 10,0A,C1
+       FC4B 20,20,28
+       FC4E A1,00
+[1979] FC50 88,04,20       DATA  >8804,>202A,>140C,>C160,>2028,>C804,>2028,>C1C5
+       FC53 2A,14,0C
+       FC56 C1,60,20
+       FC59 28,C8,04
+       FC5C 20,28,C1
+       FC5F C5
+[1980] FC60 02,09,00       DATA  >0209,>0008,>06A0,>262E,>0609,>16FC,>10B6
+       FC63 08,06,A0
+       FC66 26,2E,06
+       FC69 09,16,FC
+       FC6C 10,B6
+[1981] FC6E 02,00,08       DATA  >0200,>0800,>10CC,>A005,>C800,>2022,>10AF,>A800
+       FC71 00,10,CC
+       FC74 A0,05,C8
+       FC77 00,20,22
+       FC7A 10,AF,A8
+       FC7D 00
+[1982] FC7E 20,2C,13       DATA  >202C,>13AC,>0200,>0B00,>10C2,>A005,>C1C0
+       FC81 AC,02,00
+       FC84 0B,00,10
+       FC87 C2,A0,05
+       FC8A C1,C0
+[1983] FC8C 10,A6,A0       DATA  >10A6,>A005,>DDC0,>DDE0,>20DB,>10A1,>A005,>06A0
+       FC8F 05,DD,C0
+       FC92 DD,E0,20
+       FC95 DB,10,A1
+       FC98 A0,05,06
+       FC9B A0
+[1984] FC9C 25,66,C0       DATA  >2566,>C000,>1316,>0226,>FFF8,>8106,>1B02
+       FC9F 00,13,16
+       FCA2 02,26,FF
+       FCA5 F8,81,06
+       FCA8 1B,02
+[1985] FCAA 05,14,10       DATA  >0514,>1096,>8594,>16F8,>89A4,>0002,>0002,>16F4
+       FCAD 96,85,94
+       FCB0 16,F8,89
+       FCB3 A4,00,02
+       FCB6 00,02,16
+       FCB9 F4
+[1986] FCBA 89,A4,00       DATA  >89A4,>0004,>0004,>16F0,>C0E6,>0006,>C250
+       FCBD 04,00,04
+       FCC0 16,F0,C0
+       FCC3 E6,00,06
+       FCC6 C2,50
+[1987] FCC8 C4,03,C0       DATA  >C403,>C009,>16FC,>0224,>0008,>C804,>202A,>10EA
+       FCCB 09,16,FC
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0051 
+Rich E/A GROM
+       FCCE 02,24,00
+       FCD1 08,C8,04
+       FCD4 20,2A,10
+       FCD7 EA
+[1988] FCD8 A0,05,06       DATA  >A005,>06A0,>2566,>0226,>FFF8,>8106,>13E3
+       FCDB A0,25,66
+       FCDE 02,26,FF
+       FCE1 F8,81,06
+       FCE4 13,E3
+[1989] FCE6 C2,96,15       DATA  >C296,>1501,>050A,>8294,>16F7,>89A4,>0002,>0002
+       FCE9 01,05,0A
+       FCEC 82,94,16
+       FCEF F7,89,A4
+       FCF2 00,02,00
+       FCF5 02
+[1990] FCF6 16,F3,89       DATA  >16F3,>89A4,>0004,>0004,>16EF,>C296,>1516
+       FCF9 A4,00,04
+       FCFC 00,04,16
+       FCFF EF,C2,96
+       FD02 15,16
+[1991] FD04 C0,E6,00       DATA  >C0E6,>0006,>C253,>C4C0,>C0C9,>16FC,>C246,>6244
+       FD07 06,C2,53
+       FD0A C4,C0,C0
+       FD0D C9,16,FC
+       FD10 C2,46,62
+       FD13 44
+[1992] FD14 C2,86,02       DATA  >C286,>022A,>0008,>C0C6,>0643,>064A,>C693
+       FD17 2A,00,08
+       FD1A C0,C6,06
+       FD1D 43,06,4A
+       FD20 C6,93
+[1993] FD22 06,49,16       DATA  >0649,>16FB,>0224,>0008,>C804,>202A,>10D9,>CB44
+       FD25 FB,02,24
+       FD28 00,08,C8
+       FD2B 04,20,2A
+       FD2E 10,D9,CB
+       FD31 44
+[1994] FD32 00,02,02       DATA  >0002,>0200,>0C00,>0460,>2432,>0460,>2494
+       FD35 00,0C,00
+       FD38 04,60,24
+       FD3B 32,04,60
+       FD3E 24,94
+[1995] FD40 C2,8B,02       DATA  >C28B,>0209,>0006,>C1A0,>202A,>0226,>FFF8,>C106
+       FD43 09,00,06
+       FD46 C1,A0,20
+       FD49 2A,02,26
+       FD4C FF,F8,C1
+       FD4F 06
+[1996] FD50 88,06,20       DATA  >8806,>2028,>1AF3,>C806,>202A,>06A0,>262E
+       FD53 28,1A,F3
+       FD56 C8,06,20
+       FD59 2A,06,A0
+       FD5C 26,2E
+[1997] FD5E DD,A0,20       DATA  >DDA0,>20E1,>0609,>16FA,>C580,>0206,>4000,>045A
+       FD61 E1,06,09
+       FD64 16,FA,C5
+       FD67 80,02,06
+       FD6A 40,00,04
+       FD6D 5A
+[1998] FD6E C2,8B,04       DATA  >C28B,>04C0,>C30C,>1308,>06A0,>262E,>D020
+       FD71 C0,C3,0C
+       FD74 13,08,06
+       FD77 A0,26,2E
+       FD7A D0,20
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0052 
+Rich E/A GROM
+[1999] FD7C 20,E1,06       DATA  >20E1,>06A0,>262E,>A003,>045A,>0209,>0004,>06A0
+       FD7F A0,26,2E
+       FD82 A0,03,04
+       FD85 5A,02,09
+       FD88 00,04,06
+       FD8B A0
+[2000] FD8C 26,2E,06       DATA  >262E,>06A0,>25C2,>0A40,>A003,>0609,>16F8
+       FD8F A0,25,C2
+       FD92 0A,40,A0
+       FD95 03,06,09
+       FD98 16,F8
+[2001] FD9A 04,5A,02       DATA  >045A,>0223,>FFD0,>0283,>000A,>1A05,>0223,>FFF9
+       FD9D 23,FF,D0
+       FDA0 02,83,00
+       FDA3 0A,1A,05
+       FDA6 02,23,FF
+       FDA9 F9
+[2002] FDAA 02,83,00       DATA  >0283,>0019,>1B01,>045B,>0200,>0A00,>0460
+       FDAD 19,1B,01
+       FDB0 04,5B,02
+       FDB3 00,0A,00
+       FDB6 04,60
+[2003] FDB8 24,32,02       DATA  >2432,>02E0,>83E0,>0200,>2032,>C330,>C270,>C830
+       FDBB E0,83,E0
+       FDBE 02,00,20
+       FDC1 32,C3,30
+       FDC4 C2,70,C8
+       FDC7 30
+[2004] FDC8 83,54,C8       DATA  >8354,>C830,>8356,>C050,>1D00,>9820,>4000
+       FDCB 30,83,56
+       FDCE C0,50,1D
+       FDD1 00,98,20
+       FDD4 40,00
+[2005] FDD6 20,FF,16       DATA  >20FF,>161D,>0699,>101B,>1E00,>02E0,>20DA,>C020
+       FDD9 1D,06,99
+       FDDC 10,1B,1E
+       FDDF 00,02,E0
+       FDE2 20,DA,C0
+       FDE5 20
+[2006] FDE6 20,2E,02       DATA  >202E,>0201,>20DB,>0202,>0004,>0420,>2118
+       FDE9 01,20,DB
+       FDEC 02,02,00
+       FDEF 04,04,20
+       FDF2 21,18
+[2007] FDF4 70,00,09       DATA  >7000,>0950,>1610,>0982,>C001,>0201,>203C,>0420
+       FDF7 50,16,10
+       FDFA 09,82,C0
+       FDFD 01,02,01
+       FE00 20,3C,04
+       FE03 20
+[2008] FE04 21,18,04       DATA  >2118,>04C8,>0602,>11D7,>D0F1,>0983,>A203
+       FE07 C8,06,02
+       FE0A 11,D7,D0
+       FE0D F1,09,83
+       FE10 A2,03
+[2009] FE12 04,5B,02       DATA  >045B,>02E0,>20DA,>04C0,>06C0,>0460,>2432,>0201
+       FE15 E0,20,DA
+       FE18 04,C0,06
+       FE1B C0,04,60
+       FE1E 24,32,02
+       FE21 01
+[2010] FE22 3F,40,02       DATA  >3F40,>0221,>FFF8,>C011,>1105,>8060,>202A
+       FE25 21,FF,F8
+       FE28 C0,11,11
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0053 
+Rich E/A GROM
+       FE2B 05,80,60
+       FE2E 20,2A
+[2011] FE30 16,F9,05       DATA  >16F9,>05CB,>045B,>0200,>0D00,>045B,>2D52,>5163
+       FE33 CB,04,5B
+       FE36 02,00,0D
+       FE39 00,04,5B
+       FE3C 2D,52,51
+       FE3F 63
+[2012] FE40 64,83,84       DATA  >6483,>8455,>045C,>5B5F,>5EF0,>F003,>F0F0
+       FE43 55,04,5C
+       FE46 5B,5F,5E
+       FE49 F0,F0,03
+       FE4C F0,F0
+[2013] FE4E 47,00,00       DATA  >4700,>00C8,>3F38
+       FE51 C8,3F,38
+[2014] FE54 55,54,4C LOW4  DATA  >5554,>4C54,>4142,>2022,>5041,>4420,>2020,>8300
+       FE57 54,41,42
+       FE5A 20,22,50
+       FE5D 41,44,20
+       FE60 20,20,83
+       FE63 00
+[2015] FE64 47,50,4C       DATA  >4750,>4C57,>5320,>83E0,>534F,>554E,>4420
+       FE67 57,53,20
+       FE6A 83,E0,53
+       FE6D 4F,55,4E
+       FE70 44,20
+[2016] FE72 84,00,56       DATA  >8400,>5644,>5052,>4420,>8800,>5644,>5053,>5441
+       FE75 44,50,52
+       FE78 44,20,88
+       FE7B 00,56,44
+       FE7E 50,53,54
+       FE81 41
+[2017] FE82 88,02,56       DATA  >8802,>5644,>5057,>4420,>8C00,>5644,>5057
+       FE85 44,50,57
+       FE88 44,20,8C
+       FE8B 00,56,44
+       FE8E 50,57
+[2018] FE90 41,20,8C       DATA  >4120,>8C02,>5350,>4348,>5244,>9000,>5350,>4348
+       FE93 02,53,50
+       FE96 43,48,52
+       FE99 44,90,00
+       FE9C 53,50,43
+       FE9F 48
+[2019] FEA0 57,54,94       DATA  >5754,>9400,>4752,>4D52,>4420,>9800,>4752
+       FEA3 00,47,52
+       FEA6 4D,52,44
+       FEA9 20,98,00
+       FEAC 47,52
+[2020] FEAE 4D,52,41       DATA  >4D52,>4120,>9802,>4752,>4D57,>4420,>9C00,>4752
+       FEB1 20,98,02
+       FEB4 47,52,4D
+       FEB7 57,44,20
+       FEBA 9C,00,47
+       FEBD 52
+[2021] FEBE 4D,57,41       DATA  >4D57,>4120,>9C02,>5343,>414E,>2020,>000E
+       FEC1 20,9C,02
+       FEC4 53,43,41
+       FEC7 4E,20,20
+       FECA 00,0E
+[2022] FECC 58,4D,4C       DATA  >584D,>4C4C,>4E4B,>2104,>4B53,>4341,>4E20,>2108
+       FECF 4C,4E,4B
+       FED2 21,04,4B
+       FED5 53,43,41
+       FED8 4E,20,21
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0054 
+Rich E/A GROM
+       FEDB 08
+[2023] FEDC 56,53,42       DATA  >5653,>4257,>2020,>210C,>564D,>4257,>2020
+       FEDF 57,20,20
+       FEE2 21,0C,56
+       FEE5 4D,42,57
+       FEE8 20,20
+[2024] FEEA 21,10,56       DATA  >2110,>5653,>4252,>2020,>2114,>564D,>4252,>2020
+       FEED 53,42,52
+       FEF0 20,20,21
+       FEF3 14,56,4D
+       FEF6 42,52,20
+       FEF9 20
+[2025] FEFA 21,18,56       DATA  >2118,>5657,>5452,>2020,>211C,>4453,>524C
+       FEFD 57,54,52
+       FF00 20,20,21
+       FF03 1C,44,53
+       FF06 52,4C
+[2026] FF08 4E,4B,21       DATA  >4E4B,>2120,>4C4F,>4144,>4552,>2124,>4750,>4C4C
+       FF0B 20,4C,4F
+       FF0E 41,44,45
+       FF11 52,21,24
+       FF14 47,50,4C
+       FF17 4C
+[2027] FF18 4E,4B,21       DATA ,>4E4B,>2100
+       FF1B 00
+[2028]               ***********************************************************
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0055 
+Rich E/A GROM
+Symbol Table #1 (New,alpha)  
+0001 AID        835C ARG        835D ARG1       835E ARG2       8360 ARG4       
+8362 ARG6       EF2F ARROW1     EF48 ARROW2     EF4F ARROW3     EF1B ARROWS     
+E84F ASSEM      000F BACK       EF95 BACK0      EFBE BACK1      EFCE BACK3      
+F70E BASIC      000E BEGIN      EFD1 BEGIN0     EFE6 BEGIN1     EFF6 BEGIN2     
+EFFF BEGIN3     001C BERR       0038 BGETSS     F612 BINIT2     F61A BINIT3     
+E659 BLDPAB     E68A BLNKBU     F722 C1         F72D C2         F738 C3         
+F744 C4         F750 C5         F75A C6         F2E5 CAT3       F2FE CAT4       
+F30F CAT4A      F33C CAT4B      F351 CAT5       F37A CAT5A      F3EC CAT6       
+F3F7 CAT7       F244 CATDAT     F80F CCRMSG     F519 CHKER2     F50E CHKERR     
+8318 CHRCUR     0023 CIF        0002 CLEAR      E69F CLOSE      F229 CLRBUF     
+E079 CLREA      F64D CLRFAC     F606 CLRMSG     ED67 CLRREA     E841 CLRXOP     
+F561 CLSALL     F57D CLSPAB     8322 CODE       077F COLOR      E36E CONDEU     
+E372 CONDEV     E380 CONDST     E22E CONFIG     E2E6 CONFIH     E318 CONFIJ     
+E326 CONFIK     E342 CONFIL     E35F CONFLP     831E COUNT      8320 CURADD     
+F89E CURPAT     F8AE DARROW     F770 DASSM1     F766 DDSK1      F76B DEDIT1     
+F682 DEV1       F69B DEV2       F69E DEV3       F69F DEV4       F65A DEVICE     
+F698 DEVNO      F38A DF         F14D DF80       F3DA DI         EEB4 DIREC2     
+EEC2 DIREC3     EDC9 DIRECT     F421 DISNU1     F430 DISNU2     F41B DISNUM     
+F43E DISSTR     F19E DKEY       F764 DLEN       F77B DLOAD      EDCE DMENU      
+E6A3 DOIO       F11E DORF80     0010 DSRLNK     0012 DSRRET     F775 DUTIL1     
+F39A DV         F6F2 EADSR      E81A EASCRN     E38D EDITOR     E507 EINPUT     
+E50A EMOPT1     E51D EMOPT2     8326 ENDLN      000D ENTER      F07D ENTER0     
+F098 ENTER1     F0A7 ENTER2     F080 ENTR       8354 ERCODE     F804 ERRC       
+F835 ERRCE      F844 ERRDD      F7D3 ERRIOC     F829 ERRIT      F7C7 ERRMF      
+F59D ERRMSG     F7E2 ERRNME     F7F6 ERRNTL     F78A ERROR      F86E ERRPNF     
+F859 ERRUR      E7F3 EXPMEM     834A FAC        834B FAC1       8355 FAC11      
+8356 FAC12      834C FAC2       834D FAC3       834E FAC4       834F FAC5       
+8350 FAC6       8351 FAC7       8352 FAC8       8353 FAC9       F01E FCTNUP     
+F416 FILNA1     F340 FILNAM     8348 FLAG       8349 FLAG2      F218 FLSCR      
+EB0B FNDDON     EABB FNDLNK     EAC1 FNDLP      EADE FNDSHO     F880 FPATH      
+EDA6 GDDSK      EDBA GDDSKN     EDC2 GDWDS      E086 GE029      E092 GE056      
+E0D6 GE116      E3E9 GE19B      E43A GE1E2      E43C GE1E4      E469 GE1F6      
+E485 GE1FC      E4B6 GE22C      E4C1 GE235      E4C3 GE237      E4CE GE23B      
+E526 GE272      E532 GE27B      E53A GE283      E553 GE29C      E56A GE2B3      
+E56C GE2B5      E57B GE2C4      E590 GE2D9      E5C2 GE30A      E5DA GE322      
+E5E3 GE32B      E5FB GE344      E616 GE35F      E618 GE361      E61E GE367      
+E637 GE380      E644 GE38D      E689 GE3CF      E6CF GE415      E6E5 GE42B      
+E6E8 GE42E      E6F6 GE43C      E700 GE446      E706 GE44C      E72F GE456      
+E739 GE460      E75A GE46B      E75F GE470      E76B GE47C      E774 GE485      
+E788 GE499      E79A GE4AB      E7C2 GE4D3      E7CC GE4DD      E7F0 GE501      
+E7F2 GE503      EC5A GE597      EC69 GE5A6      ECAC GE5E5      ECCC GE605      
+E89D GE654      E8A8 GE687      E991 GE736      E9B3 GE756      E9C5 GE767      
+E9E1 GE784      E9EB GE7A2      E9F0 GE7A7      E9FA GE7B1      EA09 GE7C0      
+EA40 GE7F2      EA65 GE816      EA70 GE821      EA75 GE826      EA85 GE848      
+EBC8 GE883      EBD3 GE88E      F458 GE8A8      F460 GE8B0      F463 GE8B3      
+F484 GE8D4      F493 GE8E3      F4A5 GE8F5      F4B2 GE8FC      F4B8 GE907      
+F4B9 GE908      F4C0 GE90F      F4C7 GE916      F4CE GE91D      F4D9 GE928      
+F4E0 GE92F      F4E7 GE936      F4EE GE93D      F4F5 GE944      F4FA GE949      
+F509 GE958      F53E GE97A      F54D GE97F      F5A7 GE9DA      F4D3 GE9E2      
+F5C5 GE9F8      F5DF GEA12      F5EC GEA1F      F5FB GEA2E      F64C GEBBD      
+E656 GETALL     E6C4 GETINP     E6F7 GETKEY     F192 GLESS      F19C GLESS2     
+F1B1 GMORE      F24D HALVE      F3AA IF         8379 ITIMER     F3BA IV         
+8374 KBNO       8375 KEY        EA0F LANDR      8347 LDFLAG     F154 LEAASM     
+F1DB LGLES2     F1D1 LGLESS     F1C2 LKEY       EC75 LODPGM     EC82 LODUSR     
+F1DD LOKKEY     F8C4 LOW1       F8CC LOW2       F8D4 LOW3       FE54 LOW4       
+ED9E LPAB       F1C5 LUPKEY     E010 MENU       E0CB MMENU      E33D MMMENU     
+EAFA MORSCN     E0E0 MSCRN      E1AA MYEAXB     EC53 MYSRCH     EF86 NAID       
+E814 NESCRN     E082 NEWEA      E19F NEWSCN     EC4C NO1KEY     F0C1 NODIR      
+EC16 NOEABF     EF5E NOKEY      ED96 NPAB       E1B4 NSCAN      E1C3 NSCAN1     
+E1CB NSCAN2     E1DA NSCAN3     E1E2 NSCAN4     E1F1 NSCAN5     E1F9 NSCAN6     
+E208 NSCAN7     E210 NSCAN8     EF57 OKKEY      E06F OLDEA      ED75 ONEKEY     
+F793 OUTSCN     F655 P1000      F75C PAB        F780 PAB80      E67D PABNAM     
+831C PABPTR     EC9B PGMLOD     F88A PLEASE     EC93 PMSG       F0FA PORVI      
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0056 
+Rich E/A GROM
+F3CA PR         F7A5 PRESS      EBE8 PRGRM      000C PROCD      E713 PSCANX     
+F1EA RDKEY      0006 REDO       F1FD RGMORE     F1E7 RKEY       F20E ROKKEY     
+0002 ROUND      E1A7 RTRXB      EA83 RUN        EB12 RUN00      EB40 RUN01      
+EB60 RUN02      EB74 RUN03      EB94 RUN04      EB9B RUN05      EBA6 RUN06      
+EB4A RUNDN      EB6A RUNLT      EB7E RUNRT      EB36 RUNUP      6372 RXB        
+F718 SBASIC     8310 SCADD      8311 SCADE      F255 SCREEN     F403 SCROLL     
+F6F9 SEADSR     E025 SETUP      E06C SOLDEA     0020 SPACE      8324 STLN       
+8373 SUBSTK     F707 SXBDSR     8316 TEMP       8317 TEMP1      8300 TMP        
+8301 TMP1       8302 TMP2       8303 TMP3       8304 TMP4       8306 TMP6       
+8307 TMP7       8308 TMP8       EF03 TSTKE2     EF0A TSTKE3     EF0E TSTKE4     
+EF11 TSTKE5     EEF6 TSTKEY     ED95 TWOKEY     F186 UPKEY      E833 USSCRN     
+837D VCHAR      E5B8 VFILE      8356 VPAB       F8BE VREGS      836E VSTACK     
+E6B8 VZERO      EF83 WAID       F7BC WARN       F899 WDS1       F5F4 WENTER     
+F591 WRNMSG     ECE0 XBAGN      F700 XBDSR      ECDB XBINP      ED13 XBINP1     
+ED4B XBINP2     ED5D XBINP3     F160 XBPGM      8342 XTOKEN     EF78 YAID       
+E9E8 YESNO      
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0057 
+Rich E/A GROM
+Symbol Table #2 (New,value)  
+0001 AID        0002 CLEAR      0002 ROUND      0006 REDO       000C PROCD      
+000D ENTER      000E BEGIN      000F BACK       0010 DSRLNK     0012 DSRRET     
+001C BERR       0020 SPACE      0023 CIF        0038 BGETSS     077F COLOR      
+6372 RXB        8300 TMP        8301 TMP1       8302 TMP2       8303 TMP3       
+8304 TMP4       8306 TMP6       8307 TMP7       8308 TMP8       8310 SCADD      
+8311 SCADE      8316 TEMP       8317 TEMP1      8318 CHRCUR     831C PABPTR     
+831E COUNT      8320 CURADD     8322 CODE       8324 STLN       8326 ENDLN      
+8342 XTOKEN     8347 LDFLAG     8348 FLAG       8349 FLAG2      834A FAC        
+834B FAC1       834C FAC2       834D FAC3       834E FAC4       834F FAC5       
+8350 FAC6       8351 FAC7       8352 FAC8       8353 FAC9       8354 ERCODE     
+8355 FAC11      8356 FAC12      8356 VPAB       835C ARG        835D ARG1       
+835E ARG2       8360 ARG4       8362 ARG6       836E VSTACK     8373 SUBSTK     
+8374 KBNO       8375 KEY        8379 ITIMER     837D VCHAR      E010 MENU       
+E025 SETUP      E06C SOLDEA     E06F OLDEA      E079 CLREA      E082 NEWEA      
+E086 GE029      E092 GE056      E0CB MMENU      E0D6 GE116      E0E0 MSCRN      
+E19F NEWSCN     E1A7 RTRXB      E1AA MYEAXB     E1B4 NSCAN      E1C3 NSCAN1     
+E1CB NSCAN2     E1DA NSCAN3     E1E2 NSCAN4     E1F1 NSCAN5     E1F9 NSCAN6     
+E208 NSCAN7     E210 NSCAN8     E22E CONFIG     E2E6 CONFIH     E318 CONFIJ     
+E326 CONFIK     E33D MMMENU     E342 CONFIL     E35F CONFLP     E36E CONDEU     
+E372 CONDEV     E380 CONDST     E38D EDITOR     E3E9 GE19B      E43A GE1E2      
+E43C GE1E4      E469 GE1F6      E485 GE1FC      E4B6 GE22C      E4C1 GE235      
+E4C3 GE237      E4CE GE23B      E507 EINPUT     E50A EMOPT1     E51D EMOPT2     
+E526 GE272      E532 GE27B      E53A GE283      E553 GE29C      E56A GE2B3      
+E56C GE2B5      E57B GE2C4      E590 GE2D9      E5B8 VFILE      E5C2 GE30A      
+E5DA GE322      E5E3 GE32B      E5FB GE344      E616 GE35F      E618 GE361      
+E61E GE367      E637 GE380      E644 GE38D      E656 GETALL     E659 BLDPAB     
+E67D PABNAM     E689 GE3CF      E68A BLNKBU     E69F CLOSE      E6A3 DOIO       
+E6B8 VZERO      E6C4 GETINP     E6CF GE415      E6E5 GE42B      E6E8 GE42E      
+E6F6 GE43C      E6F7 GETKEY     E700 GE446      E706 GE44C      E713 PSCANX     
+E72F GE456      E739 GE460      E75A GE46B      E75F GE470      E76B GE47C      
+E774 GE485      E788 GE499      E79A GE4AB      E7C2 GE4D3      E7CC GE4DD      
+E7F0 GE501      E7F2 GE503      E7F3 EXPMEM     E814 NESCRN     E81A EASCRN     
+E833 USSCRN     E841 CLRXOP     E84F ASSEM      E89D GE654      E8A8 GE687      
+E991 GE736      E9B3 GE756      E9C5 GE767      E9E1 GE784      E9E8 YESNO      
+E9EB GE7A2      E9F0 GE7A7      E9FA GE7B1      EA09 GE7C0      EA0F LANDR      
+EA40 GE7F2      EA65 GE816      EA70 GE821      EA75 GE826      EA83 RUN        
+EA85 GE848      EABB FNDLNK     EAC1 FNDLP      EADE FNDSHO     EAFA MORSCN     
+EB0B FNDDON     EB12 RUN00      EB36 RUNUP      EB40 RUN01      EB4A RUNDN      
+EB60 RUN02      EB6A RUNLT      EB74 RUN03      EB7E RUNRT      EB94 RUN04      
+EB9B RUN05      EBA6 RUN06      EBC8 GE883      EBD3 GE88E      EBE8 PRGRM      
+EC16 NOEABF     EC4C NO1KEY     EC53 MYSRCH     EC5A GE597      EC69 GE5A6      
+EC75 LODPGM     EC82 LODUSR     EC93 PMSG       EC9B PGMLOD     ECAC GE5E5      
+ECCC GE605      ECDB XBINP      ECE0 XBAGN      ED13 XBINP1     ED4B XBINP2     
+ED5D XBINP3     ED67 CLRREA     ED75 ONEKEY     ED95 TWOKEY     ED96 NPAB       
+ED9E LPAB       EDA6 GDDSK      EDBA GDDSKN     EDC2 GDWDS      EDC9 DIRECT     
+EDCE DMENU      EEB4 DIREC2     EEC2 DIREC3     EEF6 TSTKEY     EF03 TSTKE2     
+EF0A TSTKE3     EF0E TSTKE4     EF11 TSTKE5     EF1B ARROWS     EF2F ARROW1     
+EF48 ARROW2     EF4F ARROW3     EF57 OKKEY      EF5E NOKEY      EF78 YAID       
+EF83 WAID       EF86 NAID       EF95 BACK0      EFBE BACK1      EFCE BACK3      
+EFD1 BEGIN0     EFE6 BEGIN1     EFF6 BEGIN2     EFFF BEGIN3     F01E FCTNUP     
+F07D ENTER0     F080 ENTR       F098 ENTER1     F0A7 ENTER2     F0C1 NODIR      
+F0FA PORVI      F11E DORF80     F14D DF80       F154 LEAASM     F160 XBPGM      
+F186 UPKEY      F192 GLESS      F19C GLESS2     F19E DKEY       F1B1 GMORE      
+F1C2 LKEY       F1C5 LUPKEY     F1D1 LGLESS     F1DB LGLES2     F1DD LOKKEY     
+F1E7 RKEY       F1EA RDKEY      F1FD RGMORE     F20E ROKKEY     F218 FLSCR      
+F229 CLRBUF     F244 CATDAT     F24D HALVE      F255 SCREEN     F2E5 CAT3       
+F2FE CAT4       F30F CAT4A      F33C CAT4B      F340 FILNAM     F351 CAT5       
+F37A CAT5A      F38A DF         F39A DV         F3AA IF         F3BA IV         
+F3CA PR         F3DA DI         F3EC CAT6       F3F7 CAT7       F403 SCROLL     
+F416 FILNA1     F41B DISNUM     F421 DISNU1     F430 DISNU2     F43E DISSTR     
+F458 GE8A8      F460 GE8B0      F463 GE8B3      F484 GE8D4      F493 GE8E3      
+F4A5 GE8F5      F4B2 GE8FC      F4B8 GE907      F4B9 GE908      F4C0 GE90F      
+F4C7 GE916      F4CE GE91D      F4D3 GE9E2      F4D9 GE928      F4E0 GE92F      
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0058 
+Rich E/A GROM
+F4E7 GE936      F4EE GE93D      F4F5 GE944      F4FA GE949      F509 GE958      
+F50E CHKERR     F519 CHKER2     F53E GE97A      F54D GE97F      F561 CLSALL     
+F57D CLSPAB     F591 WRNMSG     F59D ERRMSG     F5A7 GE9DA      F5C5 GE9F8      
+F5DF GEA12      F5EC GEA1F      F5F4 WENTER     F5FB GEA2E      F606 CLRMSG     
+F612 BINIT2     F61A BINIT3     F64C GEBBD      F64D CLRFAC     F655 P1000      
+F65A DEVICE     F682 DEV1       F698 DEVNO      F69B DEV2       F69E DEV3       
+F69F DEV4       F6F2 EADSR      F6F9 SEADSR     F700 XBDSR      F707 SXBDSR     
+F70E BASIC      F718 SBASIC     F722 C1         F72D C2         F738 C3         
+F744 C4         F750 C5         F75A C6         F75C PAB        F764 DLEN       
+F766 DDSK1      F76B DEDIT1     F770 DASSM1     F775 DUTIL1     F77B DLOAD      
+F780 PAB80      F78A ERROR      F793 OUTSCN     F7A5 PRESS      F7BC WARN       
+F7C7 ERRMF      F7D3 ERRIOC     F7E2 ERRNME     F7F6 ERRNTL     F804 ERRC       
+F80F CCRMSG     F829 ERRIT      F835 ERRCE      F844 ERRDD      F859 ERRUR      
+F86E ERRPNF     F880 FPATH      F88A PLEASE     F899 WDS1       F89E CURPAT     
+F8AE DARROW     F8BE VREGS      F8C4 LOW1       F8CC LOW2       F8D4 LOW3       
+FE54 LOW4       
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0059 
+Rich E/A GROM
+Symbol Table #4 (Def,alpha)  
+0034 ACCTON     835C ARG        0032 ATN        0036 BADTON     003B BITREV     
+0012 CFI        0014 CNS        002C COS        0010 CSN        8372 DATSTK     
+0001 DIVZER     0003 ERRIOV     0006 ERRLOG     0005 ERRNIP     0002 ERRSNN     
+0004 ERRSQR     0028 EXP        834A FAC        0006 FADD       000A FCOMP      
+0009 FDIV       0008 FMUL       836C FPERAD     0007 FSUB       0038 GETSPACE   
+0022 INT        0010 LINK       0018 LOCASE     002A LOG        8370 MEMSIZ     
+003D NAMLNK     8300 PAD        0024 PWR        0012 RETURN     000B SADD       
+000F SCOMP      000E SDIV       8375 SGN        002E SIN        000D SMUL       
+8400 SOUND      0026 SQR        000C SSUB       837C STATUS     0016 STCASE     
+8373 SUBSTK     0030 TAN        0007 TRIGER     004A UPCASE     836E VSPTR      
+0001 WRNOV      837F XPT        837E YPT        
+
+99/4 GPL-ASSEMBLER (Pass 3) correct                                   PAGE 0060 
+Rich E/A GROM
+Symbol Table #8 (Def,value)  
+0001 DIVZER     0001 WRNOV      0002 ERRSNN     0003 ERRIOV     0004 ERRSQR     
+0005 ERRNIP     0006 ERRLOG     0006 FADD       0007 FSUB       0007 TRIGER     
+0008 FMUL       0009 FDIV       000A FCOMP      000B SADD       000C SSUB       
+000D SMUL       000E SDIV       000F SCOMP      0010 CSN        0010 LINK       
+0012 CFI        0012 RETURN     0014 CNS        0016 STCASE     0018 LOCASE     
+0022 INT        0024 PWR        0026 SQR        0028 EXP        002A LOG        
+002C COS        002E SIN        0030 TAN        0032 ATN        0034 ACCTON     
+0036 BADTON     0038 GETSPACE   003B BITREV     003D NAMLNK     004A UPCASE     
+8300 PAD        834A FAC        835C ARG        836C FPERAD     836E VSPTR      
+8370 MEMSIZ     8372 DATSTK     8373 SUBSTK     8375 SGN        837C STATUS     
+837E YPT        837F XPT        8400 SOUND      

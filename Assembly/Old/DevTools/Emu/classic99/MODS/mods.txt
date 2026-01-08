@@ -1,0 +1,538 @@
+Modules and ROMs go in here, if you have any you want to add.
+
+Read LoadingFiles.txt for instructions on how to add new files (down near the bottom).
+
+The following data can be copy and pasted into your Classic99.ini to add cartridges.
+The compatibility information IS out of date - much more works than says here. I'll
+update it eventually.
+
+;*************** Carts **************** 
+
+[usercart0] 
+; *** 4A Flyer - Works 
+name="4A Flyer" 
+rom0=C|6000|2000|MODS\4aflyerc.bin 
+rom1=X|6000|2000|MODS\4aflyerd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart1] 
+; *** Ambulance - Collisions with cars don't work 
+name="Ambulance" 
+rom0=C|6000|2000|MODS\ambulncc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart2] 
+; *** Anteater - Works 
+name="Anteater" 
+rom0=C|6000|2000|MODS\anteatc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart3] 
+; *** Barrage - Works 
+name="Barrage" 
+rom0=C|6000|2000|MODS\barragec.bin 
+rom1=X|6000|2000|MODS\barraged.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart4] 
+; *** Black Hole - No sprite collisions 
+name="Black Hole" 
+rom0=C|6000|2000|MODS\blakholc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart5] 
+; *** Boxer - works 
+name="Boxer" 
+rom0=C|6000|2000|MODS\boxerc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart6] 
+; *** Breakthru - works 
+name="Breakthru" 
+rom0=C|6000|2000|MODS\breakc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart7] 
+; *** Buck Rogers - works 
+name="Buck Rogers" 
+rom0=C|6000|2000|MODS\buckc.bin 
+rom1=G|6000|4000|MODS\buckg.bin 
+
+[usercart8] 
+; *** Burger Builder - no sprite collisions, timing issues 
+name="Burger Builder" 
+rom0=C|6000|2000|MODS\burgbldc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart9] 
+; *** Centipede - works 
+name="Centipede" 
+rom0=C|6000|2000|MODS\centiped.grm 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart10] 
+; *** Computer War - works 
+name="Computer War" 
+rom0=C|6000|2000|MODS\compwarc.bin 
+rom1=X|6000|2000|MODS\compward.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart11] 
+; *** Connect 4 - Works 
+name="Connect 4" 
+rom0=G|6000|4000|MODS\connectg.bin 
+
+[usercart12] 
+; *** D-Station 2 - works 
+name="D-Station 2" 
+rom0=C|6000|2000|MODS\dstatn2c.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart13] 
+; *** Defender 2 - works 
+name="Defender 2" 
+rom0=C|6000|2000|mods\defendc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart14] 
+; *** Donkey Kong - works 
+name="Donkey Kong" 
+rom0=C|6000|2000|MODS\donkeyc.bin 
+rom1=X|6000|2000|MODS\donkeyd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart15] 
+; *** Escape - works 
+name="Escape" 
+rom0=C|6000|2000|MODS\escapec.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart16] 
+; *** E.T. - Works 
+name="E.T." 
+rom0=C|6000|2000|MODS\etc.bin 
+rom1=X|6000|2000|MODS\etd.bin 
+rom2=G|6000|4000|MODS\etg.bin 
+
+[usercart17] 
+; *** Fantasy - works 
+name="Fantasy" 
+rom0=C|6000|2000|MODS\fantasyc.bin 
+rom1=G|6000|A000|MODS\fantasyg.bin 
+
+[usercart18] 
+; *** Fathom - no sprite collisions 
+name="Fathom" 
+rom0=C|6000|2000|MODS\fathomc.bin 
+rom1=X|6000|2000|MODS\fathomd.bin 
+rom2=G|6000|6000|MODS\fathomg.bin 
+
+[usercart19] 
+; *** Rabbit Trail - works 
+name="Rabbit Trail" 
+rom0=C|6000|2000|MODS\RABBITTC.BIN 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart20] 
+; *** Zero Zap - works 
+name="Zero Zap" 
+rom0=G|6000|A000|MODS\ZEROZAPG.BIN 
+
+[usercart21] 
+; *** Picnic Paranoia - Works 
+name="Picnic Paranoia" 
+rom0=C|6000|2000|MODS\PICPARNC.BIN 
+rom1=X|6000|2000|MODS\picparnd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart22] 
+; *** Personal Record Keeping - Works 
+name="Personal Record Keeping" 
+rom0=G|6000|8000|MODS\PRSRECKG.BIN 
+
+[usercart23] 
+; *** Extended BASIC 2.5 - Works 
+name="Extended BASIC 2.5" 
+rom0=G|6000|A000|MODS\XB25G.BIN 
+rom1=C|6000|2000|MODS\XB25C.BIN 
+rom2=X|6000|2000|MODS\XB25D.BIN 
+
+[usercart24] 
+; *** Super XB - works 
+name="Super XB" 
+rom0=G|6000|A000|MODS\sxbag.BIN 
+rom1=C|6000|2000|MODS\sxbac.BIN 
+rom2=X|6000|2000|MODS\sxbad.BIN 
+
+[usercart25] 
+; *** Addition and Subtraction 1 - works 
+name="Addition and Subtraction 1" 
+rom0=G|6000|6000|MODS\ADDSUB1G.BIN 
+
+[usercart26] 
+; *** Addition and Substraction 2 - works 
+name="Addition and Substraction 2" 
+rom0=G|6000|6000|MODS\ADDSUB2G.BIN 
+
+[usercart27] 
+; *** Milliken Addition - works 
+name="Milliken Addition" 
+rom0=G|6000|6000|MODS\addtionG.bin 
+
+[usercart28] 
+; *** Adventure - needs external files :) 
+name="Adventure" 
+rom0=G|6000|2000|mods\advtureg.bin 
+
+[usercart29] 
+; *** The Attack - works 
+name="The Attack" 
+rom0=G|6000|2000|mods\attackg.bin 
+
+[usercart30] 
+; *** Blasto - works 
+name="Blasto" 
+rom0=G|6000|2000|mods\blastog.bin 
+
+[usercart31] 
+; *** BurgerTime - works 
+name="BurgerTime" 
+rom0=C|6000|2000|mods\burgtimc.bin 
+rom1=G|6000|4000|mods\burgtimg.bin 
+
+[usercart32] 
+; *** Championship Baseball - asks for MB expansion console 
+name="Championship Baseball" 
+rom0=C|6000|2000|mods\champbbc.bin 
+rom1=G|6000|6000|mods\champbbg.bin 
+
+[usercart33] 
+; *** Chicken Coop - works, some timing issues 
+name="Chicken Coop" 
+rom0=C|6000|2000|mods\chicoopc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart34] 
+; *** Congo Bongo - works 
+name="Congo Bongo" 
+rom0=C|6000|2000|mods\congbngc.bin 
+rom1=G|6000|4000|mods\congbngg.bin 
+
+[usercart35] 
+; *** Demon Attack - works 
+name="Demon Attack" 
+rom0=C|6000|2000|mods\demnattc.bin 
+rom1=G|6000|6000|mods\demnattg.bin 
+
+[usercart36] 
+; *** Dig Dug - works 
+name="Dig Dug" 
+rom0=C|6000|2000|mods\digdugc.bin 
+rom1=X|6000|2000|mods\digdugd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart37] 
+; *** Disk Manager - works (within the filesystem limits) 
+name="Disk Manager" 
+rom0=G|6000|4000|mods\diskmg1g.bin 
+
+[usercart38] 
+; *** Disk Manager 2 - works (within the filesystem limits) 
+name="Disk Manager 2" 
+rom0=G|6000|4000|mods\diskmg2g.bin 
+
+[usercart39] 
+; *** Art of Division 1 - works 
+name="Art of Division 1" 
+rom0=G|6000|8000|mods\divis1g.bin 
+
+[usercart40] 
+; *** Milliken Division - Many attempts to open 'tdir', then illegal opcode 
+name="Milliken Division" 
+rom0=G|6000|2000|mods\divseqg.bin 
+
+[usercart41] 
+; *** Driving Demon - works 
+name="Driving Demon" 
+rom0=C|6000|2000|mods\drivdemc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart42] 
+; *** Early Learning Fun - works 
+name="Early Learning Fun" 
+rom0=G|6000|4000|mods\erlnfung.bin 
+
+[usercart43] 
+; *** Face Maker - works 
+name="Face Maker" 
+rom0=C|6000|2000|mods\facemkrc.bin 
+rom1=G|6000|4000|mods\facemkrg.bin 
+
+[usercart44] 
+; *** Frogger - some sprites (snake, lady frog, etc) stick - won't start 
+name="Frogger" 
+rom0=C|6000|2000|mods\froggerc.bin 
+rom1=G|6000|A000|mods\froggerg.bin 
+
+[usercart45] 
+; *** Hangman - works 
+name="Hangman" 
+rom0=C|6000|2000|mods\hangmanc.bin 
+rom1=G|6000|A000|mods\hangmang.bin 
+
+[usercart46] 
+; *** Hopper - works. 
+name="Hopper" 
+rom0=C|6000|2000|mods\hopperc.bin 
+rom1=G|6000|2000|mods\hopperg.bin 
+
+[usercart47] 
+; *** Home Budget Management - works 
+name="Home Budget Management" 
+rom0=G|6000|4000|mods\hsebmang.bin 
+
+[usercart48] 
+; *** Hustle - works 
+name="Hustle" 
+rom0=G|6000|2000|mods\hustleg.bin 
+
+[usercart49] 
+; *** Jawbreaker - works 
+name="Jawbreaker" 
+rom0=C|6000|2000|mods\jawbreaC.bin 
+rom1=G|6000|2000|mods\jawbreag.bin 
+
+[usercart50] 
+; *** Jungle Hunt - works but has problems with incorrect speed 
+name="Jungle Hunt" 
+rom0=C|6000|2000|mods\junglec.bin 
+rom1=X|6000|2000|mods\jungled.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart51] 
+; *** Microsoft Multiplan - requires disk 
+name="Microsoft Multiplan" 
+rom0=G|6000|A000|mods\micmultG.bin 
+
+[usercart52] 
+; *** Microsurgeon - works 
+name="Microsurgeon" 
+rom0=C|6000|2000|mods\micsurgc.bin 
+rom1=G|6000|6000|mods\micsurgg.bin 
+
+[usercart53] 
+; *** Mini Writer - works 
+name="Mini Writer" 
+rom0=C|6000|2000|mods\miniwric.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart54] 
+; *** Minus Mission - works 
+name="Minus Mission" 
+rom0=G|6000|4000|mods\minusmsg.bin 
+
+[usercart55] 
+; *** Munch Mobile - works 
+name="Munch Mobile" 
+rom0=C|6000|2000|mods\mnchmobc.bin 
+rom1=G|6000|6000|mods\mnchmobg.bin 
+
+[usercart56] 
+; *** Moon Patrol - works (generates illegal opcodes - 
+name="Moon Patrol" 
+; (seems) a minor bug in Moon Patrol, not Classic99!) 
+rom0=C|6000|2000|mods\moonpatc.bin 
+rom1=X|6000|2000|mods\moonpatd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart57] 
+; *** Ms Pac Man - works 
+name="Ms Pac Man" 
+rom0=C|6000|2000|mods\mspacc.bin 
+rom1=X|6000|2000|mods\mspacd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart58] 
+; *** Magic of Multiplication - works 
+name="Magic of Multiplication" 
+rom0=G|6000|6000|mods\multp-1g.bin 
+
+[usercart59] 
+; *** Milliken Multiplication - works 
+name="Milliken Multiplication" 
+rom0=G|6000|6000|mods\multseqg.bin 
+
+[usercart60] 
+; *** Star Trek - works 
+name="Star Trek" 
+rom0=C|6000|2000|mods\startrkc.bin 
+rom1=G|6000|4000|mods\startrkg.bin 
+
+[usercart61] 
+; *** Micro Pinball - Some sounds don't stop 
+name="Micro Pinball" 
+rom0=C|6000|2000|mods\pinballc.bin 
+rom1=X|6000|2000|mods\pinballd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart62] 
+; *** Pole Position - works! 
+name="Pole Position" 
+rom0=C|6000|2000|mods\poleposc.bin 
+rom1=X|6000|2000|mods\poleposd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart63] 
+; *** Music Maker - works 
+name="Music Maker" 
+rom0=G|6000|6000|mods\mus-makg.bin 
+
+[usercart64] 
+; *** Number Magic - works 
+name="Number Magic" 
+rom0=G|6000|2000|mods\numbmagg.bin 
+
+[usercart65] 
+; *** Numeration 2 - at the Carnival - works 
+name="Numeration 2" 
+rom0=G|6000|6000|mods\numrat2g.bin 
+
+[usercart66] 
+; *** Pac Man - works 
+name="Pac Man" 
+rom0=C|6000|2000|mods\pacmanc.bin 
+rom1=X|6000|2000|mods\pacmand.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart67] 
+; *** Personal Real Estate - works 
+name="Personal Real Estate" 
+rom0=G|6000|8000|mods\prealesg.bin 
+
+[usercart68] 
+; *** Popeye - works 
+name="Popeye" 
+rom0=C|6000|2000|mods\popeyec.bin 
+rom1=G|6000|A000|mods\popeyeg.bin 
+
+[usercart69] 
+; *** Princess and Frog - works 
+name="Princess and Frog" 
+rom0=C|6000|2000|mods\prnfrogc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart70] 
+; *** Protector - works (uses Joystick 2) 
+name="Protector" 
+rom0=C|6000|2000|mods\protectc.bin 
+rom1=X|6000|2000|mods\protectd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart71] 
+; *** Protype - works 
+name="Protype" 
+rom0=C|6000|2000|mods\protypec.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart72] 
+; *** Romox Demo - works 
+name="Romox Demo" 
+rom0=C|6000|2000|mods\romoxc.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart73] 
+; *** Spelling 3 - works 
+name="Spelling 3" 
+rom0=C|6000|2000|mods\schspl3c.bin 
+rom1=G|6000|A000|mods\schspl3g.bin 
+
+[usercart74] 
+; *** Spelling 4 - works 
+name="Spelling 4" 
+rom0=C|6000|2000|mods\schspl4c.bin 
+rom1=G|6000|A000|mods\schspl4g.bin 
+
+[usercart75] 
+; *** Shamus - works 
+name="Shamus" 
+rom0=C|6000|2000|mods\shamusc.bin 
+rom1=X|6000|2000|mods\shamusd.bin 
+message="Won't work on 99/4 or v2.2" 
+
+[usercart76] 
+; *** Addatex Games - attempts to load DSK1.ADDA? SXB clone? 
+name="Addatex Games" 
+rom0=C|6000|2000|mods\addatxc.bin 
+rom1=X|6000|2000|mods\addatxd.bin 
+rom2=G|6000|A000|mods\addatxg.bin 
+
+[usercart77] 
+; *** Return to Pirate Isle - works 
+name="Return to Pirate Isle" 
+rom0=C|6000|2000|mods\rtpiratc.bin 
+rom1=G|6000|A000|mods\rtpiratg.bin 
+
+[usercart78] 
+; *** Symoids - Works (causes IDLE instruction warnings - this is apparently correct) 
+name="Symoids" 
+rom0=C|6000|2000|mods\SlymoidC.bin 
+rom1=G|6000|2000|mods\SlymoidG.bin 
+
+[usercart79] 
+; *** Sneggit - Works 
+name="Sneggit" 
+rom0=C|6000|2000|mods\SneggitC.bin 
+rom1=G|6000|2000|mods\SneggitG.bin 
+
+[usercart80] 
+; *** Soccer - Works 
+name="Soccer" 
+rom0=G|6000|4000|mods\soccerg.bin 
+
+[usercart81] 
+; *** Speech Editor - maybe works - needs speech synth 
+name="Speech Editor" 
+rom0=G|6000|2000|mods\spch-edg.bin 
+
+[usercart82] 
+; *** Statistics - works 
+name="Statistics" 
+rom0=G|6000|A000|mods\statistg.bin 
+
+[usercart83] 
+; *** Story Machine - works 
+name="Story Machine" 
+rom0=C|6000|2000|mods\strymacc.bin 
+rom1=G|6000|6000|mods\strymacg.bin 
+
+[usercart84] 
+; *** Milliken Substraction Sequence - works 
+name="Milliken Substraction Sequence" 
+rom0=G|6000|4000|mods\subtseqg.bin 
+
+[usercart85] 
+; *** Video Games 1 - works 
+name="Video Games 1" 
+rom0=G|6000|4000|mods\vidgam1g.bin 
+
+[usercart86] 
+; *** Video Games 2 - works 
+name="Video Games 2" 
+rom0=G|6000|2000|mods\vidgam2g.bin 
+
+[usercart87] 
+; *** Video Graphics - works 
+name="Video Graphics" 
+rom0=G|6000|2000|mods\vidgrapg.bin 
+
+[usercart88] 
+; *** Wingwar - no sprite collisions 
+name="Wingwar" 
+rom0=C|6000|2000|mods\wingwarc.bin 
+rom1=G|6000|6000|mods\wingwarg.bin 
+
+[usercart89] 
+; *** Yahtzee - works 
+name="Yahtzee" 
+rom0=C|6000|2000|mods\Yahtzeec.bin 
+rom1=G|6000|A000|mods\Yahtzeeg.bin 
