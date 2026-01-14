@@ -16,14 +16,22 @@ ALL OTHER CHIPS SETUP AS LITTLE ENDIAN
 
 
 MUX MMIO ADDRESSES
->F000 = MUX 0 THRE                 >F008 = MUX 1 THRE
->F002 = MUX 0 /THRL                >F010 = MUX 1 /THRL
->F004 = MUX 0 RRD                  >F012 = MUX 1 RRD
->F006 = MUX 0 /DRR                 >F014 = MUX 1 /DRR
+>F000 = M0DATR -> MUX 0 Data Ready
+>F002 = M0RERD -> MUX 0 Receiver Register Disconnect
+>F004 = M0THRE -> MUX 0 Transmit Holding Register Empty
+>F006 = /M0THL -> MUX 0 Transmit Holding Register Load
+>F008 = /M0IQR -> MUX 0 IRQ Reset
+>F00A = M1DATR -> MUX 1 Data Ready
+>F00C = M1RERD -> MUX 1 Receiver Register Disconnect
+>F00E = M1THRE -> MUX 1 Transmit Holding Register Empty
+>F010 = /M1THL -> MUX 1 Transmit Holding Register Load
+>F012 = /M1IQR -> MUX 1 IRQ Reset
 
 PARALLEL PORT MMIO ADDRESSES
->F016 = SEND BYTE OUT
->F018 = BYTE RECEIVED
+>F014 =
+>F016 =
+>F018 =
+>F01A =
 
 TAPE DRIVE MMIO ADDRESSES
 
