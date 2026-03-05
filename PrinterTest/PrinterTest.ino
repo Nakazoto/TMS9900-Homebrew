@@ -10,6 +10,8 @@ int dtout5 = 9;
 int dtout6 = 10;
 int busyrd = 0;
 
+const char *str = "HELLORLD FROM USAGI ELECTRIC!'\r\n'";
+
 // Initialize all the pins and set the outputs low
 void setup() {
   pinMode(prbusy, INPUT);
@@ -33,10 +35,25 @@ void setup() {
 
 // Main loop that prints a test thing over and over 
 void loop() {
-  // If Printer Busy is low execute, otherwise loop
-  busyrd = digitalRead(prbusy);
-  if (busyrd = 0) {
-    
-  }
+    for(const char *p = str; *p != '\0'; p++) {
+  
+      // If Printer Busy break out of while loop
+      busyrd = 1;
+      while (digitalRead(prbusy) == HIGH) {
+        delay(100);
+      }      
+        
+      digitalWrite(dtout0, (*p & (1<<0))? HIGH : LOW);
+      digitalWrite(dtout1, (*p & (1<<1))? HIGH : LOW);
+      digitalWrite(dtout2, (*p & (1<<2))? HIGH : LOW);
+      digitalWrite(dtout3, (*p & (1<<3))? HIGH : LOW);
+      digitalWrite(dtout4, (*p & (1<<4))? HIGH : LOW);
+      digitalWrite(dtout5, (*p & (1<<5))? HIGH : LOW);
+      digitalWrite(dtout6, (*p & (1<<6))? HIGH : LOW);
+  
+      digitalWrite(strobe, HIGH);
+      delay(100);
+      digitalWrite(strobe, LOW);
+    }
   delay(100);
 }
