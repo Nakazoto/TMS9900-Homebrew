@@ -66,7 +66,6 @@
 			(psnegative no)
 			(psa4output no)
 			(plot_black_and_white yes)
-			(plotinvisibletext no)
 			(sketchpadsonfab no)
 			(plotpadnumbers no)
 			(hidednponfab no)
@@ -77,7 +76,7 @@
 			(mirror no)
 			(drillshape 0)
 			(scaleselection 1)
-			(outputdirectory "C:/Users/Nakaz/Desktop/TMSHB G Code/BPN/Gerbers/")
+			(outputdirectory "/home/usagi/Desktop/TMSHB Cuts/Backplane/Gerbers/")
 		)
 	)
 	(net 0 "")
@@ -12207,17 +12206,6 @@
 		(uuid "88abb75b-98f1-4da9-b676-560f57f91532")
 	)
 	(gr_circle
-		(center 223.52 66.04)
-		(end 224.79 66.04)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill no)
-		(layer "Edge.Cuts")
-		(uuid "a1800d39-b8a8-4610-8f8b-0fac7ac9b5d2")
-	)
-	(gr_circle
 		(center 78.74 137.16)
 		(end 80.01 137.16)
 		(stroke
@@ -12227,6 +12215,17 @@
 		(fill no)
 		(layer "Edge.Cuts")
 		(uuid "acbd92b9-7e4c-4b2b-82cd-6b1799ec0eff")
+	)
+	(gr_circle
+		(center 223.52 66.04)
+		(end 224.79 66.04)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "Edge.Cuts")
+		(uuid "a1800d39-b8a8-4610-8f8b-0fac7ac9b5d2")
 	)
 	(gr_circle
 		(center 223.52 137.16)

@@ -37,8 +37,10 @@
 		(pad_to_mask_clearance 0)
 		(allow_soldermask_bridges_in_footprints no)
 		(tenting front back)
+		(aux_axis_origin 43.18 101.6)
+		(grid_origin 43.18 101.6)
 		(pcbplotparams
-			(layerselection 0x00000000_00000000_55555555_5755f5ff)
+			(layerselection 0x00000000_00000000_55555555_57555554)
 			(plot_on_all_layers_selection 0x00000000_00000000_00000000_00000000)
 			(disableapertmacros no)
 			(usegerberextensions no)
@@ -50,7 +52,7 @@
 			(svgprecision 4)
 			(plotframeref no)
 			(mode 1)
-			(useauxorigin no)
+			(useauxorigin yes)
 			(hpglpennumber 1)
 			(hpglpenspeed 20)
 			(hpglpendiameter 15.000000)
@@ -72,9 +74,9 @@
 			(subtractmaskfromsilk no)
 			(outputformat 1)
 			(mirror no)
-			(drillshape 1)
+			(drillshape 0)
 			(scaleselection 1)
-			(outputdirectory "")
+			(outputdirectory "/home/usagi/Desktop/TMSHB Cuts/Buffer/Gerbers/")
 		)
 	)
 	(net 0 "")
@@ -9742,17 +9744,6 @@
 		)
 	)
 	(gr_rect
-		(start 43.18 66.04)
-		(end 193.04 101.6)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill no)
-		(layer "Edge.Cuts")
-		(uuid "42357100-753c-42a9-971e-5a72c2f0e1eb")
-	)
-	(gr_rect
 		(start 43.18 27.94)
 		(end 193.04 63.5)
 		(stroke
@@ -9762,6 +9753,17 @@
 		(fill no)
 		(layer "Edge.Cuts")
 		(uuid "4508c3ba-0477-41f1-95f7-0489d09144d0")
+	)
+	(gr_rect
+		(start 43.18 66.04)
+		(end 193.04 101.6)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "Edge.Cuts")
+		(uuid "42357100-753c-42a9-971e-5a72c2f0e1eb")
 	)
 	(via
 		(at 60.96 33.02)
