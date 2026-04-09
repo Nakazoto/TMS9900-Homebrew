@@ -1,5 +1,6 @@
-TMS9900 IS BIG ENDIAN
-ALL OTHER CHIPS SETUP AS LITTLE ENDIAN
+********************************************************************************
+*                                 MEMORY MAP                                   *
+********************************************************************************
 
 >0000 TO >0002 = RESET VECTOR
 >0004 TO >003E = INTERRUPT VECTORS
@@ -14,24 +15,50 @@ ALL OTHER CHIPS SETUP AS LITTLE ENDIAN
 >F000 TO >FFFA = MMIO ADDRESS SPACE (2K WORDS / 4K BYTES)
 >FFFC TO >FFFE = LOAD SIGNAL VECTOR
 
+********************************************************************************
+*                               MMIO ADDRESSES                                 *
+********************************************************************************
 
-MUX MMIO ADDRESSES
->F000 = M0STAT -> MUX 0 Status (THRE onto DA0 and DR onto DA1)
->F002 = M0RERD -> MUX 0 Receiver Register Disconnect
->F004 = /M0THL -> MUX 0 Transmit Holding Register Load
->F006 = /M0IQR -> MUX 0 IRQ Reset
->F008 = M1STAT -> MUX 1 Status (THRE onto DA0 and DR onto DA1)
->F00A = M1RERD -> MUX 1 Receiver Register Disconnect
->F00C = /M1THL -> MUX 1 Transmit Holding Register Load
->F00E = /M1IQR -> MUX 1 IRQ Reset
+MUX 0 MMIO ADDRESSES
+>F000 = M0STAT -> Put THRE onto Data Bus 8, DR onto Data Bus 9
+>F002 = M0RERD -> Clear DR flag, connect Receiver Register to Data Bus[15:8]
+>F004 = /M0THL -> Load Data Bus[15:8] into Transmitter Holding Register
+>F006 = /M0RST -> Reset the Priority Interrupt Flip Flop
 
+MUX 1 MMIO ADDRESSES
+>F008 = M1STAT -> Put THRE onto Data Bus 8, DR onto Data Bus 9
+>F00A = M1RERD -> Clear DR flag, connect Receiver Register to Data Bus[15:8]
+>F00C = /M1THL -> Load Data Bus[15:8] into Transmitter Holding Register
+>F00E = /M1RST -> Reset the Priority Interrupt Flip Flop
+
+TIMER MMIO ADDRESS
+>F010 = /TIRST -> Reset Timer Interrupt Flip Flop
 
 PARALLEL PORT MMIO ADDRESSES
->F014 =
->F016 =
->F018 =
->F01A =
+>F012 = PRBUSY -> Puts the printer busy signal onto Data Bus[8]
+>F014 = /PPRFD -> Paper feed signal to feed paper through the printer
+>F016 = PRSTRB -> Load Data Bus[15:8] into buffer to print
 
 TAPE DRIVE MMIO ADDRESSES
+TBD
 
+********************************************************************************
+*                                 INTERRUPTS                                   *
+********************************************************************************
 
+Priority Level 0 -> Reset (Highest Level)
+Priority Level 1 -> Reserved
+Priority Level 2 -> Tape Drive Interrupt
+Priority Level 3 -> UART 0 Interrupt
+Priority Level 4 -> UART 1 Interrupt
+Priority Level 5 -> Timer Interrupt
+Priority Level 6 -> Unused
+Priority Level 7 -> Unused
+Priority Level 8 -> Unused
+Priority Level 9 -> Unused
+Priority Level A -> Unused
+Priority Level B -> Unused
+Priority Level C -> Unused
+Priority Level D -> Unused
+Priority Level E -> Unused
+Priority Level F -> Unused (Lowest Level)

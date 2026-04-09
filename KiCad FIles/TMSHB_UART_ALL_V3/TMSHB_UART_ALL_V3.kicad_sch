@@ -21338,7 +21338,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "470nF"
+		(property "Value" "47nF"
 			(at 300.736 271.526 0)
 			(effects
 				(font
